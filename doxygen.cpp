@@ -203,7 +203,7 @@ void Doxygen::createDocumentationDoxygen() const
         else
         {
             docToWrite += genericBeginNoindent;
-            docToWrite += "@enum " + overview.prettyName(name);
+            docToWrite += "* @enum " + overview.prettyName(name);
             docToWrite += "\n*/\n";
         }
     }
@@ -266,7 +266,14 @@ void Doxygen::createDocumentationDoxygen() const
                 rx.setPatternSyntax(QRegExp::Wildcard);
                 if(!rx.exactMatch(arglist))
                 {
-                    arglist.chop(arglist.size() - arglist.lastIndexOf(' '));
+                    // dirty workarround
+                    int last;
+                    if(arglist.contains('>'))
+                        last = arglist.lastIndexOf('>') + 1;
+                    else
+                        last = arglist.lastIndexOf(' ');
+
+                    arglist.chop(arglist.size() - last);
                     docToWrite += "    * @return " +  arglist + "\n";
                 }
 
