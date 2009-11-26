@@ -18,8 +18,10 @@ along with Doxygen plugin. If not, see http://www.gnu.org/licenses.</license>
     <url>http://dev.kofee.org/QtCreator-Doxygen/</url>
     <dependencyList>
         <dependency name="Core" version="1.3.0"/>
-        <dependency name="TextEditor" version="1.3.0"/>
-        <dependency name="CppTools" version="1.3.0"/>
         <dependency name="CppEditor" version="1.3.0"/>
+        <dependency name="CppTools" version="1.3.0"/>
+        <dependency name="Locator" version="1.3.0"/>
+        <dependency name="ProjectExplorer" version="1.3.0"/>
+        <dependency name="TextEditor" version="1.3.0"/>
     </dependencyList>
 </plugin>
