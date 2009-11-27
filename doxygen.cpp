@@ -64,7 +64,8 @@ using namespace CppHelper;
 using namespace CppHelper::Internal;
 using namespace ProjectExplorer;
 
-Doxygen::Doxygen* Doxygen::m_instance = 0;
+// Doxygen::Doxygen* Doxygen::m_instance = 0;
+CppHelper::Internal::Doxygen* CppHelper::Internal::Doxygen::m_instance = 0;
 
 Doxygen::Doxygen()
 {
