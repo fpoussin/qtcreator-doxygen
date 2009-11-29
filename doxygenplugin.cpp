@@ -84,10 +84,9 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     m_doxygenCreateDocumentationAction = new QAction(tr("Create Doxygen Documentation"),  this);
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
-    command->setDefaultKeySequence(QKeySequence(tr("Alt+Shift+F3")));
+    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F3")));
     connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered()), this, SLOT(createDocumentation()));
     doxygenMenu->addAction(command);
-    am->actionContainer(CppTools::Constants::M_TOOLS_CPP)->addAction(command);
     // Don't forget the contextual menu
     Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
     contextMenu->addAction(command);

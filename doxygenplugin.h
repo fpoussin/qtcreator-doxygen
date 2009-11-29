@@ -26,14 +26,6 @@
 #include "doxygensettings.h"
 #include "doxygensettingsstruct.h"
 
-//namespace Utils {
-//    class ParameterAction;
-//}
-//
-//namespace ProjectExplorer {
-//    class ProjectExplorerPlugin;
-//}
-
 namespace DoxyPlugin {
 namespace Internal {
 
