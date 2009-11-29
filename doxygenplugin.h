@@ -62,6 +62,6 @@ private slots:
 };
 
 } // namespace Internal
-} // namespace CppHelper
+} // namespace DoxyPlugin
 
 #endif // DOXYGENPLUGIN_H

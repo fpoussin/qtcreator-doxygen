@@ -38,6 +38,6 @@ private:
 };
 
 } // namespace Internal
-} // namespace CppHelper
+} // namespace DoxyPlugin
 
 #endif // DOXYGEN_H

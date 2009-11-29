@@ -27,5 +27,5 @@ namespace Constants {
 const char * const CREATE_DOCUMENTATION_DOXYGEN = "CppEditor.CreateDocumentationDoxygen";
 
 } // namespace Constants
-} // namespace CppHelper
+} // namespace DoxyPlugin
 #endif // DOXYGENCONSTANTS_H

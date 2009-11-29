@@ -95,19 +95,6 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     // TODO "compile" documentation action
     // TODO edit Doxyfile action
 
-//    //Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
-//
-//    QList<int> context;
-//    context << core->uniqueIDManager()->uniqueIdentifier(CppEditor::Constants::C_CPPEDITOR);
-//
-//    QAction* createDocumentationDoxygen = new QAction(tr("Create Doxygen Documentation"),  this);
-//    Core::Command *cmd = am->registerAction(createDocumentationDoxygen, Constants::CREATE_DOCUMENTATION_DOXYGEN, context);
-//    // FIXME allow editor to define the shortcut.
-//    cmd->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F3")));
-//    connect(createDocumentationDoxygen, SIGNAL(triggered()), this, SLOT(createDocumentationDoxygen()));
-//    am->actionContainer(CppTools::Constants::M_TOOLS_CPP)->addAction(cmd);
-//    contextMenu->addAction(cmd);
-
     return true;
 }
 
