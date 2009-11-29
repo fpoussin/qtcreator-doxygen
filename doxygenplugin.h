@@ -22,8 +22,19 @@
 #define DOXYGENPLUGIN_H
 
 #include <libs/extensionsystem/iplugin.h>
+#include <plugins/coreplugin/icorelistener.h>
+#include "doxygensettings.h"
+#include "doxygensettingsstruct.h"
 
-namespace CppHelper {
+//namespace Utils {
+//    class ParameterAction;
+//}
+//
+//namespace ProjectExplorer {
+//    class ProjectExplorerPlugin;
+//}
+
+namespace DoxyPlugin {
 namespace Internal {
 
 class DoxygenPlugin  : public ExtensionSystem::IPlugin
@@ -37,9 +48,17 @@ public:
     bool initialize(const QStringList &arguments, QString *error_message);
     void extensionsInitialized();
     void shutdown();
+    static DoxygenPlugin* instance();
+    void setSettings(const DoxygenSettingsStruct &s);
+    DoxygenSettingsStruct settings() const;
+
+private:
+    static DoxygenPlugin *m_doxygenPluginInstance;
+    DoxygenSettings* m_settings;
+    QAction* m_doxygenCreateDocumentationAction;
 
 private slots:
-    void createDocumentationDoxygen();
+    void createDocumentation();
 };
 
 } // namespace Internal

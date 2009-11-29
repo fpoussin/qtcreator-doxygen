@@ -22,28 +22,28 @@
 
 
 #include <QObject>
-
 #include <plugins/cppeditor/cppeditorconstants.h>
 #include <plugins/cpptools/cpptoolsconstants.h>
 #include <plugins/cpptools/cppmodelmanagerinterface.h>
-
 #include <plugins/texteditor/basetexteditor.h>
-#include <libs/extensionsystem/pluginmanager.h>
-
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/uniqueidmanager.h>
 #include <plugins/coreplugin/mimedatabase.h>
 #include <plugins/coreplugin/actionmanager/actionmanager.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
 #include <plugins/coreplugin/editormanager/editormanager.h>
+#include <plugins/projectexplorer/project.h>
+#include <plugins/projectexplorer/projectexplorer.h>
+#include <plugins/projectexplorer/session.h>
+#include <plugins/projectexplorer/projectexplorerconstants.h>
 
 #include <libs/cplusplus/Overview.h>
+#include <libs/extensionsystem/pluginmanager.h>
 #include <shared/cplusplus/Scope.h>
 #include <shared/cplusplus/Symbols.h>
 #include <shared/cplusplus/Names.h>
-
-
-
+#include <cplusplus/CppDocument.h>
+#include <cplusplus/CppBindings.h>
 
 
 #include <QString>
@@ -52,20 +52,13 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QRegExp>
-#include <plugins/projectexplorer/project.h>
-#include <plugins/projectexplorer/projectexplorer.h>
-#include <plugins/projectexplorer/session.h>
-#include <plugins/projectexplorer/projectexplorerconstants.h>
-#include <cplusplus/CppDocument.h>
-#include <cplusplus/CppBindings.h>
 
 using namespace CPlusPlus;
-using namespace CppHelper;
-using namespace CppHelper::Internal;
 using namespace ProjectExplorer;
+using namespace DoxyPlugin;
+using namespace DoxyPlugin::Internal;
 
-// Doxygen::Doxygen* Doxygen::m_instance = 0;
-CppHelper::Internal::Doxygen* CppHelper::Internal::Doxygen::m_instance = 0;
+Doxygen* Doxygen::m_instance = 0;
 
 Doxygen::Doxygen()
 {
@@ -78,6 +71,7 @@ Doxygen* Doxygen::instance()
     return m_instance;
 }
 
+// TODO, get rid of it.
 QStringList scopesForSymbol(const Symbol* symbol)
 {
     Scope *scope = symbol->scope();
@@ -115,7 +109,8 @@ Symbol* currentSymbol(Core::IEditor *editor)
     return doc->findSymbolAt(line, column);
 }
 
-void Doxygen::createDocumentationDoxygen() const
+// TODO, recode it entirely.
+void Doxygen::createDocumentation() const
 {
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();

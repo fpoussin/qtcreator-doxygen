@@ -21,7 +21,7 @@
 #ifndef DOXYGENCONSTANTS_H
 #define DOXYGENCONSTANTS_H
 
-namespace CppHelper {
+namespace DoxyPlugin {
 namespace Constants {
 
 const char * const CREATE_DOCUMENTATION_DOXYGEN = "CppEditor.CreateDocumentationDoxygen";

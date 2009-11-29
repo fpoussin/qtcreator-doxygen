@@ -21,7 +21,7 @@
 #ifndef DOXYGEN_H
 #define DOXYGEN_H
 
-namespace CppHelper {
+namespace DoxyPlugin {
 namespace Internal {
 
 class Doxygen
@@ -29,7 +29,7 @@ class Doxygen
 public:
     static Doxygen* instance();
 
-    void createDocumentationDoxygen() const;
+    void createDocumentation() const;
 
 private:
     Doxygen();
