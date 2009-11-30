@@ -182,22 +182,23 @@ bool DoxygenPlugin::buildDocumentation()
     }
     if(!projectRoot.size())
         return false;
-    projectRoot += "Doxyfile"; // TODO, let the user configure this
+    QString doxyFile = projectRoot;
+    doxyFile += "Doxyfile"; // TODO, let the user configure this
     QStringList args;
 
     // create default Doxyfile if it doesn't exist
-    QFileInfo doxyFileInfo;
-    doxyFileInfo.setFile(projectRoot);
+    QFileInfo doxyFileInfo(doxyFile);
+
     if(!doxyFileInfo.exists())
     {
-        args << "-g" << projectRoot;
-        DoxygenResponse response = runDoxygen(args, doxygenTimeOut, true);
+        args << "-g" << doxyFile;
+        DoxygenResponse response = runDoxygen(args, doxygenTimeOut, true, projectRoot);
         if(!response.error)
             args.clear();
         else return !response.error;
     }
-    args << projectRoot;
-    DoxygenResponse response = runDoxygen(args, doxygenTimeOut, true);
+    args << doxyFile;
+    DoxygenResponse response = runDoxygen(args, doxygenTimeOut, true, projectRoot);
     return !response.error;
 }
 
@@ -213,7 +214,8 @@ DoxygenSettingsStruct DoxygenPlugin::settings() const
 }
 
 DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int timeOut,
-                                          bool showStdOutInOutputWindow, QTextCodec *outputCodec)
+                                          bool showStdOutInOutputWindow, QString& workingDirectory,
+                                          QTextCodec *outputCodec)
 {
     const QString executable = settings().doxygenCommand;
     DoxygenResponse response;
@@ -234,6 +236,8 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
 
     //Run, connect stderr to the output window
     Utils::SynchronousProcess process;
+    if(!workingDirectory.isEmpty())
+        process.setWorkingDirectory(workingDirectory);
     process.setTimeout(timeOut);
     process.setStdOutCodec(outputCodec);
 

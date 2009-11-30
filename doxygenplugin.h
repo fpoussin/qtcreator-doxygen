@@ -53,7 +53,7 @@ public:
     void setSettings(const DoxygenSettingsStruct &s);
     DoxygenSettingsStruct settings() const;
     DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut,
-                                  bool showStdOutInOutputWindow, QTextCodec *outputCodec = 0);
+                                  bool showStdOutInOutputWindow, QString& workingDirectory = QString(), QTextCodec *outputCodec = 0);
 private:
     static DoxygenPlugin *m_doxygenPluginInstance;
     DoxygenSettings* m_settings;
