@@ -44,6 +44,8 @@ INCLUDEPATH += $$QTC_SOURCE_DIR/src \
     $$QTC_SOURCE_DIR/src/plugins \
     $$QTC_SOURCE_DIR/src/libs \
     $$QTC_SOURCE_DIR/src/libs/cplusplus \
+    $$QTC_SOURCE_DIR/src/libs/extensionsystem \
+    $$QTC_SOURCE_DIR/src/libs/utils \
     $$QTC_SOURCE_DIR/src/shared \
     $$QTC_SOURCE_DIR/src/shared/cplusplus
 

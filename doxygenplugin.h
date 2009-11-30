@@ -22,12 +22,21 @@
 #define DOXYGENPLUGIN_H
 
 #include <libs/extensionsystem/iplugin.h>
-#include <plugins/coreplugin/icorelistener.h>
 #include "doxygensettings.h"
 #include "doxygensettingsstruct.h"
 
 namespace DoxyPlugin {
 namespace Internal {
+
+struct DoxygenResponse
+{
+    DoxygenResponse() : error(false) {}
+    bool error;
+    QString stdOut;
+    QString stdErr;
+    QString message;
+};
+
 
 class DoxygenPlugin  : public ExtensionSystem::IPlugin
 {
@@ -43,14 +52,17 @@ public:
     static DoxygenPlugin* instance();
     void setSettings(const DoxygenSettingsStruct &s);
     DoxygenSettingsStruct settings() const;
-
+    DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut,
+                                  bool showStdOutInOutputWindow, QTextCodec *outputCodec = 0);
 private:
     static DoxygenPlugin *m_doxygenPluginInstance;
     DoxygenSettings* m_settings;
     QAction* m_doxygenCreateDocumentationAction;
+    QAction* m_doxygenBuildDocumentationAction;
 
 private slots:
     void createDocumentation();
+    bool buildDocumentation();
 };
 
 } // namespace Internal

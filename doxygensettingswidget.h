@@ -32,7 +32,8 @@ namespace Ui {
     class DoxygenSettingsWidget;
 }
 
-class DoxygenSettingsWidget : public QWidget {
+class DoxygenSettingsWidget : public QWidget
+{
     Q_OBJECT
 public:
     DoxygenSettingsWidget(QWidget *parent = 0);

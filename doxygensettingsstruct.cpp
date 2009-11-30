@@ -19,7 +19,7 @@
 **/
 
 #include <QStringList>
-
+#include <QTextStream>
 #include "doxygensettingsstruct.h"
 using namespace DoxyPlugin;
 using namespace DoxyPlugin::Internal;
@@ -41,10 +41,10 @@ static QString defaultCommand()
 }
 
 DoxygenSettingsStruct::DoxygenSettingsStruct() :
-    doxygenCommand(defaultCommand()),
-    style(javaDoc),
-    printBrief(true),
-    allowImplementation(false)
+        doxygenCommand(defaultCommand()),
+        style(javaDoc),
+        printBrief(true),
+        allowImplementation(false)
 {
 }
 
@@ -73,13 +73,30 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
 
     return
             doxygenCommand      == s.doxygenCommand
-         && style               ==  s.style
-         && printBrief          == s.printBrief
-         && allowImplementation == s.allowImplementation;
+            && style               ==  s.style
+            && printBrief          == s.printBrief
+            && allowImplementation == s.allowImplementation;
 }
 
 QStringList DoxygenSettingsStruct::addOptions(const QStringList &args) const
 {
     // TODO, look at possible doxygen args in the manual and act here...
     return args;
+}
+
+QString DoxygenSettingsStruct::formatArguments(const QStringList &args)
+{
+    // TODO find out if it can really be useful or get rid of it
+    QString rc;
+    QTextStream str(&rc);
+    const int size = args.size();
+    for (int i = 0; i < size; i++)
+    {
+        const QString &arg = args.at(i);
+        if (i)
+            str << ' ';
+        str << arg;
+    }
+
+    return rc;
 }
