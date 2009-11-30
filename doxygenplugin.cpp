@@ -146,6 +146,9 @@ bool DoxygenPlugin::buildDocumentation()
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
 
+    // prevent a crash if user launches this command with no editor opened
+    if(!editor) return false;
+
     // Catch hold of the plugin-manager
     ExtensionSystem::PluginManager* pm
             = ExtensionSystem::PluginManager::instance();
@@ -214,7 +217,7 @@ DoxygenSettingsStruct DoxygenPlugin::settings() const
 }
 
 DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int timeOut,
-                                          bool showStdOutInOutputWindow, QString& workingDirectory,
+                                          bool showStdOutInOutputWindow, QString workingDirectory,
                                           QTextCodec *outputCodec)
 {
     const QString executable = settings().doxygenCommand;

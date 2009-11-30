@@ -115,6 +115,8 @@ void Doxygen::createDocumentation() const
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
 
+    // before continuing, test if the editor is actually showing a file.
+    if(!editor) return;
 
     // Catch hold of the plugin-manager
     ExtensionSystem::PluginManager* pm
