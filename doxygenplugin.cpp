@@ -227,6 +227,7 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
 
     // TODO, get a better output with printError...
     Core::MessageManager* msgManager = Core::MessageManager::instance();
+    msgManager->showOutputPane();
 
     const QString outputText = tr("Executing: %1 %2\n").arg(executable, DoxygenSettingsStruct::formatArguments(allArgs));
     msgManager->printToOutputPane(outputText);
