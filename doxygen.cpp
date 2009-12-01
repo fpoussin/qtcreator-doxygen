@@ -248,7 +248,7 @@ void Doxygen::createDocumentation() const
                 }
                 singleArg.replace("*","");
                 singleArg.replace("&","");
-                docToWrite += "    * @arg " + singleArg.section(' ', - 1) + "\n";
+                docToWrite += "    * @param " + singleArg.section(' ', - 1) + "\n";
             }
 
             // And now check the return type
