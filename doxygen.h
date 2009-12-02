@@ -39,5 +39,4 @@ private:
 
 } // namespace Internal
 } // namespace DoxyPlugin
-
 #endif // DOXYGEN_H

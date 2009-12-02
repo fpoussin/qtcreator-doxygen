@@ -4,12 +4,12 @@ DEFINES += DOXYGEN_LIBRARY
 PROVIDER = Kofee
 
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
-unix:QTC_SOURCE_DIR = /home/kofee/dev/qtcreator/qt-creator-src/
-win32:QTC_SOURCE_DIR = C:/Qt/dev/qt-creator-src/
+unix:QTC_SOURCE_DIR = /home/kofee/dev/qtcreator/qt-creator-1.3.0/
+win32:QTC_SOURCE_DIR = C:/Qt/dev/qt-creator-1.3.0/
 IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
 # Define QTC_BUILD_DIR to the location of Qt Creator build dir for the plugin (i.e ~/dev/qtcreator/doxygen/)
-unix:QTC_BUILD_DIR = /home/kofee/dev/qtcreator/doxygen/
+unix:QTC_BUILD_DIR = /home/kofee/dev/qtcreator/qtcreator-doxygen/
 win32:QTC_BUILD_DIR = C:/Qt/dev/qtcreator-doxygen/
 IDE_BUILD_TREE = $$QTC_BUILD_DIR
 
@@ -19,9 +19,9 @@ DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
 unix:LIBS += -L/usr/lib/qtcreator \
     -L/usr/lib/qtcreator/plugins/Nokia \
     -L/usr/lib/qt4
-win32:LIBS += -LC:/Qt/4.6.0-rc1/lib \
-    -LC:/Qt/dev/qt-creator-src/lib/qtcreator/plugins/Nokia \
-    -LC:/Qt/dev/qt-creator-src/lib/qtcreator
+win32:LIBS += -LC:/Qt/4.6.0/lib \
+    -LC:/Qt/dev/qt-creator-1.3.0/lib/qtcreator/plugins/Nokia \
+    -LC:/Qt/dev/qt-creator-1.3.0/lib/qtcreator
 include( $$IDE_SOURCE_TREE/src/qtcreatorplugin.pri )
 include( $$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri )
 include( $$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri )
