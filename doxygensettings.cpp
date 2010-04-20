@@ -44,7 +44,7 @@ QString DoxygenSettings::id() const
     return "DoxygenPlugin";
 }
 
-QString DoxygenSettings::trName() const
+QString DoxygenSettings::displayName() const
 {
     return tr("Doxygen");
 }
@@ -54,7 +54,7 @@ QString DoxygenSettings::category() const
     return "Documentation";
 }
 
-QString DoxygenSettings::trCategory() const
+QString DoxygenSettings::displayCategory() const
 {
     return tr("Documentation");
 }

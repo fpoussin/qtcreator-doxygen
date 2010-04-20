@@ -35,7 +35,7 @@ struct DoxygenSettingsStruct
 {
     DoxygenSettingsStruct();
     void fromSettings(QSettings *);
-    void toSettings(QSettings *) const;
+    void toSettings(QSettings *);
     // add options to command line
     QStringList addOptions(const QStringList &args) const;
     // Format arguments for log windows hiding passwords, etc.
@@ -47,6 +47,19 @@ struct DoxygenSettingsStruct
     unsigned int style;
     bool printBrief;
     bool allowImplementation;
+
+    // Support both javadoc and Qt style documentation
+    // FIXME: make it appear in Doxygen.cpp
+    struct DoxygenComment
+    {
+        QString doxGenericBeginNoindent;// = "/**\n* @brief \n*\n";
+        QString doxGenericBegin;//         = "    /**\n    * @brief \n    *\n";
+        QString doxShortBeginNoindent;//   = "/** ";
+        QString doxShortBegin;//           = "    /** ";
+        QString doxNewLine;//              " " * @";
+        QString doxEnding;//               = " */";
+    } DoxyComment;
+    void setDoxygenCommentStyle(const int s);
 };
 
 inline bool operator==(const DoxygenSettingsStruct &p1, const DoxygenSettingsStruct &p2)

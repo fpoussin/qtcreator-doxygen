@@ -136,7 +136,7 @@ DoxygenPlugin* DoxygenPlugin::instance()
 
 void DoxygenPlugin::createDocumentation()
 {
-    Doxygen::instance()->createDocumentation();
+    Doxygen::instance()->createDocumentation(settings().DoxyComment);
 }
 
 bool DoxygenPlugin::buildDocumentation()

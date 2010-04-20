@@ -21,6 +21,8 @@
 #ifndef DOXYGEN_H
 #define DOXYGEN_H
 
+#include "doxygensettingsstruct.h"
+
 namespace DoxyPlugin {
 namespace Internal {
 
@@ -29,7 +31,7 @@ class Doxygen
 public:
     static Doxygen* instance();
 
-    void createDocumentation() const;
+    void createDocumentation(const DoxygenSettingsStruct::DoxygenComment &DoxyComment) const;
 
 private:
     Doxygen();

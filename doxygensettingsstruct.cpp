@@ -56,9 +56,12 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
     allowImplementation = settings->value(QLatin1String(allowImplementationKeyC), 0).toBool();
     settings->endGroup();
+
+    // Support both java and qt styles
+    setDoxygenCommentStyle(style);
 }
 
-void DoxygenSettingsStruct::toSettings(QSettings *settings) const
+void DoxygenSettingsStruct::toSettings(QSettings *settings)
 {
     settings->beginGroup(QLatin1String(groupC));
     settings->setValue(QLatin1String(commandKeyC), doxygenCommand);
@@ -66,14 +69,17 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings) const
     settings->setValue(QLatin1String(printBriefKeyC), printBrief);
     settings->setValue(QLatin1String(allowImplementationKeyC), allowImplementation);
     settings->endGroup();
+
+    // Support both java and qt styles
+    setDoxygenCommentStyle(style);
 }
 
 bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
 {
 
     return
-            doxygenCommand      == s.doxygenCommand
-            && style               ==  s.style
+            doxygenCommand         == s.doxygenCommand
+            && style               == s.style
             && printBrief          == s.printBrief
             && allowImplementation == s.allowImplementation;
 }
@@ -99,4 +105,27 @@ QString DoxygenSettingsStruct::formatArguments(const QStringList &args)
     }
 
     return rc;
+}
+
+void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
+{
+    if(!s) // java
+    {
+        DoxyComment.doxGenericBeginNoindent = "/**\n* @brief \n*\n";
+        DoxyComment.doxGenericBegin         = "    /**\n    * @brief \n    *\n";
+        DoxyComment.doxShortBeginNoindent   = "/** ";
+        DoxyComment.doxShortBegin           = "    /** ";
+        DoxyComment.doxNewLine              = "* @";
+        DoxyComment.doxEnding               = "*/";
+
+    }
+    else // qt
+    {
+        DoxyComment.doxGenericBeginNoindent = "/*!\n* \\brief \n*\n";
+        DoxyComment.doxGenericBegin         = "    /*!\n    * \\brief \n    *\n";
+        DoxyComment.doxShortBeginNoindent   = "/*! ";
+        DoxyComment.doxShortBegin           = "    /*! ";
+        DoxyComment.doxNewLine              = "* \\";
+        DoxyComment.doxEnding               = "*/";
+    }
 }

@@ -83,7 +83,7 @@ QStringList scopesForSymbol(const Symbol* symbol)
 
         if (owner && owner->name() && ! scope->isEnumScope())
         {
-            Name *name = owner->name();
+            const Name *name = owner->name();
             Overview overview;
             overview.setShowArgumentNames(false);
             overview.setShowReturnTypes(false);
@@ -103,14 +103,14 @@ Symbol* currentSymbol(Core::IEditor *editor)
     if (!modelManager)
         return 0;
     const Snapshot snapshot = modelManager->snapshot();
-    Document::Ptr doc = snapshot.value(editor->file()->fileName());
+    Document::Ptr doc = snapshot.document(editor->file()->fileName());
     if (!doc)
         return 0;
     return doc->findSymbolAt(line, column);
 }
 
 // TODO, recode it entirely.
-void Doxygen::createDocumentation() const
+void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &DoxyComment) const
 {
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
@@ -167,47 +167,47 @@ void Doxygen::createDocumentation() const
     overview.setShowReturnTypes(true);
     overview.setShowFullyQualifiedNamed(true);
     overview.setShowFunctionSignatures(true);
-    Name *name = lastSymbol->name();
+    const Name *name = lastSymbol->name();
     scopes.append(overview.prettyName(name));
 
-    QString genericBeginNoindent = "/**\n* @brief \n*\n";
-    QString genericBegin         = "    /**\n    * @brief \n    *\n";
-    QString shortBeginNoindent   = "/** ";
-    QString shortBegin           = "    /** ";
+//    QString genericBeginNoindent = "/**\n* @brief \n*\n";
+//    QString genericBegin         = "    /**\n    * @brief \n    *\n";
+//    QString shortBeginNoindent   = "/** ";
+//    QString shortBegin           = "    /** ";
     QString docToWrite;
 
     if(lastSymbol->isClass())
     {
         QString fileName = editor->file()->fileName().remove(0, editor->file()->fileName().lastIndexOf("/") + 1);
         QString fileNameProj = editor->file()->fileName().remove(projectRoot);
-        docToWrite += genericBeginNoindent;
-        docToWrite += "* @class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"";
+        docToWrite += DoxyComment.doxGenericBeginNoindent;
+        docToWrite += DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"";
         docToWrite += "\n*/\n";
     }
     else if(lastSymbol->isTypedef())
     {
-        docToWrite += shortBeginNoindent;
-        docToWrite += "@typedef " + overview.prettyName(name);
+        docToWrite += DoxyComment.doxShortBeginNoindent;
+        docToWrite += DoxyComment.doxNewLine + "typedef " + overview.prettyName(name);
         docToWrite += " */\n";
     }
     else if(lastSymbol->isEnum())
     {
         if(lastSymbol->scope()->isClassScope())
         {
-            docToWrite += genericBegin;
-            docToWrite += "    * @enum " + overview.prettyName(name);
+            docToWrite += DoxyComment.doxGenericBegin;
+            docToWrite += "    " + DoxyComment.doxNewLine + "enum " + overview.prettyName(name);
             docToWrite += "    */\n";
         }
         else
         {
-            docToWrite += genericBeginNoindent;
-            docToWrite += "* @enum " + overview.prettyName(name);
+            docToWrite += DoxyComment.doxGenericBeginNoindent;
+            docToWrite += DoxyComment.doxNewLine + "enum " + overview.prettyName(name);
             docToWrite += "\n*/\n";
         }
     }
     else if(lastSymbol->isArgument())
     {
-        docToWrite += shortBegin;
+        docToWrite += DoxyComment.doxShortBegin;
         docToWrite += "  ARG*/\n";
     }
     // Here comes the bitch.
@@ -219,16 +219,16 @@ void Doxygen::createDocumentation() const
         overview.setShowFunctionSignatures(true);
         QString arglist = overview.prettyType(lastSymbol->type(), name);
 
-        docToWrite += genericBegin;
+        docToWrite += DoxyComment.doxGenericBegin;
 
         // if variable, do it quickly...
         if(!arglist.contains('('))
         {
-            docToWrite += "    * @var " + overview.prettyName(name) + "\n    */\n";
+            docToWrite += "    " + DoxyComment.doxNewLine + "var " + overview.prettyName(name) + "\n    */\n";
         }
         else
         {
-            docToWrite += "    * @fn " + overview.prettyName(name) + "\n";
+            docToWrite += "    " + DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
             // Check parameters
             // Do it the naive way first before finding better in the API
             // TODO, check throw()...
@@ -248,7 +248,7 @@ void Doxygen::createDocumentation() const
                 }
                 singleArg.replace("*","");
                 singleArg.replace("&","");
-                docToWrite += "    * @param " + singleArg.section(' ', - 1) + "\n";
+                docToWrite += "    " + DoxyComment.doxNewLine + "param " + singleArg.section(' ', - 1) + "\n";
             }
 
             // And now check the return type
@@ -272,7 +272,7 @@ void Doxygen::createDocumentation() const
                         last = arglist.lastIndexOf(' ');
 
                     arglist.chop(arglist.size() - last);
-                    docToWrite += "    * @return " +  arglist + "\n";
+                    docToWrite += "    " + DoxyComment.doxNewLine + "return " +  arglist + "\n";
                 }
 
             }
