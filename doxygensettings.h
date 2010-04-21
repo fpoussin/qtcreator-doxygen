@@ -42,9 +42,9 @@ public:
     QString id() const;
     QString displayName() const;
     QString displayCategory() const;
-    //QString trName() const;
     QString category() const;
-    //QString trCategory() const;
+    QIcon categoryIcon() const;
+
     QWidget *createPage(QWidget *parent);
     void apply();
     void finish();

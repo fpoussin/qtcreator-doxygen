@@ -21,9 +21,12 @@
 #include "doxygensettings.h"
 #include "doxygen.h"
 #include "doxygenplugin.h"
+#include "doxygenconstants.h"
 #include <plugins/coreplugin/icore.h>
 #include <libs/utils/qtcassert.h>
+#include <QtCore/QCoreApplication>
 
+namespace DoxyPlugin {
 
 DoxygenSettings* DoxygenSettings::m_doxygenSettingsInstance = 0;
 
@@ -41,7 +44,7 @@ DoxygenSettings::~DoxygenSettings()
 // implementation of interface Core::IOptionsPage
 QString DoxygenSettings::id() const
 {
-    return "DoxygenPlugin";
+    return QLatin1String("DoxygenPlugin");
 }
 
 QString DoxygenSettings::displayName() const
@@ -51,12 +54,18 @@ QString DoxygenSettings::displayName() const
 
 QString DoxygenSettings::category() const
 {
-    return "Documentation";
+    return QLatin1String(Constants::DOXYGEN_SETTINGS_CATEGORY);
 }
 
 QString DoxygenSettings::displayCategory() const
 {
-    return tr("Documentation");
+    return QCoreApplication::translate("Doxygen", Constants::DOXYGEN_SETTINGS_TR_CATEGORY);
+}
+
+QIcon DoxygenSettings::categoryIcon() const
+{
+    //FIXME, actually do something
+    return QIcon();
 }
 
 QWidget* DoxygenSettings::createPage(QWidget *parent)
@@ -95,4 +104,5 @@ DoxygenSettings* DoxygenSettings::instance()
 {
     QTC_ASSERT(m_doxygenSettingsInstance, return m_doxygenSettingsInstance)
     return m_doxygenSettingsInstance;
+}
 }

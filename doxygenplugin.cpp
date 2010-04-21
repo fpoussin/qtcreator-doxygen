@@ -28,6 +28,7 @@
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/coreconstants.h>
 #include <plugins/coreplugin/actionmanager/actionmanager.h>
+#include <plugins/coreplugin/actionmanager/actioncontainer.h>
 #include <plugins/coreplugin/actionmanager/command.h>
 #include <plugins/coreplugin/uniqueidmanager.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
@@ -46,6 +47,7 @@
 
 #include <QtPlugin>
 #include <QAction>
+#include <QMenu>
 #include <QKeySequence>
 #include <QStringList>
 #include <QFileInfo>
