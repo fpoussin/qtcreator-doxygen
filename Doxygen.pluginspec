@@ -1,4 +1,4 @@
-<plugin name="Doxygen" version="0.0.3" compatVersion="1.3.84">
+<plugin name="Doxygen" version="0.0.3" compatVersion="2.0.81">
     <vendor>Kofee</vendor>
     <copyright>(C) 2009 Kevin Tanguy (kofee@kofee.org)</copyright>
     <license>
@@ -17,11 +17,11 @@ along with Doxygen plugin. If not, see http://www.gnu.org/licenses.</license>
     <description>Doxygen plugin for creating Doxygen tags inside source code.</description>
     <url>http://dev.kofee.org/QtCreator-Doxygen/</url>
     <dependencyList>
-        <dependency name="Core" version="1.3.84"/>
-        <dependency name="CppEditor" version="1.3.84"/>
-        <dependency name="CppTools" version="1.3.84"/>
-        <dependency name="Locator" version="1.3.84"/>
-        <dependency name="ProjectExplorer" version="1.3.84"/>
-        <dependency name="TextEditor" version="1.3.84"/>
+        <dependency name="Core" version="2.0.81"/>
+        <dependency name="CppEditor" version="2.0.81"/>
+        <dependency name="CppTools" version="2.0.81"/>
+        <dependency name="Locator" version="2.0.81"/>
+        <dependency name="ProjectExplorer" version="2.0.81"/>
+        <dependency name="TextEditor" version="2.0.81"/>
     </dependencyList>
 </plugin>
