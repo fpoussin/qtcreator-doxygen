@@ -1,31 +1,63 @@
+CONFIG += release
 TEMPLATE = lib
 TARGET = Doxygen
 DEFINES += DOXYGEN_LIBRARY
 PROVIDER = Kofee
 
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
-unix:QTC_SOURCE_DIR = /home/kofee/Dev/Qt/qt-creator-20100421/
+unix: {
+    !macx: {
+        QTC_SOURCE_DIR = /home/kofee/Dev/Qt/qt-creator-2.1/
+    }
+    macx: {
+        QTC_SOURCE_DIR = /Users/$USER/Downloads/Qt/qt-creator/
+    }
+}
 win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-20100421/
 IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
 # Define QTC_BUILD_DIR to the location of Qt Creator build dir for the plugin (i.e ~/dev/qtcreator-doxygen/)
-unix:QTC_BUILD_DIR = /home/kofee/Dev/Qt/qtcreator-doxygen/trunk/
+unix: {
+    !macx: {
+        QTC_BUILD_DIR = /home/kofee/Dev/Qt/qtcreator-doxygen/trunk/
+    }
+    macx: {
+        QTC_BUILD_DIR = /Users/$USER/Downloads/Qt/qtcreatorbuild/
+    }
+}
 win32:QTC_BUILD_DIR = C:/Qt/qtcreator-doxygen/
 IDE_BUILD_TREE = $$QTC_BUILD_DIR
 
 # Define DESTDIR to the local location of the installation of Qt creator (if local user)
 # or the system location if building as root
-DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
-unix:LIBS += -L/home/kofee/Dev/Qt/qtcreator-2.0.0-alpha1-src/lib/qtcreator/ \
-    -L/home/kofee/Dev/Qt/qt-creator-2.0.0-alpha1-src/lib/qtcreator/plugins/Nokia/ \
-    -L/home/kofee/Dev/Qt/qt-4.7-tp/lib/
+!macx:DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
+macx: {
+    DESTDIR = /Users/$USER/Downloads/Qt/qtcreatorbuild/bin/Qt\\
+Creator.app/Contents/PlugIns/$$(PROVIDER)
+}
+
+unix: {
+    !macx: {
+        LIBS += -L/home/kofee/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/ \
+        -L/home/kofee/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/plugins/Nokia/ \
+        -L/usr/local/Trolltech/Qt-4.7.0/lib
+    }
+    macx: {
+        LIBS += -L/Users/$USER/Downloads/Qt/qtcreatorbuild/src/libs \
+        -L/Users/$USER/Downloads/Qt/qtcreatorbuild/bin/Qt\\
+        Creator.app/Contents/PlugIns/Nokia/ \
+        -L/usr/local/Trolltech/Qt-4.7.0/lib
+    }
+}
 win32:LIBS += -LC:/Qt/qt-20100421/lib/ \
     -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/plugins/Nokia/ \
     -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/
+
 include( $$IDE_SOURCE_TREE/src/qtcreatorplugin.pri )
 include( $$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri )
 include( $$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri )
 include( $$IDE_SOURCE_TREE/src/plugins/cppeditor/cppeditor.pri )
+
 HEADERS += doxygenplugin.h \
     doxygen_global.h \
     doxygenconstants.h \

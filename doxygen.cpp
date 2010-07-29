@@ -77,6 +77,55 @@ QStringList scopesForSymbol(const Symbol* symbol)
     Scope *scope = symbol->scope();
     QStringList scopes;
 
+#ifdef __DEBUG__
+    unsigned count = scope->symbolCount();
+
+    qDebug();
+    Overview overview;
+    overview.setShowArgumentNames(true);
+    overview.setShowReturnTypes(true);
+    overview.setShowFullyQualifiedNamed(true);
+    overview.setShowFunctionSignatures(true);
+
+    qDebug() << overview.prettyName(symbol->name());
+    qDebug() << overview.prettyType(symbol->type(), symbol->name());
+    qDebug() << "number of symbols: " << count;
+    qDebug() << "isArgument: " << symbol->isArgument();
+    qDebug() << "isBaseClass: " << symbol->isBaseClass();
+    qDebug() << "isBlock: " << symbol->isBlock();
+    qDebug() << "isClass: " << symbol->isClass();
+    qDebug() << "isDeclaration: " << symbol->isDeclaration();
+    qDebug() << "isDeprecated: " << symbol->isDeprecated();
+    qDebug() << "isEnum: " << symbol->isEnum();
+    qDebug() << "isExtern: " << symbol->isExtern();
+    qDebug() << "isForwardClassDeclaration: " << symbol->isForwardClassDeclaration();
+    qDebug() << "isFriend: " << symbol->isFriend();
+    qDebug() << "isFunction: " << symbol->isFunction();
+    qDebug() << "isGenerated: " << symbol->isGenerated();
+    qDebug() << "isMutable: " << symbol->isMutable();
+    qDebug() << "isNamespace: " << symbol->isNamespace();
+    qDebug() << "isPrivate: " << symbol->isPrivate();
+    qDebug() << "isProtected: " << symbol->isProtected();
+    qDebug() << "isPublic: " << symbol->isPublic();
+    qDebug() << "isRegister: " << symbol->isRegister();
+    qDebug() << "isScopedSymbol: " << symbol->isScopedSymbol();
+    qDebug() << "isStatic: " << symbol->isStatic();
+    qDebug() << "isTypedef: " << symbol->isTypedef();
+    qDebug() << "isTypenameArgument: " << symbol->isTypenameArgument();
+    qDebug() << "isUsingDeclaration: " << symbol->isUsingDeclaration();
+    qDebug() << "isUsingNamespaceDirective: " << symbol->isUsingNamespaceDirective();
+#endif
+
+    if(symbol->isFunction())
+    {
+        const Name *name = symbol->name();
+        Overview overview;
+        overview.setShowArgumentNames(false);
+        overview.setShowReturnTypes(false);
+        scopes.prepend(overview.prettyName(name));
+        return scopes;
+    }
+
     for (; scope; scope = scope->enclosingScope())
     {
         Symbol *owner = scope->owner();
@@ -170,10 +219,10 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
     const Name *name = lastSymbol->name();
     scopes.append(overview.prettyName(name));
 
-//    QString genericBeginNoindent = "/**\n* @brief \n*\n";
-//    QString genericBegin         = "    /**\n    * @brief \n    *\n";
-//    QString shortBeginNoindent   = "/** ";
-//    QString shortBegin           = "    /** ";
+    //    QString genericBeginNoindent = "/**\n* @brief \n*\n";
+    //    QString genericBegin         = "    /**\n    * @brief \n    *\n";
+    //    QString shortBeginNoindent   = "/** ";
+    //    QString shortBegin           = "    /** ";
     QString docToWrite;
 
     if(lastSymbol->isClass())
@@ -211,7 +260,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
         docToWrite += "  ARG*/\n";
     }
     // Here comes the bitch.
-    else if(lastSymbol->isDeclaration())
+    else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
     {
         overview.setShowArgumentNames(true);
         overview.setShowReturnTypes(false);
@@ -258,7 +307,8 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
             overview.setShowFunctionSignatures(false);
 
             arglist = overview.prettyType(lastSymbol->type(), name);
-            if( (overview.prettyName(name) != scopes.front()) && (overview.prettyName(name).at(0) != '~') )
+
+            if( ((overview.prettyName(name) != scopes.front()) && (overview.prettyName(name).at(0) != '~')) || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~")) )
             {
                 QRegExp rx("void *");
                 rx.setPatternSyntax(QRegExp::Wildcard);
