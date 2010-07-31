@@ -61,7 +61,8 @@ enum { doxygenTimeOut = 120000 };
 
 static const char * const CMD_ID_DOXYGEN_MENU        = "Doxygen.Menu";
 static const char * const CMD_ID_CREATEDOCUMENTATION = "Doxygen.CreateDocumentation";
-static const char * const CMD_ID_BUILDDOCUMENTATION = "Doxygen.BuildDocumentation";
+static const char * const CMD_ID_DOCUMENTFILE        = "Doxygen.DocumentFile";
+static const char * const CMD_ID_BUILDDOCUMENTATION  = "Doxygen.BuildDocumentation";
 
 
 DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
@@ -98,6 +99,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     toolsContainer->addMenu(doxygenMenu);
 
     // put action in our own menu in "Tools"
+    // create documentation for symbol under cursor
     Core::Command *command;
     m_doxygenCreateDocumentationAction = new QAction(tr("Create Doxygen Documentation"),  this);
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
@@ -108,6 +110,13 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     // Don't forget the contextual menu
     Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
     contextMenu->addAction(command);
+    // create documentation for a whole file
+    m_doxygenDocumentFileAction = new QAction(tr("Document whole file"),  this);
+    command = am->registerAction(m_doxygenDocumentFileAction, CMD_ID_DOCUMENTFILE, globalcontext);
+    command->setAttribute(Core::Command::CA_UpdateText);
+    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F5")));
+    connect(m_doxygenDocumentFileAction, SIGNAL(triggered()), this, SLOT(documentFile()));
+    doxygenMenu->addAction(command);
 
     // TODO "compile" documentation action
     m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"),  this);
@@ -139,6 +148,11 @@ DoxygenPlugin* DoxygenPlugin::instance()
 void DoxygenPlugin::createDocumentation()
 {
     Doxygen::instance()->createDocumentation(settings().DoxyComment);
+}
+
+void DoxygenPlugin::documentFile()
+{
+    Doxygen::instance()->documentFile(settings().DoxyComment);
 }
 
 bool DoxygenPlugin::buildDocumentation()

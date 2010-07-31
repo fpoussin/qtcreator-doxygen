@@ -77,45 +77,6 @@ QStringList scopesForSymbol(const Symbol* symbol)
     Scope *scope = symbol->scope();
     QStringList scopes;
 
-#ifdef __DEBUG__
-    unsigned count = scope->symbolCount();
-
-    qDebug();
-    Overview overview;
-    overview.setShowArgumentNames(true);
-    overview.setShowReturnTypes(true);
-    overview.setShowFullyQualifiedNamed(true);
-    overview.setShowFunctionSignatures(true);
-
-    qDebug() << overview.prettyName(symbol->name());
-    qDebug() << overview.prettyType(symbol->type(), symbol->name());
-    qDebug() << "number of symbols: " << count;
-    qDebug() << "isArgument: " << symbol->isArgument();
-    qDebug() << "isBaseClass: " << symbol->isBaseClass();
-    qDebug() << "isBlock: " << symbol->isBlock();
-    qDebug() << "isClass: " << symbol->isClass();
-    qDebug() << "isDeclaration: " << symbol->isDeclaration();
-    qDebug() << "isDeprecated: " << symbol->isDeprecated();
-    qDebug() << "isEnum: " << symbol->isEnum();
-    qDebug() << "isExtern: " << symbol->isExtern();
-    qDebug() << "isForwardClassDeclaration: " << symbol->isForwardClassDeclaration();
-    qDebug() << "isFriend: " << symbol->isFriend();
-    qDebug() << "isFunction: " << symbol->isFunction();
-    qDebug() << "isGenerated: " << symbol->isGenerated();
-    qDebug() << "isMutable: " << symbol->isMutable();
-    qDebug() << "isNamespace: " << symbol->isNamespace();
-    qDebug() << "isPrivate: " << symbol->isPrivate();
-    qDebug() << "isProtected: " << symbol->isProtected();
-    qDebug() << "isPublic: " << symbol->isPublic();
-    qDebug() << "isRegister: " << symbol->isRegister();
-    qDebug() << "isScopedSymbol: " << symbol->isScopedSymbol();
-    qDebug() << "isStatic: " << symbol->isStatic();
-    qDebug() << "isTypedef: " << symbol->isTypedef();
-    qDebug() << "isTypenameArgument: " << symbol->isTypenameArgument();
-    qDebug() << "isUsingDeclaration: " << symbol->isUsingDeclaration();
-    qDebug() << "isUsingNamespaceDirective: " << symbol->isUsingNamespaceDirective();
-#endif
-
     if(symbol->isFunction())
     {
         const Name *name = symbol->name();
@@ -219,10 +180,6 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
     const Name *name = lastSymbol->name();
     scopes.append(overview.prettyName(name));
 
-    //    QString genericBeginNoindent = "/**\n* @brief \n*\n";
-    //    QString genericBegin         = "    /**\n    * @brief \n    *\n";
-    //    QString shortBeginNoindent   = "/** ";
-    //    QString shortBegin           = "    /** ";
     QString docToWrite;
 
     if(lastSymbol->isClass())
@@ -262,22 +219,29 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
     // Here comes the bitch.
     else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
     {
+        QString fullIndent, indent;
+        if(lastSymbol->scope()->isClassScope())
+        {
+            fullIndent = "    ";
+        }
+
         overview.setShowArgumentNames(true);
         overview.setShowReturnTypes(false);
         overview.setShowFullyQualifiedNamed(true);
         overview.setShowFunctionSignatures(true);
         QString arglist = overview.prettyType(lastSymbol->type(), name);
 
-        docToWrite += DoxyComment.doxGenericBegin;
+        //docToWrite += DoxyComment.doxGenericBegin;
+        docToWrite += fullIndent + DoxyComment.doxBegin + fullIndent + DoxyComment.doxBrief + fullIndent + DoxyComment.doxEmptyLine;
 
         // if variable, do it quickly...
         if(!arglist.contains('('))
         {
-            docToWrite += "    " + DoxyComment.doxNewLine + "var " + overview.prettyName(name) + "\n    */\n";
+            docToWrite += fullIndent + DoxyComment.doxNewLine + "var " + overview.prettyName(name) + "\n" + fullIndent + "*/\n";
         }
         else
         {
-            docToWrite += "    " + DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
+            docToWrite += fullIndent + DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
             // Check parameters
             // Do it the naive way first before finding better in the API
             // TODO, check throw()...
@@ -297,7 +261,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
                 }
                 singleArg.replace("*","");
                 singleArg.replace("&","");
-                docToWrite += "    " + DoxyComment.doxNewLine + "param " + singleArg.section(' ', - 1) + "\n";
+                docToWrite += fullIndent + DoxyComment.doxNewLine + "param " + singleArg.section(' ', - 1) + "\n";
             }
 
             // And now check the return type
@@ -322,11 +286,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
                         last = arglist.lastIndexOf(' ');
 
                     arglist.chop(arglist.size() - last);
-                    docToWrite += "    " + DoxyComment.doxNewLine + "return " +  arglist + "\n";
+                    docToWrite += fullIndent + DoxyComment.doxNewLine + "return " +  arglist + "\n";
                 }
 
             }
-            docToWrite += "    */\n";
+            docToWrite += fullIndent + "*/\n";
         }
     }
 
@@ -341,3 +305,94 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
     }
 
 }
+
+void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CPlusPlus::Symbol*> &symmap)
+{
+    if(!symbol) return;
+
+    if(symbol->isArgument()
+        ||symbol->isFunction()
+        || symbol->isDeclaration()
+        || symbol->isEnum())
+        {
+        symmap.insert(symbol->line(), symbol);
+        return;
+    }
+    else if(symbol->isForwardClassDeclaration()
+        || symbol->isExtern()
+        || symbol->isFriend()
+        || symbol->isGenerated()
+        || symbol->isUsingNamespaceDirective()
+        || symbol->isUsingDeclaration()
+        )
+        {
+        return;
+    }
+    symmap.insert(symbol->line(), symbol);
+
+
+
+    const CPlusPlus::ScopedSymbol *scopedSymbol = symbol->asScopedSymbol();
+    if (scopedSymbol)
+    {
+        CPlusPlus::Scope *scope = scopedSymbol->members();
+        if (scope)
+        {
+            CPlusPlus::Scope::iterator cur = scope->firstSymbol();
+            while (cur != scope->lastSymbol())
+            {
+                const CPlusPlus::Symbol *curSymbol = *cur;
+                ++cur;
+                if (!curSymbol)
+                    continue;
+                addSymbol(curSymbol, symmap);
+            }
+        }
+    }
+
+}
+
+void Doxygen::documentFile(const DoxygenSettingsStruct::DoxygenComment &DoxyComment)
+{
+    const Core::EditorManager *editorManager = Core::EditorManager::instance();
+    Core::IEditor *editor = editorManager->currentEditor();
+
+    // before continuing, test if the editor is actually showing a file.
+    if(!editor) return;
+
+    CppTools::CppModelManagerInterface *modelManager =
+            ExtensionSystem::PluginManager::instance()->getObject<CppTools::CppModelManagerInterface>();
+    if (!modelManager)
+        return;
+    const Snapshot snapshot = modelManager->snapshot();
+    Document::Ptr doc = snapshot.document(editor->file()->fileName());
+    if (!doc)
+        return;
+
+    Scope *scope = doc->globalSymbols();
+    if(!scope)
+    {
+        return;
+    }
+
+    unsigned symbolcount = scope->symbolCount();
+
+    QMap<unsigned, const Symbol*> symmap;
+    for(unsigned i = 0; i < symbolcount; ++i)
+        addSymbol(scope->symbolAt(i), symmap);
+
+    TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
+            editorManager->currentEditor()->widget());
+
+    if (editorWidget)
+    {
+        QMap<unsigned, const Symbol*>::iterator it = symmap.end();
+        for(; it != symmap.begin(); --it)
+        {
+            unsigned line = (it-1).key();
+            editorWidget->gotoLine(line);
+            createDocumentation(DoxyComment);
+        }
+    }
+}
+

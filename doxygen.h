@@ -20,6 +20,7 @@
 
 #ifndef DOXYGEN_H
 #define DOXYGEN_H
+#include <shared/cplusplus/Symbols.h>
 
 #include "doxygensettingsstruct.h"
 
@@ -31,7 +32,11 @@ class Doxygen
 public:
     static Doxygen* instance();
 
+    void addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CPlusPlus::Symbol*> &symmap);
+
     void createDocumentation(const DoxygenSettingsStruct::DoxygenComment &DoxyComment) const;
+    void documentFile(const DoxygenSettingsStruct::DoxygenComment &DoxyComment);
+
 
 private:
     Doxygen();

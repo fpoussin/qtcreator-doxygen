@@ -54,6 +54,9 @@ struct DoxygenSettingsStruct
     {
         QString doxGenericBeginNoindent;// = "/**\n* @brief \n*\n";
         QString doxGenericBegin;//         = "    /**\n    * @brief \n    *\n";
+        QString doxBegin; //               = "/**\n";
+        QString doxBrief;  //              = "* @brief";
+        QString doxEmptyLine;  //          = "*\n";
         QString doxShortBeginNoindent;//   = "/** ";
         QString doxShortBegin;//           = "    /** ";
         QString doxNewLine;//              " " * @";

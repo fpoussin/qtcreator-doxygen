@@ -58,10 +58,12 @@ private:
     static DoxygenPlugin *m_doxygenPluginInstance;
     DoxygenSettings* m_settings;
     QAction* m_doxygenCreateDocumentationAction;
+    QAction* m_doxygenDocumentFileAction;
     QAction* m_doxygenBuildDocumentationAction;
 
 private slots:
     void createDocumentation();
+    void documentFile();
     bool buildDocumentation();
 };
 

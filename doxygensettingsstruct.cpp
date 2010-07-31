@@ -113,6 +113,9 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
     {
         DoxyComment.doxGenericBeginNoindent = "/**\n* @brief \n*\n";
         DoxyComment.doxGenericBegin         = "    /**\n    * @brief \n    *\n";
+        DoxyComment.doxBegin                = "/**\n";
+        DoxyComment.doxBrief                = "* @brief \n";
+        DoxyComment.doxEmptyLine            = "*\n";
         DoxyComment.doxShortBeginNoindent   = "/** ";
         DoxyComment.doxShortBegin           = "    /** ";
         DoxyComment.doxNewLine              = "* @";
@@ -121,11 +124,14 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
     }
     else // qt
     {
-        DoxyComment.doxGenericBeginNoindent = "/*!\n* \\brief \n*\n";
-        DoxyComment.doxGenericBegin         = "    /*!\n    * \\brief \n    *\n";
+        DoxyComment.doxGenericBeginNoindent = "/*!\n  \\brief \n\n";
+        DoxyComment.doxGenericBegin         = "    /*!\n      \\brief \n\n";
+        DoxyComment.doxBegin                = "/*!\n";
+        DoxyComment.doxBrief                = "  \\brief \n";
+        DoxyComment.doxEmptyLine            = " \n";
         DoxyComment.doxShortBeginNoindent   = "/*! ";
         DoxyComment.doxShortBegin           = "    /*! ";
-        DoxyComment.doxNewLine              = "* \\";
+        DoxyComment.doxNewLine              = "  \\";
         DoxyComment.doxEnding               = "*/";
     }
 }
