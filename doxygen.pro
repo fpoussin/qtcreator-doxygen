@@ -7,10 +7,10 @@ PROVIDER = Kofee
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
 unix: {
     !macx: {
-        QTC_SOURCE_DIR = /home/kofee/Dev/Qt/qt-creator-2.1/
+        QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1/
     }
     macx: {
-        QTC_SOURCE_DIR = /Users/$USER/Downloads/Qt/qt-creator/
+        QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
     }
 }
 win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-20100421/
@@ -19,10 +19,10 @@ IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 # Define QTC_BUILD_DIR to the location of Qt Creator build dir for the plugin (i.e ~/dev/qtcreator-doxygen/)
 unix: {
     !macx: {
-        QTC_BUILD_DIR = /home/kofee/Dev/Qt/qtcreator-doxygen/trunk/
+        QTC_BUILD_DIR = /home/$$(USER)/Dev/Qt/qtcreator-doxygen/trunk/
     }
     macx: {
-        QTC_BUILD_DIR = /Users/$USER/Downloads/Qt/qtcreatorbuild/
+        QTC_BUILD_DIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/
     }
 }
 win32:QTC_BUILD_DIR = C:/Qt/qtcreator-doxygen/
@@ -32,19 +32,19 @@ IDE_BUILD_TREE = $$QTC_BUILD_DIR
 # or the system location if building as root
 !macx:DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
 macx: {
-    DESTDIR = /Users/$USER/Downloads/Qt/qtcreatorbuild/bin/Qt\\
+    DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/Qt\\
 Creator.app/Contents/PlugIns/$$(PROVIDER)
 }
 
 unix: {
     !macx: {
-        LIBS += -L/home/kofee/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/ \
-        -L/home/kofee/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/plugins/Nokia/ \
+        LIBS += -L/home/$$(USER)/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/ \
+        -L/home/$$(USER)/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/plugins/Nokia/ \
         -L/usr/local/Trolltech/Qt-4.7.0/lib
     }
     macx: {
-        LIBS += -L/Users/$USER/Downloads/Qt/qtcreatorbuild/src/libs \
-        -L/Users/$USER/Downloads/Qt/qtcreatorbuild/bin/Qt\\
+        LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
+        -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/Qt\\
         Creator.app/Contents/PlugIns/Nokia/ \
         -L/usr/local/Trolltech/Qt-4.7.0/lib
     }
