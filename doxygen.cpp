@@ -247,14 +247,20 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
             // TODO, check throw()...
             arglist.remove(0, arglist.indexOf("(") + 1);
             arglist.remove(arglist.lastIndexOf(")"), arglist.size() - arglist.lastIndexOf(")"));
+            int indexfrom, indexto;
+            while((indexfrom = arglist.indexOf('<'))!= -1)
+            {
+                if((indexto = arglist.indexOf('>')) != -1)
+                    arglist.remove(indexfrom, indexto - indexfrom + 1);
+            }
             QStringList args = arglist.trimmed().split(',', QString::SkipEmptyParts);
 
             Q_FOREACH(QString singleArg, args)
             {
-                if(singleArg.contains('>'))
-                {
-                    singleArg.remove(0, singleArg.lastIndexOf('>') + 1);
-                }
+                //if(singleArg.contains('>'))
+                //{
+                //    singleArg.remove(0, singleArg.lastIndexOf('>') + 1);
+                //}
                 if(singleArg.contains('='))
                 {
                     singleArg.remove(singleArg.size() - singleArg.lastIndexOf('='));
