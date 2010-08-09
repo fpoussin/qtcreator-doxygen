@@ -80,7 +80,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="comboBox">
+           <widget class="QComboBox" name="styleChooser">
             <item>
              <property name="text">
               <string>JavaDoc</string>
@@ -101,21 +101,35 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="printBriefTag">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Verbose (fn, var, class file...): </string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="verbosePrinting">
             <property name="text">
              <string/>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
+           <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Allow in implementation:</string>
+             <string>Short Variable documentation: </string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QCheckBox" name="checkBox_2">
+           <widget class="QCheckBox" name="shortVariableDocumentation">
             <property name="text">
              <string/>
             </property>

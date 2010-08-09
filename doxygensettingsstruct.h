@@ -46,21 +46,18 @@ struct DoxygenSettingsStruct
     QString doxygenCommand;
     unsigned int style;
     bool printBrief;
-    bool allowImplementation;
+    bool shortVarDoc;
+    bool verbosePrinting;
 
     // Support both javadoc and Qt style documentation
-    // FIXME: make it appear in Doxygen.cpp
     struct DoxygenComment
     {
-        QString doxGenericBeginNoindent;// = "/**\n* @brief \n*\n";
-        QString doxGenericBegin;//         = "    /**\n    * @brief \n    *\n";
         QString doxBegin; //               = "/**\n";
         QString doxBrief;  //              = "* @brief";
         QString doxEmptyLine;  //          = "*\n";
-        QString doxShortBeginNoindent;//   = "/** ";
-        QString doxShortBegin;//           = "    /** ";
         QString doxNewLine;//              " " * @";
         QString doxEnding;//               = " */";
+        QString doxShortVarDoc;
     } DoxyComment;
     void setDoxygenCommentStyle(const int s);
 };

@@ -51,16 +51,18 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
 {
     DoxygenSettingsStruct rc;
     rc.doxygenCommand = ui->pathChooser->path();
-    rc.style = ui->comboBox->currentIndex();
-    rc.printBrief = ui->checkBox->isChecked();
-    rc.allowImplementation = ui->checkBox_2->isChecked();
+    rc.style = ui->styleChooser->currentIndex();
+    rc.printBrief = ui->printBriefTag->isChecked();
+    rc.shortVarDoc = ui->shortVariableDocumentation->isChecked();
+    rc.verbosePrinting = ui->verbosePrinting->isChecked();
     return rc;
 }
 
 void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
 {
     ui->pathChooser->setPath(s.doxygenCommand);
-    ui->comboBox->setCurrentIndex(s.style);
-    ui->checkBox->setChecked(s.printBrief);
-    ui->checkBox_2->setChecked(s.allowImplementation);
+    ui->styleChooser->setCurrentIndex(s.style);
+    ui->printBriefTag->setChecked(s.printBrief);
+    ui->shortVariableDocumentation->setChecked(s.shortVarDoc);
+    ui->verbosePrinting->setChecked(s.verbosePrinting);
 }

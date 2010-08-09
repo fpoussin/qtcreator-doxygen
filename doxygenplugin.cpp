@@ -147,12 +147,12 @@ DoxygenPlugin* DoxygenPlugin::instance()
 
 void DoxygenPlugin::createDocumentation()
 {
-    Doxygen::instance()->createDocumentation(settings().DoxyComment);
+    Doxygen::instance()->createDocumentation(settings());
 }
 
 void DoxygenPlugin::documentFile()
 {
-    Doxygen::instance()->documentFile(settings().DoxyComment);
+    Doxygen::instance()->documentFile(settings());
 }
 
 bool DoxygenPlugin::buildDocumentation()

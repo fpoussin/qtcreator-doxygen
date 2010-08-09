@@ -30,10 +30,13 @@ IDE_BUILD_TREE = $$QTC_BUILD_DIR
 
 # Define DESTDIR to the local location of the installation of Qt creator (if local user)
 # or the system location if building as root
-!macx:DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
-macx: {
-    DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/Qt\\
-Creator.app/Contents/PlugIns/$$(PROVIDER)
+unix: {
+    !macx: {
+        DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
+    }
+    macx: {
+        DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/$$(PROVIDER)
+    }
 }
 
 unix: {
@@ -44,8 +47,7 @@ unix: {
     }
     macx: {
         LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
-        -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/Qt\\
-        Creator.app/Contents/PlugIns/Nokia/ \
+        -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/Nokia/ \
         -L/usr/local/Trolltech/Qt-4.7.0/lib
     }
 }

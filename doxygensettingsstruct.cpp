@@ -28,7 +28,9 @@ static const char *groupC = "Doxygen";
 static const char *commandKeyC = "Command";
 static const char *styleKeyC = "Style";
 static const char *printBriefKeyC = "PrintBrief";
-static const char *allowImplementationKeyC = "AllowImplementation";
+static const char *printShortVarDocKeyC = "PrintShortVarDoc";
+static const char *verbosePrintingKeyC = "VerbosePrinting";
+
 
 static QString defaultCommand()
 {
@@ -44,7 +46,8 @@ DoxygenSettingsStruct::DoxygenSettingsStruct() :
         doxygenCommand(defaultCommand()),
         style(javaDoc),
         printBrief(true),
-        allowImplementation(false)
+        shortVarDoc(true),
+        verbosePrinting(false)
 {
 }
 
@@ -54,7 +57,8 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
     doxygenCommand = settings->value(QLatin1String(commandKeyC), defaultCommand()).toString();
     style = settings->value(QLatin1String(styleKeyC), 0).toInt();
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
-    allowImplementation = settings->value(QLatin1String(allowImplementationKeyC), 0).toBool();
+    shortVarDoc = settings->value(QLatin1String(printShortVarDocKeyC), 1).toBool();
+    verbosePrinting = settings->value(QLatin1String(verbosePrintingKeyC), 0).toBool();
     settings->endGroup();
 
     // Support both java and qt styles
@@ -67,7 +71,8 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
     settings->setValue(QLatin1String(commandKeyC), doxygenCommand);
     settings->setValue(QLatin1String(styleKeyC), style);
     settings->setValue(QLatin1String(printBriefKeyC), printBrief);
-    settings->setValue(QLatin1String(allowImplementationKeyC), allowImplementation);
+    settings->setValue(QLatin1String(printShortVarDocKeyC), shortVarDoc);
+    settings->setValue(QLatin1String(verbosePrintingKeyC), verbosePrinting);
     settings->endGroup();
 
     // Support both java and qt styles
@@ -81,7 +86,8 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
             doxygenCommand         == s.doxygenCommand
             && style               == s.style
             && printBrief          == s.printBrief
-            && allowImplementation == s.allowImplementation;
+            && shortVarDoc         == s.shortVarDoc
+            && verbosePrinting     == s.verbosePrinting;
 }
 
 QStringList DoxygenSettingsStruct::addOptions(const QStringList &args) const
@@ -111,27 +117,22 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
 {
     if(!s) // java
     {
-        DoxyComment.doxGenericBeginNoindent = "/**\n* @brief \n*\n";
-        DoxyComment.doxGenericBegin         = "    /**\n    * @brief \n    *\n";
         DoxyComment.doxBegin                = "/**\n";
-        DoxyComment.doxBrief                = "* @brief \n";
-        DoxyComment.doxEmptyLine            = "*\n";
-        DoxyComment.doxShortBeginNoindent   = "/** ";
-        DoxyComment.doxShortBegin           = "    /** ";
-        DoxyComment.doxNewLine              = "* @";
-        DoxyComment.doxEnding               = "*/";
+        DoxyComment.doxBrief                = " * @brief \n";
+        DoxyComment.doxEmptyLine            = " *\n";
+        DoxyComment.doxNewLine              = " * @";
+        DoxyComment.doxEnding               = "*/\n";
+        DoxyComment.doxShortVarDoc          = "/**< ";
 
     }
     else // qt
     {
-        DoxyComment.doxGenericBeginNoindent = "/*!\n  \\brief \n\n";
-        DoxyComment.doxGenericBegin         = "    /*!\n      \\brief \n\n";
         DoxyComment.doxBegin                = "/*!\n";
-        DoxyComment.doxBrief                = "  \\brief \n";
-        DoxyComment.doxEmptyLine            = " \n";
-        DoxyComment.doxShortBeginNoindent   = "/*! ";
-        DoxyComment.doxShortBegin           = "    /*! ";
-        DoxyComment.doxNewLine              = "  \\";
-        DoxyComment.doxEnding               = "*/";
+        DoxyComment.doxBrief                = " \\brief \n";
+        DoxyComment.doxEmptyLine            = "\n";
+        DoxyComment.doxNewLine              = " \\";
+        DoxyComment.doxEnding               = "*/\n";
+        DoxyComment.doxShortVarDoc          = "/*!< ";
+
     }
 }

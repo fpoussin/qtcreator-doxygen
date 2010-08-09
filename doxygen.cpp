@@ -120,7 +120,7 @@ Symbol* currentSymbol(Core::IEditor *editor)
 }
 
 // TODO, recode it entirely.
-void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &DoxyComment) const
+void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 {
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
@@ -128,6 +128,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
     // before continuing, test if the editor is actually showing a file.
     if(!editor) return;
 
+    // get the widget for later.
+    TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
+            editorManager->currentEditor()->widget());
+
+    // TODO, only do that if class and verbosePrinting
     // Catch hold of the plugin-manager
     ExtensionSystem::PluginManager* pm
             = ExtensionSystem::PluginManager::instance();
@@ -169,8 +174,6 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
     if (!lastSymbol || !lastSymbol->scope())
         return;
 
-    /// scopes.at(0) = class name
-    /// scopes.at(1) = method name + (...) <-- analyse this
     QStringList scopes = scopesForSymbol(lastSymbol);
     Overview overview;
     overview.setShowArgumentNames(true);
@@ -182,66 +185,96 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
 
     QString docToWrite;
 
+    // Do we print a short documentation block at end of line?
+    bool printAtEnd = false;
+
+    // Get current indentation as per bug #5
+    QString indent;
+    editorWidget->moveCursor(QTextCursor::StartOfLine);
+    editorWidget->gotoLineEndWithSelection();
+    QString currentText = editorWidget->textCursor().selectedText();
+    QStringList textList = currentText.split(QRegExp("\\b"));
+    indent = textList.at(0);
+    if(indent.endsWith('~'))
+    {
+        indent.chop(1);
+    }
+
     if(lastSymbol->isClass())
     {
-        QString fileName = editor->file()->fileName().remove(0, editor->file()->fileName().lastIndexOf("/") + 1);
-        QString fileNameProj = editor->file()->fileName().remove(projectRoot);
-        docToWrite += DoxyComment.doxGenericBeginNoindent;
-        docToWrite += DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"";
-        docToWrite += "\n*/\n";
+        docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
+        if(DoxySettings.printBrief)
+        {
+            docToWrite += indent + DoxySettings.DoxyComment.doxBrief;
+            docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine;
+        }
+        if(DoxySettings.verbosePrinting)
+        {
+            QString fileName = editor->file()->fileName().remove(0, editor->file()->fileName().lastIndexOf("/") + 1);
+            QString fileNameProj = editor->file()->fileName().remove(projectRoot);
+            docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"\n";
+        }
+        docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
     }
     else if(lastSymbol->isTypedef())
     {
-        docToWrite += DoxyComment.doxShortBeginNoindent;
-        docToWrite += DoxyComment.doxNewLine + "typedef " + overview.prettyName(name);
-        docToWrite += " */\n";
+        docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
+        if(DoxySettings.printBrief)
+        {
+            docToWrite += indent + DoxySettings.DoxyComment.doxBrief;
+            docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine;
+        }
+        if(DoxySettings.verbosePrinting)
+            docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "typedef " + overview.prettyName(name);
+        docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
     }
     else if(lastSymbol->isEnum())
     {
-        if(lastSymbol->scope()->isClassScope())
-        {
-            docToWrite += DoxyComment.doxGenericBegin;
-            docToWrite += "    " + DoxyComment.doxNewLine + "enum " + overview.prettyName(name);
-            docToWrite += "    */\n";
-        }
-        else
-        {
-            docToWrite += DoxyComment.doxGenericBeginNoindent;
-            docToWrite += DoxyComment.doxNewLine + "enum " + overview.prettyName(name);
-            docToWrite += "\n*/\n";
-        }
-    }
-    else if(lastSymbol->isArgument())
-    {
-        docToWrite += DoxyComment.doxShortBegin;
-        docToWrite += "  ARG*/\n";
+        docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
+        if(DoxySettings.printBrief)
+            docToWrite += indent + DoxySettings.DoxyComment.doxBrief;
+        docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine;
+        if(DoxySettings.verbosePrinting)
+            docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "enum " + overview.prettyName(name) + "\n";
+        docToWrite += DoxySettings.DoxyComment.doxEnding;
     }
     // Here comes the bitch.
     else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
     {
-        QString fullIndent, indent;
-        if(lastSymbol->scope()->isClassScope())
-        {
-            fullIndent = "    ";
-        }
-
         overview.setShowArgumentNames(true);
         overview.setShowReturnTypes(false);
         overview.setShowFullyQualifiedNamed(true);
         overview.setShowFunctionSignatures(true);
         QString arglist = overview.prettyType(lastSymbol->type(), name);
 
-        //docToWrite += DoxyComment.doxGenericBegin;
-        docToWrite += fullIndent + DoxyComment.doxBegin + fullIndent + DoxyComment.doxBrief + fullIndent + DoxyComment.doxEmptyLine;
+        docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
+        if(DoxySettings.printBrief)
+        {
+            docToWrite += indent + DoxySettings.DoxyComment.doxBrief;
+            docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine;
+        }
 
         // if variable, do it quickly...
         if(!arglist.contains('('))
         {
-            docToWrite += fullIndent + DoxyComment.doxNewLine + "var " + overview.prettyName(name) + "\n" + fullIndent + "*/\n";
+            if(DoxySettings.shortVarDoc)
+            {
+                printAtEnd = true;
+                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO " + DoxySettings.DoxyComment.doxEnding;
+            }
+            else
+            {
+                if(DoxySettings.verbosePrinting)
+                    docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "var " + overview.prettyName(name) + "\n" + indent + DoxySettings.DoxyComment.doxEnding;
+                else
+                     docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine + indent + DoxySettings.DoxyComment.doxEnding;
+            }
         }
         else
         {
-            docToWrite += fullIndent + DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
+            if(DoxySettings.verbosePrinting)
+                docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
+
             // Check parameters
             // Do it the naive way first before finding better in the API
             // TODO, check throw()...
@@ -257,17 +290,13 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
 
             Q_FOREACH(QString singleArg, args)
             {
-                //if(singleArg.contains('>'))
-                //{
-                //    singleArg.remove(0, singleArg.lastIndexOf('>') + 1);
-                //}
                 if(singleArg.contains('='))
                 {
                     singleArg.remove(singleArg.size() - singleArg.lastIndexOf('='));
                 }
                 singleArg.replace("*","");
                 singleArg.replace("&","");
-                docToWrite += fullIndent + DoxyComment.doxNewLine + "param " + singleArg.section(' ', - 1) + "\n";
+                docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "param " + singleArg.section(' ', - 1) + "\n";
             }
 
             // And now check the return type
@@ -292,21 +321,22 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct::DoxygenComment &D
                         last = arglist.lastIndexOf(' ');
 
                     arglist.chop(arglist.size() - last);
-                    docToWrite += fullIndent + DoxyComment.doxNewLine + "return " +  arglist + "\n";
+                    docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "return " +  arglist + "\n";
                 }
 
             }
-            docToWrite += fullIndent + "*/\n";
+            docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
         }
     }
 
 
     // Write the documentation in the editor
-    TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
-            editorManager->currentEditor()->widget());
     if (editorWidget)
     {
-        editorWidget->moveCursor(QTextCursor::StartOfBlock);
+        if(printAtEnd)
+            editorWidget->moveCursor(QTextCursor::EndOfLine);
+        else
+            editorWidget->moveCursor(QTextCursor::StartOfBlock);
         editorWidget->insertPlainText(docToWrite);
     }
 
@@ -358,7 +388,7 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CP
 
 }
 
-void Doxygen::documentFile(const DoxygenSettingsStruct::DoxygenComment &DoxyComment)
+void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
 {
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
@@ -397,7 +427,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct::DoxygenComment &DoxyComm
         {
             unsigned line = (it-1).key();
             editorWidget->gotoLine(line);
-            createDocumentation(DoxyComment);
+            createDocumentation(DoxySettings);
         }
     }
 }

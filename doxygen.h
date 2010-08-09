@@ -34,8 +34,8 @@ public:
 
     void addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CPlusPlus::Symbol*> &symmap);
 
-    void createDocumentation(const DoxygenSettingsStruct::DoxygenComment &DoxyComment) const;
-    void documentFile(const DoxygenSettingsStruct::DoxygenComment &DoxyComment);
+    void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
+    void documentFile(const DoxygenSettingsStruct &DoxySettings);
 
 
 private:
