@@ -5,37 +5,43 @@ DEFINES += DOXYGEN_LIBRARY
 PROVIDER = Kofee
 
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
-unix: {
-    !macx: {
-        QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1/
+isEmpty(QTC_SOURCE_DIR) {
+    unix: {
+        !macx: {
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1/
+        }
+        macx: {
+            QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
+        }
     }
-    macx: {
-        QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
-    }
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-20100421/
 }
-win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-20100421/
-IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
+isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
 # Define QTC_BUILD_DIR to the location of Qt Creator build dir for the plugin (i.e ~/dev/qtcreator-doxygen/)
-unix: {
-    !macx: {
-        QTC_BUILD_DIR = /home/$$(USER)/Dev/Qt/qtcreator-doxygen/trunk/
+isEmpty(QTC_BUILD_DIR) {
+    unix: {
+        !macx: {
+            QTC_BUILD_DIR = /home/$$(USER)/Dev/Qt/qtcreator-doxygen/trunk/
+        }
+        macx: {
+            QTC_BUILD_DIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/
+        }
     }
-    macx: {
-        QTC_BUILD_DIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/
-    }
+    win32:QTC_BUILD_DIR = C:/Qt/qtcreator-doxygen/
 }
-win32:QTC_BUILD_DIR = C:/Qt/qtcreator-doxygen/
-IDE_BUILD_TREE = $$QTC_BUILD_DIR
+isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE = $$QTC_BUILD_DIR
 
 # Define DESTDIR to the local location of the installation of Qt creator (if local user)
 # or the system location if building as root
-unix: {
-    !macx: {
-        DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
-    }
-    macx: {
-        DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/$$(PROVIDER)
+isEmpty(DESTDIR) {
+    unix: {
+        !macx: {
+            DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
+        }
+        macx: {
+            DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/$$(PROVIDER)
+        }
     }
 }
 
