@@ -64,8 +64,7 @@ QString DoxygenSettings::displayCategory() const
 
 QIcon DoxygenSettings::categoryIcon() const
 {
-    //FIXME, actually do something
-    return QIcon();
+    return QIcon(":/doxygen.png");
 }
 
 QWidget* DoxygenSettings::createPage(QWidget *parent)

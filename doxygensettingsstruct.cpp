@@ -26,6 +26,7 @@ using namespace DoxyPlugin::Internal;
 
 static const char *groupC = "Doxygen";
 static const char *commandKeyC = "Command";
+static const char *wizardcommandKeyC = "Wizard";
 static const char *styleKeyC = "Style";
 static const char *printBriefKeyC = "PrintBrief";
 static const char *printShortVarDocKeyC = "PrintShortVarDoc";
@@ -34,8 +35,16 @@ static const char *verbosePrintingKeyC = "VerbosePrinting";
 
 static QString defaultCommand()
 {
-    QString rc;
-    rc = QLatin1String("doxygen");
+    QString rc = QLatin1String("doxygen");
+#if defined(Q_OS_WIN32)
+    rc.append(QLatin1String(".exe"));
+#endif
+    return rc;
+}
+
+static QString defaultWizardCommand()
+{
+    QString rc = QLatin1String("doxywizard");
 #if defined(Q_OS_WIN32)
     rc.append(QLatin1String(".exe"));
 #endif
@@ -44,6 +53,7 @@ static QString defaultCommand()
 
 DoxygenSettingsStruct::DoxygenSettingsStruct() :
         doxygenCommand(defaultCommand()),
+        doxywizardCommand(defaultWizardCommand()),
         style(javaDoc),
         printBrief(true),
         shortVarDoc(true),
@@ -55,6 +65,7 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
 {
     settings->beginGroup(QLatin1String(groupC));
     doxygenCommand = settings->value(QLatin1String(commandKeyC), defaultCommand()).toString();
+    doxywizardCommand = settings->value(QLatin1String(wizardcommandKeyC), defaultWizardCommand()).toString();
     style = settings->value(QLatin1String(styleKeyC), 0).toInt();
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
     shortVarDoc = settings->value(QLatin1String(printShortVarDocKeyC), 1).toBool();
@@ -69,6 +80,7 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
 {
     settings->beginGroup(QLatin1String(groupC));
     settings->setValue(QLatin1String(commandKeyC), doxygenCommand);
+    settings->setValue(QLatin1String(wizardcommandKeyC), doxywizardCommand);
     settings->setValue(QLatin1String(styleKeyC), style);
     settings->setValue(QLatin1String(printBriefKeyC), printBrief);
     settings->setValue(QLatin1String(printShortVarDocKeyC), shortVarDoc);
@@ -84,6 +96,7 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
 
     return
             doxygenCommand         == s.doxygenCommand
+            && doxywizardCommand   == s.doxywizardCommand
             && style               == s.style
             && printBrief          == s.printBrief
             && shortVarDoc         == s.shortVarDoc
@@ -122,7 +135,7 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
         DoxyComment.doxEmptyLine            = " *\n";
         DoxyComment.doxNewLine              = " * @";
         DoxyComment.doxEnding               = "*/\n";
-        DoxyComment.doxShortVarDoc          = "/**< ";
+        DoxyComment.doxShortVarDoc          = " /**< ";
 
     }
     else // qt
@@ -132,7 +145,7 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
         DoxyComment.doxEmptyLine            = "\n";
         DoxyComment.doxNewLine              = " \\";
         DoxyComment.doxEnding               = "*/\n";
-        DoxyComment.doxShortVarDoc          = "/*!< ";
+        DoxyComment.doxShortVarDoc          = " /*!< ";
 
     }
 }

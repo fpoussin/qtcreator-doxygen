@@ -8,7 +8,7 @@ PROVIDER = Kofee
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.0.1-src/
         }
         macx: {
             QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
@@ -22,7 +22,7 @@ isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 isEmpty(QTC_BUILD_DIR) {
     unix: {
         !macx: {
-            QTC_BUILD_DIR = /home/$$(USER)/Dev/Qt/qtcreator-doxygen/trunk/
+            QTC_BUILD_DIR = /home/$$(USER)/Dev/Qt/qtcreator-doxygen/
         }
         macx: {
             QTC_BUILD_DIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/
@@ -37,7 +37,7 @@ isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE = $$QTC_BUILD_DIR
 isEmpty(DESTDIR) {
     unix: {
         !macx: {
-            DESTDIR = lib/qtcreator/plugins/$$(PROVIDER)
+            DESTDIR = $$(PROVIDER)
         }
         macx: {
             DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/$$(PROVIDER)
@@ -47,9 +47,9 @@ isEmpty(DESTDIR) {
 
 unix: {
     !macx: {
-        LIBS += -L/home/$$(USER)/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/ \
-        -L/home/$$(USER)/Dev/Qt/qt-creator-build-2.1/lib/qtcreator/plugins/Nokia/ \
-        -L/usr/local/Trolltech/Qt-4.7.0/lib
+        LIBS += -L/home/kofee/qtsdk-2010.05/lib/qtcreator \
+        -L/home/kofee/qtsdk-2010.05/lib/qtcreator/plugins/Nokia \
+        -L/home/kofee/qtsdk-2010.05/lib
     }
     macx: {
         LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
@@ -79,7 +79,10 @@ SOURCES += doxygenplugin.cpp \
     doxygensettingswidget.cpp \
     doxygensettingsstruct.cpp
 FORMS += doxygensettingswidget.ui
-OTHER_FILES += Doxygen.pluginspec
+RESOURCES += doxygen.qrc \
+    doxygen.qrc
+OTHER_FILES += Doxygen.pluginspec \
+    doxygen.png
 INCLUDEPATH += $$QTC_SOURCE_DIR/src \
     $$QTC_SOURCE_DIR/src/plugins \
     $$QTC_SOURCE_DIR/src/libs \

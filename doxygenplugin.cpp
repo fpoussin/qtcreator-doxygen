@@ -57,12 +57,13 @@ using namespace DoxyPlugin;
 using namespace DoxyPlugin::Internal;
 
 // Timeout for building documentation
-enum { doxygenTimeOut = 120000 };
+enum { doxygenTimeOut = 120000};
 
 static const char * const CMD_ID_DOXYGEN_MENU        = "Doxygen.Menu";
 static const char * const CMD_ID_CREATEDOCUMENTATION = "Doxygen.CreateDocumentation";
 static const char * const CMD_ID_DOCUMENTFILE        = "Doxygen.DocumentFile";
 static const char * const CMD_ID_BUILDDOCUMENTATION  = "Doxygen.BuildDocumentation";
+static const char * const CMD_ID_DOXYFILEWIZARD      = "Doxygen.RunWizard";
 
 
 DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
@@ -118,7 +119,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     connect(m_doxygenDocumentFileAction, SIGNAL(triggered()), this, SLOT(documentFile()));
     doxygenMenu->addAction(command);
 
-    // TODO "compile" documentation action
+    // "compile" documentation action
     m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"),  this);
     command = am->registerAction(m_doxygenBuildDocumentationAction, CMD_ID_BUILDDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
@@ -126,7 +127,14 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     connect(m_doxygenBuildDocumentationAction, SIGNAL(triggered()), this, SLOT(buildDocumentation()));
     doxygenMenu->addAction(command);
 
-    // TODO edit Doxyfile action
+    // edit Doxyfile action
+    m_doxygenDoxyfileWizardAction = new QAction(tr("Edit Doxyfile"),  this);
+    command = am->registerAction(m_doxygenDoxyfileWizardAction, CMD_ID_DOXYFILEWIZARD, globalcontext);
+    command->setAttribute(Core::Command::CA_UpdateText);
+    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F6")));
+    connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered()), this, SLOT(doxyfileWizard()));
+    doxygenMenu->addAction(command);
+
 
     return true;
 }
@@ -155,7 +163,7 @@ void DoxygenPlugin::documentFile()
     Doxygen::instance()->documentFile(settings());
 }
 
-bool DoxygenPlugin::buildDocumentation()
+bool DoxygenPlugin::buildDocumentation() // TODO: refactor
 {
     // TODO, allow configuration of the command
     // the default here will just run doxygen at the project root
@@ -221,6 +229,65 @@ bool DoxygenPlugin::buildDocumentation()
     return !response.error;
 }
 
+void DoxygenPlugin::doxyfileWizard() // TODO: refactor
+{
+    const Core::EditorManager *editorManager = Core::EditorManager::instance();
+    Core::IEditor *editor = editorManager->currentEditor();
+
+    // prevent a crash if user launches this command with no editor opened
+    if(!editor) return;
+
+    // Catch hold of the plugin-manager
+    ExtensionSystem::PluginManager* pm
+            = ExtensionSystem::PluginManager::instance();
+    // Look for the ProjectExplorerPlugin object
+    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
+            = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
+    // Fetch a list of all open projects
+    QList<ProjectExplorer::Project*> projects
+            = projectExplorerPlugin->session()->projects();
+
+    // Project root directory
+    QString projectRoot;
+    // TODO really check if it's smart, and if it is, refactor.
+    // Attempt to find our project
+    Q_FOREACH(ProjectExplorer::Project* project, projects)
+    {
+        QStringList files = project->files(ProjectExplorer::Project::ExcludeGeneratedFiles); // ProjectExplorer::Project::FilesMode::ExcludeGeneratedFiles
+        // is it our project ?
+        if(files.contains(editor->file()->fileName()))
+        {
+            // YES! get the .pro and remove the directory part from our filename
+            // TODO, check if it is smart... (it's not really.)
+            Q_FOREACH(QString f, files)
+            {
+                if(f.contains(QRegExp(".pro$")))
+                {
+                    projectRoot = f.section('/', 0, -2);
+                    if(projectRoot.size()) projectRoot.append("/");
+                    continue;
+                }
+            }
+            if(projectRoot.size()) continue;
+        }
+    }
+    if(!projectRoot.size())
+        return;
+
+    QString executable = settings().doxywizardCommand;
+    QStringList arglist("Doxyfile"); // TODO, let the user configure this
+
+    Core::MessageManager* msgManager = Core::MessageManager::instance();
+
+    bool ret = QProcess::startDetached(settings().doxywizardCommand, arglist, projectRoot);
+
+    if(!ret)
+    {
+        const QString outputText = tr("Failed to launch %1\n").arg(executable);
+        msgManager->showOutputPane();
+        msgManager->printToOutputPane(outputText);
+    }
+}
 
 void DoxygenPlugin::setSettings(const DoxygenSettingsStruct &s)
 {
@@ -250,10 +317,10 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
     Core::MessageManager* msgManager = Core::MessageManager::instance();
     msgManager->showOutputPane();
 
-    const QString outputText = tr("Executing: %1 %2\n").arg(executable, DoxygenSettingsStruct::formatArguments(allArgs));
+    const QString outputText = tr("Executing: %1 %2\n").arg(executable).arg(DoxygenSettingsStruct::formatArguments(allArgs));
     msgManager->printToOutputPane(outputText);
 
-    //Run, connect stderr to the output window
+    // Run, connect stderr to the output window
     Utils::SynchronousProcess process;
     if(!workingDirectory.isEmpty())
         process.setWorkingDirectory(workingDirectory);

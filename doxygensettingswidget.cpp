@@ -26,8 +26,10 @@ DoxygenSettingsWidget::DoxygenSettingsWidget(QWidget *parent) :
     ui(new Ui::DoxygenSettingsWidget)
 {
     ui->setupUi(this);
-    ui->pathChooser->setExpectedKind(Utils::PathChooser::Command);
-    ui->pathChooser->setPromptDialogTitle(tr("Doxygen Command"));
+    ui->pathChooser_doxygen->setExpectedKind(Utils::PathChooser::Command);
+    ui->pathChooser_doxygen->setPromptDialogTitle(tr("Doxygen Command"));
+    ui->pathChooser_wizard->setExpectedKind(Utils::PathChooser::Command);
+    ui->pathChooser_wizard->setPromptDialogTitle(tr("DoxyWizard Command"));
 }
 
 DoxygenSettingsWidget::~DoxygenSettingsWidget()
@@ -50,7 +52,8 @@ void DoxygenSettingsWidget::changeEvent(QEvent *e)
 DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
 {
     DoxygenSettingsStruct rc;
-    rc.doxygenCommand = ui->pathChooser->path();
+    rc.doxygenCommand = ui->pathChooser_doxygen->path();
+    rc.doxywizardCommand = ui->pathChooser_wizard->path();
     rc.style = ui->styleChooser->currentIndex();
     rc.printBrief = ui->printBriefTag->isChecked();
     rc.shortVarDoc = ui->shortVariableDocumentation->isChecked();
@@ -60,7 +63,8 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
 
 void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
 {
-    ui->pathChooser->setPath(s.doxygenCommand);
+    ui->pathChooser_doxygen->setPath(s.doxygenCommand);
+    ui->pathChooser_wizard->setPath(s.doxywizardCommand);
     ui->styleChooser->setCurrentIndex(s.style);
     ui->printBriefTag->setChecked(s.printBrief);
     ui->shortVariableDocumentation->setChecked(s.shortVarDoc);

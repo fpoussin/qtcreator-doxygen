@@ -44,6 +44,7 @@ struct DoxygenSettingsStruct
     bool equals(const DoxygenSettingsStruct &s) const;
 
     QString doxygenCommand;
+    QString doxywizardCommand;
     unsigned int style;
     bool printBrief;
     bool shortVarDoc;

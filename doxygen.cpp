@@ -260,43 +260,43 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             if(DoxySettings.shortVarDoc)
             {
                 printAtEnd = true;
-                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO " + DoxySettings.DoxyComment.doxEnding;
+                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO */";
             }
             else
             {
                 if(DoxySettings.verbosePrinting)
                     docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "var " + overview.prettyName(name) + "\n" + indent + DoxySettings.DoxyComment.doxEnding;
                 else
-                     docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine + indent + DoxySettings.DoxyComment.doxEnding;
+                    docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine + indent + DoxySettings.DoxyComment.doxEnding;
             }
         }
         else
         {
+            // Never noticed it before, a useless comment block because of the Q_OBJECT macro
+            // so let's just ignore that will we?
+            if(overview.prettyName(name) == "qt_metacall")
+                return;
+
             if(DoxySettings.verbosePrinting)
                 docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
 
             // Check parameters
             // Do it the naive way first before finding better in the API
-            // TODO, check throw()...
             arglist.remove(0, arglist.indexOf("(") + 1);
             arglist.remove(arglist.lastIndexOf(")"), arglist.size() - arglist.lastIndexOf(")"));
             int indexfrom, indexto;
-            while((indexfrom = arglist.indexOf('<'))!= -1)
+            while( ((indexfrom = arglist.indexOf('<'))!= -1) && (indexto = arglist.indexOf('>') != -1) )
             {
-                if((indexto = arglist.indexOf('>')) != -1)
                     arglist.remove(indexfrom, indexto - indexfrom + 1);
             }
             QStringList args = arglist.trimmed().split(',', QString::SkipEmptyParts);
 
             Q_FOREACH(QString singleArg, args)
             {
-                if(singleArg.contains('='))
-                {
-                    singleArg.remove(singleArg.size() - singleArg.lastIndexOf('='));
-                }
+                singleArg.remove(QRegExp("\\s*=.*")); // FIXME probably don't need the * after \\s but...
                 singleArg.replace("*","");
                 singleArg.replace("&","");
-                docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "param " + singleArg.section(' ', - 1) + "\n";
+                docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "param " + singleArg.section(' ',  -1) + "\n";
             }
 
             // And now check the return type
@@ -307,8 +307,10 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
             arglist = overview.prettyType(lastSymbol->type(), name);
 
-            if( ((overview.prettyName(name) != scopes.front()) && (overview.prettyName(name).at(0) != '~')) || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~")) )
+            // FIXME this check is just insane...
+            if( arglist.contains(' ') && (((overview.prettyName(name) != scopes.front()) && (overview.prettyName(name).at(0) != '~')) || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
             {
+                //qDebug() << arglist;
                 QRegExp rx("void *");
                 rx.setPatternSyntax(QRegExp::Wildcard);
                 if(!rx.exactMatch(arglist))

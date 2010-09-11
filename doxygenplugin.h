@@ -54,17 +54,20 @@ public:
     DoxygenSettingsStruct settings() const;
     DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut,
                                bool showStdOutInOutputWindow, QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
+
 private:
     static DoxygenPlugin *m_doxygenPluginInstance;
     DoxygenSettings* m_settings;
     QAction* m_doxygenCreateDocumentationAction;
     QAction* m_doxygenDocumentFileAction;
     QAction* m_doxygenBuildDocumentationAction;
+    QAction* m_doxygenDoxyfileWizardAction;
 
 private slots:
     void createDocumentation();
     void documentFile();
     bool buildDocumentation();
+    void doxyfileWizard();
 };
 
 } // namespace Internal
