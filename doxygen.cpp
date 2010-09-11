@@ -282,12 +282,13 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
             // Check parameters
             // Do it the naive way first before finding better in the API
+            qDebug() << arglist;
             arglist.remove(0, arglist.indexOf("(") + 1);
             arglist.remove(arglist.lastIndexOf(")"), arglist.size() - arglist.lastIndexOf(")"));
             int indexfrom, indexto;
-            while( ((indexfrom = arglist.indexOf('<'))!= -1) && (indexto = arglist.indexOf('>') != -1) )
+            while( ((indexfrom = arglist.indexOf('<'))!= -1) && ((indexto = arglist.indexOf('>')) != -1) )
             {
-                    arglist.remove(indexfrom, indexto - indexfrom + 1);
+                arglist.remove(indexfrom, indexto - indexfrom + 1);
             }
             QStringList args = arglist.trimmed().split(',', QString::SkipEmptyParts);
 
@@ -396,12 +397,14 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     Core::IEditor *editor = editorManager->currentEditor();
 
     // before continuing, test if the editor is actually showing a file.
-    if(!editor) return;
+    if(!editor)
+        return;
 
     CppTools::CppModelManagerInterface *modelManager =
             ExtensionSystem::PluginManager::instance()->getObject<CppTools::CppModelManagerInterface>();
-    if (!modelManager)
+    if(!modelManager)
         return;
+
     const Snapshot snapshot = modelManager->snapshot();
     Document::Ptr doc = snapshot.document(editor->file()->fileName());
     if (!doc)
@@ -409,9 +412,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
 
     Scope *scope = doc->globalSymbols();
     if(!scope)
-    {
         return;
-    }
 
     unsigned symbolcount = scope->symbolCount();
 
