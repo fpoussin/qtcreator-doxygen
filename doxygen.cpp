@@ -50,7 +50,7 @@
 #include <QStringList>
 #include <QFile>
 #include <QFileInfo>
-#include <QDebug>
+//#include <QDebug>
 #include <QRegExp>
 
 using namespace CPlusPlus;
@@ -195,6 +195,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     QString currentText = editorWidget->textCursor().selectedText();
     QStringList textList = currentText.split(QRegExp("\\b"));
     indent = textList.at(0);
+    // quickfix when calling the method o n"};" (end class) or "}" (end namespace)
+    if(indent.contains(QRegExp("^\\};?")))
+        return;
     if(indent.endsWith('~'))
     {
         indent.chop(1);
@@ -282,7 +285,6 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
             // Check parameters
             // Do it the naive way first before finding better in the API
-            qDebug() << arglist;
             arglist.remove(0, arglist.indexOf("(") + 1);
             arglist.remove(arglist.lastIndexOf(")"), arglist.size() - arglist.lastIndexOf(")"));
             int indexfrom, indexto;
