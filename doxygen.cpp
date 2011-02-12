@@ -27,9 +27,6 @@
 #include <plugins/cpptools/cppmodelmanagerinterface.h>
 #include <plugins/texteditor/basetexteditor.h>
 #include <plugins/coreplugin/icore.h>
-#include <plugins/coreplugin/uniqueidmanager.h>
-#include <plugins/coreplugin/mimedatabase.h>
-#include <plugins/coreplugin/actionmanager/actionmanager.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
 #include <plugins/coreplugin/editormanager/editormanager.h>
 #include <plugins/projectexplorer/project.h>
@@ -38,19 +35,17 @@
 #include <plugins/projectexplorer/projectexplorerconstants.h>
 
 #include <libs/cplusplus/Overview.h>
+
 #include <libs/extensionsystem/pluginmanager.h>
 #include <shared/cplusplus/Scope.h>
 #include <shared/cplusplus/Symbols.h>
 #include <shared/cplusplus/Names.h>
 #include <cplusplus/CppDocument.h>
-#include <cplusplus/CppBindings.h>
-
 
 #include <QString>
 #include <QStringList>
 #include <QFile>
 #include <QFileInfo>
-//#include <QDebug>
 #include <QRegExp>
 
 using namespace CPlusPlus;
@@ -74,7 +69,7 @@ Doxygen* Doxygen::instance()
 // TODO, get rid of it.
 QStringList scopesForSymbol(const Symbol* symbol)
 {
-    Scope *scope = symbol->scope();
+    const Scope *scope = symbol->asScope();
     QStringList scopes;
 
     if(symbol->isFunction())
@@ -89,9 +84,9 @@ QStringList scopesForSymbol(const Symbol* symbol)
 
     for (; scope; scope = scope->enclosingScope())
     {
-        Symbol *owner = scope->owner();
+        Symbol *owner = scope->memberAt(0);
 
-        if (owner && owner->name() && ! scope->isEnumScope())
+        if (owner && owner->name() && ! scope->isEnum())
         {
             const Name *name = owner->name();
             Overview overview;
@@ -105,18 +100,18 @@ QStringList scopesForSymbol(const Symbol* symbol)
 
 Symbol* currentSymbol(Core::IEditor *editor)
 {
-    int line = editor->currentLine();
-    int column = editor->currentColumn();
-
     CppTools::CppModelManagerInterface *modelManager =
             ExtensionSystem::PluginManager::instance()->getObject<CppTools::CppModelManagerInterface>();
     if (!modelManager)
         return 0;
+
     const Snapshot snapshot = modelManager->snapshot();
     Document::Ptr doc = snapshot.document(editor->file()->fileName());
     if (!doc)
         return 0;
-    return doc->findSymbolAt(line, column);
+
+    Symbol* last = doc->lastVisibleSymbolAt(editor->currentLine(), editor->currentColumn());
+    return last;
 }
 
 // TODO, recode it entirely.
@@ -167,24 +162,30 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         }
     }
 
-
-
-
+    // FIXME, this poutine isn't that digest.
+    // "unroll" the process
     Symbol *lastSymbol = currentSymbol(editor);
-    if (!lastSymbol || !lastSymbol->scope())
+    if(lastSymbol->line() != static_cast<unsigned>(editor->currentLine()))
+        editorWidget->moveCursor(QTextCursor::StartOfLine);
+    while(lastSymbol->line() != static_cast<unsigned>(editor->currentLine()) && lastSymbol)
+    {
+        editorWidget->moveCursor(QTextCursor::NextWord);
+        lastSymbol = currentSymbol(editor);
+    }
+    if (!lastSymbol /*|| !lastSymbol->asScope()*/)
         return;
 
     QStringList scopes = scopesForSymbol(lastSymbol);
     Overview overview;
     overview.setShowArgumentNames(true);
+    overview.setShowDefaultArguments(false);
+    overview.setShowTemplateParameters(false);
     overview.setShowReturnTypes(true);
-    overview.setShowFullyQualifiedNamed(true);
     overview.setShowFunctionSignatures(true);
     const Name *name = lastSymbol->name();
     scopes.append(overview.prettyName(name));
 
     QString docToWrite;
-
     // Do we print a short documentation block at end of line?
     bool printAtEnd = false;
 
@@ -195,13 +196,13 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     QString currentText = editorWidget->textCursor().selectedText();
     QStringList textList = currentText.split(QRegExp("\\b"));
     indent = textList.at(0);
-    // quickfix when calling the method o n"};" (end class) or "}" (end namespace)
+
+    // quickfix when calling the method on "};" (end class) or "}" (end namespace)
     if(indent.contains(QRegExp("^\\};?")))
         return;
+
     if(indent.endsWith('~'))
-    {
         indent.chop(1);
-    }
 
     if(lastSymbol->isClass())
     {
@@ -243,11 +244,13 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     }
     // Here comes the bitch.
     else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
-    {
+    {        
         overview.setShowArgumentNames(true);
         overview.setShowReturnTypes(false);
-        overview.setShowFullyQualifiedNamed(true);
+        overview.setShowDefaultArguments(false);
+        overview.setShowTemplateParameters(false);
         overview.setShowFunctionSignatures(true);
+
         QString arglist = overview.prettyType(lastSymbol->type(), name);
 
         docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
@@ -304,8 +307,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
             // And now check the return type
             overview.setShowArgumentNames(false);
+            overview.setShowDefaultArguments(false);
+            overview.setShowTemplateParameters(false);
             overview.setShowReturnTypes(true);
-            overview.setShowFullyQualifiedNamed(false);
             overview.setShowFunctionSignatures(false);
 
             arglist = overview.prettyType(lastSymbol->type(), name);
@@ -313,7 +317,6 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             // FIXME this check is just insane...
             if( arglist.contains(' ') && (((overview.prettyName(name) != scopes.front()) && (overview.prettyName(name).at(0) != '~')) || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
             {
-                //qDebug() << arglist;
                 QRegExp rx("void *");
                 rx.setPatternSyntax(QRegExp::Wildcard);
                 if(!rx.exactMatch(arglist))
@@ -347,7 +350,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
 }
 
-void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CPlusPlus::Symbol*> &symmap)
+void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &symmap)
 {
     if(!symbol) return;
 
@@ -356,7 +359,7 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CP
         || symbol->isDeclaration()
         || symbol->isEnum())
         {
-        symmap.insert(symbol->line(), symbol);
+        symmap.append(symbol);
         return;
     }
     else if(symbol->isForwardClassDeclaration()
@@ -369,25 +372,16 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CP
         {
         return;
     }
-    symmap.insert(symbol->line(), symbol);
+    symmap.append(symbol);
 
 
-
-    const CPlusPlus::ScopedSymbol *scopedSymbol = symbol->asScopedSymbol();
-    if (scopedSymbol)
+    const CPlusPlus::Scope* scopedSymbol = symbol->asScope();
+    if(scopedSymbol)
     {
-        CPlusPlus::Scope *scope = scopedSymbol->members();
-        if (scope)
+        int nbmembers = scopedSymbol->memberCount();
+        for(int i=0; i <nbmembers; ++i)
         {
-            CPlusPlus::Scope::iterator cur = scope->firstSymbol();
-            while (cur != scope->lastSymbol())
-            {
-                const CPlusPlus::Symbol *curSymbol = *cur;
-                ++cur;
-                if (!curSymbol)
-                    continue;
-                addSymbol(curSymbol, symmap);
-            }
+            addSymbol(scopedSymbol->memberAt(i), symmap);
         }
     }
 
@@ -412,26 +406,36 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     if (!doc)
         return;
 
-    Scope *scope = doc->globalSymbols();
+    // TODO : check
+    int globalSymbols = doc->globalSymbolCount();
+    if(!globalSymbols)
+        return;
+
+    // check that as well...
+    Scope* scope = doc->scopeAt(0,0);
     if(!scope)
         return;
 
-    unsigned symbolcount = scope->symbolCount();
+    unsigned symbolcount = scope->memberCount();
 
-    QMap<unsigned, const Symbol*> symmap;
-    for(unsigned i = 0; i < symbolcount; ++i)
-        addSymbol(scope->symbolAt(i), symmap);
+    QList<const Symbol*> symmap;
+    for(unsigned i=0; i < symbolcount; ++i)
+        addSymbol(scope->memberAt(i), symmap);
 
     TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
             editorManager->currentEditor()->widget());
 
     if (editorWidget)
     {
-        QMap<unsigned, const Symbol*>::iterator it = symmap.end();
+        QList<const Symbol*>::iterator it = symmap.end();
         for(; it != symmap.begin(); --it)
         {
-            unsigned line = (it-1).key();
-            editorWidget->gotoLine(line);
+            const Symbol* sym = *(it-1);
+            editorWidget->gotoLine(sym->line());
+            // should not be needed after the change in createDocumentation
+            // will see that later.
+            for(unsigned i=0; i<sym->column(); ++i)
+                editorWidget->moveCursor(QTextCursor::Right);
             createDocumentation(DoxySettings);
         }
     }

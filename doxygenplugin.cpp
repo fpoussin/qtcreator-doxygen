@@ -59,6 +59,7 @@ using namespace DoxyPlugin::Internal;
 // Timeout for building documentation
 enum { doxygenTimeOut = 120000};
 
+static const char * const CMD_ID_DOXYGEN_MAINVIEW    = "Doxygen.MainView";
 static const char * const CMD_ID_DOXYGEN_MENU        = "Doxygen.Menu";
 static const char * const CMD_ID_CREATEDOCUMENTATION = "Doxygen.CreateDocumentation";
 static const char * const CMD_ID_DOCUMENTFILE        = "Doxygen.DocumentFile";
@@ -92,10 +93,10 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
 
     Core::ICore *core = Core::ICore::instance();
     Core::ActionManager *am = core->actionManager();
-    QList<int> globalcontext;
-    globalcontext << core->uniqueIDManager()->uniqueIdentifier(C_GLOBAL);
+    Core::Context globalcontext(C_GLOBAL);
+    //Core::Context context(CMD_ID_DOXYGEN_MAINVIEW);
     Core::ActionContainer *toolsContainer = am->actionContainer(Core::Constants::M_TOOLS);
-    Core::ActionContainer *doxygenMenu = am->createMenu(QLatin1String(CMD_ID_DOXYGEN_MENU));
+    Core::ActionContainer *doxygenMenu = am->createMenu(Core::Id(CMD_ID_DOXYGEN_MENU));
     doxygenMenu->menu()->setTitle(tr("&Doxygen"));
     toolsContainer->addMenu(doxygenMenu);
 
@@ -134,7 +135,6 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F6")));
     connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered()), this, SLOT(doxyfileWizard()));
     doxygenMenu->addAction(command);
-
 
     return true;
 }

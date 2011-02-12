@@ -32,7 +32,7 @@ class Doxygen
 public:
     static Doxygen* instance();
 
-    void addSymbol(const CPlusPlus::Symbol* symbol, QMap<unsigned, const CPlusPlus::Symbol*> &symmap);
+    void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
 
     void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
     void documentFile(const DoxygenSettingsStruct &DoxySettings);

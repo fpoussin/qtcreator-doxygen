@@ -8,7 +8,7 @@ PROVIDER = Kofee
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.0.1-src/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1.0-rc1-src/
         }
         macx: {
             QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
@@ -47,9 +47,13 @@ isEmpty(DESTDIR) {
 
 unix: {
     !macx: {
-        LIBS += -L/home/kofee/qtsdk-2010.05/lib/qtcreator \
-        -L/home/kofee/qtsdk-2010.05/lib/qtcreator/plugins/Nokia \
-        -L/home/kofee/qtsdk-2010.05/lib
+        #LIBS += -L/home/kofee/qtsdk-2010.05/lib/qtcreator \
+        #-L/home/kofee/qtsdk-2010.05/lib/qtcreator/plugins/Nokia \
+        #-L/home/kofee/qtsdk-2010.05/lib
+        LIBS += -L/home/kofee/qtcreator-2.0.94/lib/qtcreator \
+        -L/home/kofee/qtcreator-2.0.94/lib/qtcreator/plugins/Nokia \
+        -L/home/kofee/qtcreator-2.0.94/lib
+
     }
     macx: {
         LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
