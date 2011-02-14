@@ -1,8 +1,8 @@
 CONFIG += release
 TEMPLATE = lib
 TARGET = Doxygen
-DEFINES += DOXYGEN_LIBRARY
 PROVIDER = Kofee
+
 
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
 isEmpty(QTC_SOURCE_DIR) {
@@ -32,9 +32,37 @@ isEmpty(QTC_BUILD_DIR) {
 }
 isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE = $$QTC_BUILD_DIR
 
-# Define DESTDIR to the local location of the installation of Qt creator (if local user)
-# or the system location if building as root
-isEmpty(DESTDIR) {
+# You can define LIBSROOT as the root of qtcreator lib directory (i.e. LIBSROOT=/home/kofee/qtcreator-2.0.94/lib
+isEmpty(LIBSROOT) {
+    unix: {
+        !macx: {
+            LIBS += -L/home/kofee/qtcreator-2.0.94/lib/qtcreator \
+            -L/home/kofee/qtcreator-2.0.94/lib/qtcreator/plugins/Nokia \
+            -L/home/kofee/qtcreator-2.0.94/lib
+        }
+        macx: {
+            LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
+            -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/Nokia/ \
+            -L/usr/local/Trolltech/Qt-4.7.0/lib
+        }
+    }
+    win32:LIBS += -LC:/Qt/qt-20100421/lib/ \
+        -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/plugins/Nokia/ \
+        -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/
+} else {
+    LIBS += -L$$LIBSROOT \
+    -L$$LIBSROOT/qtcreator \
+    -L$$LIBSROOT/qtcreator/plugins/Nokia/
+}
+
+
+include( $$IDE_SOURCE_TREE/src/qtcreatorplugin.pri )
+include( $$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri )
+include( $$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri )
+include( $$IDE_SOURCE_TREE/src/plugins/cppeditor/cppeditor.pri )
+
+# Define DEST to the location of the installation of Qt creator (if local user)
+isEmpty(DEST) {
     unix: {
         !macx: {
             DESTDIR = $$(PROVIDER)
@@ -43,32 +71,16 @@ isEmpty(DESTDIR) {
             DESTDIR = /Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/$$(PROVIDER)
         }
     }
+} else {
+    DESTDIR = $$DEST
 }
 
-unix: {
-    !macx: {
-        #LIBS += -L/home/kofee/qtsdk-2010.05/lib/qtcreator \
-        #-L/home/kofee/qtsdk-2010.05/lib/qtcreator/plugins/Nokia \
-        #-L/home/kofee/qtsdk-2010.05/lib
-        LIBS += -L/home/kofee/qtcreator-2.0.94/lib/qtcreator \
-        -L/home/kofee/qtcreator-2.0.94/lib/qtcreator/plugins/Nokia \
-        -L/home/kofee/qtcreator-2.0.94/lib
-
-    }
-    macx: {
-        LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
-        -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/Nokia/ \
-        -L/usr/local/Trolltech/Qt-4.7.0/lib
+# copy the pluginspec to its "final" destination 
+!isEmpty(DESTDIR) {
+    unix: {
+        QMAKE_POST_LINK += cp Doxygen.pluginspec $$DESTDIR
     }
 }
-win32:LIBS += -LC:/Qt/qt-20100421/lib/ \
-    -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/plugins/Nokia/ \
-    -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/
-
-include( $$IDE_SOURCE_TREE/src/qtcreatorplugin.pri )
-include( $$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri )
-include( $$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri )
-include( $$IDE_SOURCE_TREE/src/plugins/cppeditor/cppeditor.pri )
 
 HEADERS += doxygenplugin.h \
     doxygen_global.h \
