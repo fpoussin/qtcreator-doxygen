@@ -14,7 +14,7 @@ isEmpty(QTC_SOURCE_DIR) {
             QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
         }
     }
-    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-20100421/
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.1.0-rc1-src/
 }
 isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
@@ -46,9 +46,11 @@ isEmpty(LIBSROOT) {
             -L/usr/local/Trolltech/Qt-4.7.0/lib
         }
     }
-    win32:LIBS += -LC:/Qt/qt-20100421/lib/ \
-        -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/plugins/Nokia/ \
-        -LC:/Qt/qtcreator-build-20100421/lib/qtcreator/
+    win32:LIBS += -LC:/Qt/qtcreator-2.0.94/bin \
+        -LC:/Qt/qtcreator-2.0.94/lib/qtcreator/plugins/Nokia/ \
+        -LC:/Qt/qtcreator-2.0.94/lib/qtcreator/ \
+        -LC:/Qt/qt-creator-2.1.0-rc1-src/lib/qtcreator \
+        -LC:/Qt/qt-creator-2.1.0-rc1-src/lib/qtcreator/plugins/Nokia
 } else {
     LIBS += -L$$LIBSROOT \
     -L$$LIBSROOT/qtcreator \
