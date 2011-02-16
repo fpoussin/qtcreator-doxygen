@@ -15,7 +15,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Doxygen plugin. If not, see http://www.gnu.org/licenses.</license>
     <description>Doxygen plugin for creating Doxygen tags inside source code.</description>
-    <url>http://dev.kofee.org/QtCreator-Doxygen/</url>
+    <url>http://dev.kofee.org/projects/qtcreator-doxygen/</url>
     <dependencyList>
         <dependency name="Core" version="2.0.94"/>
         <dependency name="CppEditor" version="2.0.94"/>
