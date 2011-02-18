@@ -240,7 +240,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         docToWrite += indent + DoxySettings.DoxyComment.doxEmptyLine;
         if(DoxySettings.verbosePrinting)
             docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "enum " + overview.prettyName(name) + "\n";
-        docToWrite += DoxySettings.DoxyComment.doxEnding;
+        docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
     }
     // Here comes the bitch.
     else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
@@ -331,12 +331,10 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
                     arglist.chop(arglist.size() - last);
                     docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "return " +  arglist + "\n";
                 }
-
             }
             docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
         }
     }
-
 
     // Write the documentation in the editor
     if (editorWidget)
@@ -347,44 +345,34 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             editorWidget->moveCursor(QTextCursor::StartOfBlock);
         editorWidget->insertPlainText(docToWrite);
     }
-
 }
 
 void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &symmap)
 {
-    if(!symbol) return;
-
+    if(!symbol || symbol->isBaseClass() || symbol->isGenerated())
+        return;
     if(symbol->isArgument()
-        ||symbol->isFunction()
+        || symbol->isFunction()
         || symbol->isDeclaration()
         || symbol->isEnum())
-        {
+    {
         symmap.append(symbol);
         return;
     }
-    else if(symbol->isForwardClassDeclaration()
-        || symbol->isExtern()
-        || symbol->isFriend()
-        || symbol->isGenerated()
-        || symbol->isUsingNamespaceDirective()
-        || symbol->isUsingDeclaration()
-        )
-        {
-        return;
+    else if(symbol->isClass())
+    {
+        symmap.append(symbol);
     }
-    symmap.append(symbol);
-
 
     const CPlusPlus::Scope* scopedSymbol = symbol->asScope();
     if(scopedSymbol)
     {
         int nbmembers = scopedSymbol->memberCount();
-        for(int i=0; i <nbmembers; ++i)
+        for(int i=0; i<nbmembers; ++i)
         {
             addSymbol(scopedSymbol->memberAt(i), symmap);
         }
     }
-
 }
 
 void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
@@ -403,13 +391,14 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
 
     const Snapshot snapshot = modelManager->snapshot();
     Document::Ptr doc = snapshot.document(editor->file()->fileName());
-    if (!doc)
+    if(!doc)
         return;
 
     // TODO : check
     int globalSymbols = doc->globalSymbolCount();
     if(!globalSymbols)
         return;
+
 
     // check that as well...
     Scope* scope = doc->scopeAt(0,0);
@@ -422,6 +411,15 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     for(unsigned i=0; i < symbolcount; ++i)
         addSymbol(scope->memberAt(i), symmap);
 
+    // sanity check, it's expensive and ugly but the result isn't pretty on some codes if not done.
+    unsigned oldline=0;
+    Q_FOREACH(const Symbol* sym, symmap)
+    {
+        if(sym->line() == oldline)
+            symmap.removeOne(sym);
+        oldline = sym->line();
+    }
+
     TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
             editorManager->currentEditor()->widget());
 
@@ -432,10 +430,6 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         {
             const Symbol* sym = *(it-1);
             editorWidget->gotoLine(sym->line());
-            // should not be needed after the change in createDocumentation
-            // will see that later.
-            for(unsigned i=0; i<sym->column(); ++i)
-                editorWidget->moveCursor(QTextCursor::Right);
             createDocumentation(DoxySettings);
         }
     }
