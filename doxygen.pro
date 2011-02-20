@@ -8,13 +8,13 @@ PROVIDER = Kofee
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1.0-rc1-src/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.1.0-src/
         }
         macx: {
             QTC_SOURCE_DIR = /Users/$$(USER)/Downloads/Qt/qt-creator/
         }
     }
-    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.1.0-rc1-src/
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.1.0-src/
 }
 isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
@@ -32,25 +32,25 @@ isEmpty(QTC_BUILD_DIR) {
 }
 isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE = $$QTC_BUILD_DIR
 
-# You can define LIBSROOT as the root of qtcreator lib directory (i.e. LIBSROOT=/home/kofee/qtcreator-2.0.94/lib
+# You can define LIBSROOT as the root of qtcreator lib directory (i.e. LIBSROOT=/home/kofee/qtcreator-2.1.0/lib
 isEmpty(LIBSROOT) {
     unix: {
         !macx: {
-            LIBS += -L/home/kofee/qtcreator-2.0.94/lib/qtcreator \
-            -L/home/kofee/qtcreator-2.0.94/lib/qtcreator/plugins/Nokia \
-            -L/home/kofee/qtcreator-2.0.94/lib
+            LIBS += -L/home/$$(USER)/qtcreator-2.1.0/lib/qtcreator \
+            -L/home/$$(USER)/qtcreator-2.1.0/lib/qtcreator/plugins/Nokia \
+            -L/home/$$(USER)/qtcreator-2.1.0/lib
         }
         macx: {
             LIBS += -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/src/libs \
             -L/Users/$$(USER)/Downloads/Qt/qtcreatorbuild/bin/QtCreator.app/Contents/PlugIns/Nokia/ \
-            -L/usr/local/Trolltech/Qt-4.7.0/lib
+            -L/usr/local/Trolltech/Qt-4.7.1/lib
         }
     }
-    win32:LIBS += -LC:/Qt/qtcreator-2.0.94/bin \
-        -LC:/Qt/qtcreator-2.0.94/lib/qtcreator/plugins/Nokia/ \
-        -LC:/Qt/qtcreator-2.0.94/lib/qtcreator/ \
-        -LC:/Qt/qt-creator-2.1.0-rc1-src/lib/qtcreator \
-        -LC:/Qt/qt-creator-2.1.0-rc1-src/lib/qtcreator/plugins/Nokia
+    win32:LIBS += -LC:/Qt/qtcreator-2.1.0/bin \
+        -LC:/Qt/qtcreator-2.1.0/lib/qtcreator/plugins/Nokia/ \
+        -LC:/Qt/qtcreator-2.1.0/lib/qtcreator/ \
+        -LC:/Qt/qt-creator-2.1.0-src/lib/qtcreator \
+        -LC:/Qt/qt-creator-2.1.0-src/lib/qtcreator/plugins/Nokia
 } else {
     LIBS += -L$$LIBSROOT \
     -L$$LIBSROOT/qtcreator \
