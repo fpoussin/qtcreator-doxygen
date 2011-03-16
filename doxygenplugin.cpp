@@ -171,44 +171,13 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
     Core::IEditor *editor = editorManager->currentEditor();
 
     // prevent a crash if user launches this command with no editor opened
-    if(!editor) return false;
+    if(!editor)
+        return false;
 
-    // Catch hold of the plugin-manager
-    ExtensionSystem::PluginManager* pm
-            = ExtensionSystem::PluginManager::instance();
-    // Look for the ProjectExplorerPlugin object
-    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
-            = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    // Fetch a list of all open projects
-    QList<ProjectExplorer::Project*> projects
-            = projectExplorerPlugin->session()->projects();
-
-    // Project root directory
-    QString projectRoot;
-    // TODO really check if it's smart, and if it is, refactor.
-    // Attempt to find our project
-    Q_FOREACH(ProjectExplorer::Project* project, projects)
-    {
-        QStringList files = project->files(ProjectExplorer::Project::ExcludeGeneratedFiles); // ProjectExplorer::Project::FilesMode::ExcludeGeneratedFiles
-        // is it our project ?
-        if(files.contains(editor->file()->fileName()))
-        {
-            // YES! get the .pro and remove the directory part from our filename
-            // TODO, check if it is smart... (it's not really.)
-            Q_FOREACH(QString f, files)
-            {
-                if(f.contains(QRegExp(".pro$")))
-                {
-                    projectRoot = f.section('/', 0, -2);
-                    if(projectRoot.size()) projectRoot.append("/");
-                    continue;
-                }
-            }
-            if(projectRoot.size()) continue;
-        }
-    }
+    QString projectRoot = Doxygen::getProjectRoot(editor);
     if(!projectRoot.size())
         return false;
+
     QString doxyFile = projectRoot;
     doxyFile += "Doxyfile"; // TODO, let the user configure this
     QStringList args;
@@ -235,42 +204,10 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     Core::IEditor *editor = editorManager->currentEditor();
 
     // prevent a crash if user launches this command with no editor opened
-    if(!editor) return;
+    if(!editor)
+        return;
 
-    // Catch hold of the plugin-manager
-    ExtensionSystem::PluginManager* pm
-            = ExtensionSystem::PluginManager::instance();
-    // Look for the ProjectExplorerPlugin object
-    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
-            = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    // Fetch a list of all open projects
-    QList<ProjectExplorer::Project*> projects
-            = projectExplorerPlugin->session()->projects();
-
-    // Project root directory
-    QString projectRoot;
-    // TODO really check if it's smart, and if it is, refactor.
-    // Attempt to find our project
-    Q_FOREACH(ProjectExplorer::Project* project, projects)
-    {
-        QStringList files = project->files(ProjectExplorer::Project::ExcludeGeneratedFiles); // ProjectExplorer::Project::FilesMode::ExcludeGeneratedFiles
-        // is it our project ?
-        if(files.contains(editor->file()->fileName()))
-        {
-            // YES! get the .pro and remove the directory part from our filename
-            // TODO, check if it is smart... (it's not really.)
-            Q_FOREACH(QString f, files)
-            {
-                if(f.contains(QRegExp(".pro$")))
-                {
-                    projectRoot = f.section('/', 0, -2);
-                    if(projectRoot.size()) projectRoot.append("/");
-                    continue;
-                }
-            }
-            if(projectRoot.size()) continue;
-        }
-    }
+    QString projectRoot = Doxygen::getProjectRoot(editor);
     if(!projectRoot.size())
         return;
 

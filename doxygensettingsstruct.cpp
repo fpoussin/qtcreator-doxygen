@@ -31,7 +31,13 @@ static const char *styleKeyC = "Style";
 static const char *printBriefKeyC = "PrintBrief";
 static const char *printShortVarDocKeyC = "PrintShortVarDoc";
 static const char *verbosePrintingKeyC = "VerbosePrinting";
-
+static const char *customBeginKeyC = "CustomBegin";
+static const char *customBriefKeyC= "CustomBrief";
+static const char *customEmptyLineKeyC= "CustomEmptyLine";
+static const char *customNewLineKeyC= "CustomNewLine";
+static const char *customEndingKeyC= "CustomEnding";
+static const char *customShortDocKeyC= "CustomShortDoc";
+static const char *customShortDocEndKeyC= "CustomShortDocEnd";
 
 static QString defaultCommand()
 {
@@ -52,12 +58,12 @@ static QString defaultWizardCommand()
 }
 
 DoxygenSettingsStruct::DoxygenSettingsStruct() :
-        doxygenCommand(defaultCommand()),
-        doxywizardCommand(defaultWizardCommand()),
-        style(javaDoc),
-        printBrief(true),
-        shortVarDoc(true),
-        verbosePrinting(false)
+    doxygenCommand(defaultCommand()),
+    doxywizardCommand(defaultWizardCommand()),
+    style(qtDoc),
+    printBrief(true),
+    shortVarDoc(true),
+    verbosePrinting(false)
 {
 }
 
@@ -70,9 +76,16 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
     shortVarDoc = settings->value(QLatin1String(printShortVarDocKeyC), 1).toBool();
     verbosePrinting = settings->value(QLatin1String(verbosePrintingKeyC), 0).toBool();
+    customBegin = settings->value(QLatin1String(customBeginKeyC), "").toString();
+    customBrief = settings->value(QLatin1String(customBriefKeyC), "").toString();
+    customEmptyLine = settings->value(QLatin1String(customEmptyLineKeyC), "").toString();
+    customNewLine = settings->value(QLatin1String(customNewLineKeyC), "").toString();
+    customEnding = settings->value(QLatin1String(customEndingKeyC), "").toString();
+    customShortDoc = settings->value(QLatin1String(customShortDocKeyC), "").toString();
+    customShortDocEnd = settings->value(QLatin1String(customShortDocEndKeyC), "").toString();
     settings->endGroup();
 
-    // Support both java and qt styles
+    // Support java, qt and custom styles
     setDoxygenCommentStyle(style);
 }
 
@@ -85,9 +98,16 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
     settings->setValue(QLatin1String(printBriefKeyC), printBrief);
     settings->setValue(QLatin1String(printShortVarDocKeyC), shortVarDoc);
     settings->setValue(QLatin1String(verbosePrintingKeyC), verbosePrinting);
+    settings->setValue(QLatin1String(customBeginKeyC),customBegin );
+    settings->setValue(QLatin1String(customBriefKeyC), customBrief);
+    settings->setValue(QLatin1String(customEmptyLineKeyC), customEmptyLine);
+    settings->setValue(QLatin1String(customNewLineKeyC), customNewLine);
+    settings->setValue(QLatin1String(customEndingKeyC), customEnding);
+    settings->setValue(QLatin1String(customShortDocKeyC), customShortDoc);
+    settings->setValue(QLatin1String(customShortDocEndKeyC), customShortDocEnd);
     settings->endGroup();
 
-    // Support both java and qt styles
+    // Support java, qt and custom styles
     setDoxygenCommentStyle(style);
 }
 
@@ -100,7 +120,14 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
             && style               == s.style
             && printBrief          == s.printBrief
             && shortVarDoc         == s.shortVarDoc
-            && verbosePrinting     == s.verbosePrinting;
+            && verbosePrinting     == s.verbosePrinting
+            && customBegin         == s.customBegin
+            && customBrief         == s.customBrief
+            && customEmptyLine     == s.customEmptyLine
+            && customNewLine       == s.customNewLine
+            && customEnding        == s.customEnding
+            && customShortDoc      == s.customShortDoc
+            && customShortDocEnd   == s.customShortDocEnd;
 }
 
 QStringList DoxygenSettingsStruct::addOptions(const QStringList &args) const
@@ -136,9 +163,11 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
         DoxyComment.doxNewLine              = " * @";
         DoxyComment.doxEnding               = "*/\n";
         DoxyComment.doxShortVarDoc          = " /**< ";
+        DoxyComment.doxShortVarDocEnd       = " */";
+
 
     }
-    else // qt
+    else if(s == 1) // qt
     {
         DoxyComment.doxBegin                = "/*!\n";
         DoxyComment.doxBrief                = " \\brief \n";
@@ -146,6 +175,17 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
         DoxyComment.doxNewLine              = " \\";
         DoxyComment.doxEnding               = "*/\n";
         DoxyComment.doxShortVarDoc          = " /*!< ";
+        DoxyComment.doxShortVarDocEnd       = " */";
 
+    }
+    else if(s == 2) // Custom tags
+    {
+        DoxyComment.doxBegin                = customBegin;
+        DoxyComment.doxBrief                = customBrief;
+        DoxyComment.doxEmptyLine            = customEmptyLine;
+        DoxyComment.doxNewLine              = customNewLine;
+        DoxyComment.doxEnding               = customEnding;
+        DoxyComment.doxShortVarDoc          = customShortDoc;
+        DoxyComment.doxShortVarDocEnd       = customShortDocEnd;
     }
 }

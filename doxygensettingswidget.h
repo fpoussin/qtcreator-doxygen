@@ -46,6 +46,9 @@ protected:
 
 private:
     Ui::DoxygenSettingsWidget *ui;
+
+private slots:
+    void updateCustomWidgetPart(int index);
 };
 
 #endif // DOXYGENSETTINGSWIDGET_H

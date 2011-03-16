@@ -23,6 +23,8 @@
 #include <shared/cplusplus/Symbols.h>
 
 #include "doxygensettingsstruct.h"
+#include <plugins/coreplugin/icore.h>
+#include <plugins/coreplugin/editormanager/ieditor.h>
 
 namespace DoxyPlugin {
 namespace Internal {
@@ -31,9 +33,8 @@ class Doxygen
 {
 public:
     static Doxygen* instance();
-
+    static QString getProjectRoot(Core::IEditor* editor);
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
-
     void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
     void documentFile(const DoxygenSettingsStruct &DoxySettings);
 

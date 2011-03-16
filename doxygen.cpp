@@ -121,58 +121,28 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     Core::IEditor *editor = editorManager->currentEditor();
 
     // before continuing, test if the editor is actually showing a file.
-    if(!editor) return;
+    if(!editor)
+        return;
 
     // get the widget for later.
     TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
-            editorManager->currentEditor()->widget());
+                editorManager->currentEditor()->widget());
 
-    // TODO, only do that if class and verbosePrinting
-    // Catch hold of the plugin-manager
-    ExtensionSystem::PluginManager* pm
-            = ExtensionSystem::PluginManager::instance();
-    // Look for the ProjectExplorerPlugin object
-    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
-            = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    // Fetch a list of all open projects
-    QList<ProjectExplorer::Project*> projects
-            = projectExplorerPlugin->session()->projects();
-    // Project root directory
-    QString projectRoot;
-
-    // Attempt to find our project
-    Q_FOREACH(ProjectExplorer::Project* project, projects)
-    {
-        QStringList files = project->files(Project::ExcludeGeneratedFiles); // ProjectExplorer::Project::FilesMode::ExcludeGeneratedFiles
-        // is it our project ?
-        if(files.contains(editor->file()->fileName()))
-        {
-            // YES! get the .pro and remove the directory part from our filename
-            // TODO, check if it is smart... (it's not really.)
-            Q_FOREACH(QString f, files)
-            {
-                if(f.contains(QRegExp(".pro$")))
-                {
-                    projectRoot = f.section('/', 0, -2);
-                    if(projectRoot.size()) projectRoot.append("/");
-                    continue;
-                }
-            }
-            if(projectRoot.size()) continue;
-        }
-    }
-
-    // FIXME, this poutine isn't that digest.
-    // "unroll" the process
+    // get our symbol
     Symbol *lastSymbol = currentSymbol(editor);
-    if(lastSymbol->line() != static_cast<unsigned>(editor->currentLine()))
-        editorWidget->moveCursor(QTextCursor::StartOfLine);
-    while(lastSymbol->line() != static_cast<unsigned>(editor->currentLine()) && lastSymbol)
+    editorWidget->moveCursor(QTextCursor::StartOfLine);
+    int lastLine = editor->currentLine();
+    int lastColumn = editor->currentColumn();
+    while(lastSymbol->line() != static_cast<unsigned>(lastLine) && lastSymbol)
     {
         editorWidget->moveCursor(QTextCursor::NextWord);
+        // infinite loop prevention
+        if(editor->currentLine() == lastLine && editor->currentColumn() == lastColumn)
+            return;
         lastSymbol = currentSymbol(editor);
     }
-    if (!lastSymbol /*|| !lastSymbol->asScope()*/)
+
+    if (!lastSymbol)
         return;
 
     QStringList scopes = scopesForSymbol(lastSymbol);
@@ -214,6 +184,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         }
         if(DoxySettings.verbosePrinting)
         {
+            QString projectRoot = getProjectRoot(editor);
             QString fileName = editor->file()->fileName().remove(0, editor->file()->fileName().lastIndexOf("/") + 1);
             QString fileNameProj = editor->file()->fileName().remove(projectRoot);
             docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"\n";
@@ -266,7 +237,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             if(DoxySettings.shortVarDoc)
             {
                 printAtEnd = true;
-                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO */";
+                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO" + DoxySettings.DoxyComment.doxShortVarDocEnd;
             }
             else
             {
@@ -315,7 +286,10 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             arglist = overview.prettyType(lastSymbol->type(), name);
 
             // FIXME this check is just insane...
-            if( arglist.contains(' ') && (((overview.prettyName(name) != scopes.front()) && (overview.prettyName(name).at(0) != '~')) || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
+            if( arglist.contains(' ')
+                && (((overview.prettyName(name) != scopes.front())
+                && (overview.prettyName(name).at(0) != '~'))
+                || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
             {
                 QRegExp rx("void *");
                 rx.setPatternSyntax(QRegExp::Wildcard);
@@ -352,9 +326,9 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &s
     if(!symbol || symbol->isBaseClass() || symbol->isGenerated())
         return;
     if(symbol->isArgument()
-        || symbol->isFunction()
-        || symbol->isDeclaration()
-        || symbol->isEnum())
+            || symbol->isFunction()
+            || symbol->isDeclaration()
+            || symbol->isEnum())
     {
         symmap.append(symbol);
         return;
@@ -421,7 +395,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     }
 
     TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
-            editorManager->currentEditor()->widget());
+                editorManager->currentEditor()->widget());
 
     if (editorWidget)
     {
@@ -433,5 +407,45 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
             createDocumentation(DoxySettings);
         }
     }
+}
+
+QString Doxygen::getProjectRoot(Core::IEditor* editor)
+{
+    // TODO, only do that if class and verbosePrinting
+    // Catch hold of the plugin-manager
+    ExtensionSystem::PluginManager* pm
+            = ExtensionSystem::PluginManager::instance();
+    // Look for the ProjectExplorerPlugin object
+    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
+            = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
+    // Fetch a list of all open projects
+    QList<ProjectExplorer::Project*> projects
+            = projectExplorerPlugin->session()->projects();
+    // Project root directory
+    QString projectRoot;
+
+    // Attempt to find our project
+    Q_FOREACH(ProjectExplorer::Project* project, projects)
+    {
+        QStringList files = project->files(Project::ExcludeGeneratedFiles);
+        // is it our project ?
+        if(files.contains(editor->file()->fileName()))
+        {
+            // YES! get the .pro and remove the directory part from our filename
+            // TODO, check if it is smart... (it's not really.)
+            Q_FOREACH(QString f, files)
+            {
+                if(f.contains(QRegExp(".pro$")))
+                {
+                    projectRoot = f.section('/', 0, -2);
+                    if(projectRoot.size()) projectRoot.append("/");
+                    continue;
+                }
+            }
+            if(projectRoot.size())
+                continue;
+        }
+    }
+   return projectRoot;
 }
 

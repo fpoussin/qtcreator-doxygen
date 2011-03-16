@@ -50,7 +50,16 @@ struct DoxygenSettingsStruct
     bool shortVarDoc;
     bool verbosePrinting;
 
-    // Support both javadoc and Qt style documentation
+    // Custom style
+    QString customBegin;
+    QString customBrief;
+    QString customEmptyLine;
+    QString customNewLine;
+    QString customEnding;
+    QString customShortDoc;
+    QString customShortDocEnd;
+
+    // Support javadoc, Qt & custom style documentation
     struct DoxygenComment
     {
         QString doxBegin; //               = "/**\n";
@@ -59,6 +68,7 @@ struct DoxygenSettingsStruct
         QString doxNewLine;//              " " * @";
         QString doxEnding;//               = " */";
         QString doxShortVarDoc;
+        QString doxShortVarDocEnd;
     } DoxyComment;
     void setDoxygenCommentStyle(const int s);
 };
