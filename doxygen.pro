@@ -8,8 +8,8 @@ macx: {
     CONFIG += x86 x86_64
 
     # After compilation:
-    #install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore /Applications/Qt\ Creator.app/C$
-    #install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGuiframework/Versions/4/QtGui /Applications/Qt\ Creator.app/Conten$
+    #install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
+    #install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
 }
 
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
