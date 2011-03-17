@@ -127,21 +127,26 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     // get the widget for later.
     TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
                 editorManager->currentEditor()->widget());
-
     // get our symbol
     Symbol *lastSymbol = currentSymbol(editor);
     editorWidget->moveCursor(QTextCursor::StartOfLine);
     int lastLine = editor->currentLine();
     int lastColumn = editor->currentColumn();
-    while(lastSymbol->line() != static_cast<unsigned>(lastLine) && lastSymbol)
+    while(lastSymbol
+          && (lastSymbol->line() != static_cast<unsigned>(lastLine)
+          || lastSymbol->column() != static_cast<unsigned>(lastColumn)))
     {
+        //qDebug() << lastSymbol->line() << " " << lastSymbol->column();
+        //qDebug() << lastLine << " " << lastColumn;
         editorWidget->moveCursor(QTextCursor::NextWord);
         // infinite loop prevention
-        if(editor->currentLine() == lastLine && editor->currentColumn() == lastColumn)
+        if(lastLine == editor->currentLine() && lastColumn == editor->currentColumn())
             return;
+        lastLine = editor->currentLine();
+        lastColumn = editor->currentColumn();
         lastSymbol = currentSymbol(editor);
     }
-
+    //qDebug() << lastLine << " " << lastColumn;
     if (!lastSymbol)
         return;
 
@@ -154,6 +159,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     overview.setShowFunctionSignatures(true);
     const Name *name = lastSymbol->name();
     scopes.append(overview.prettyName(name));
+    //qDebug() << overview.prettyName(name);
+    //qDebug() << overview.prettyType(lastSymbol->type(), name);
+    //qDebug() << scopes;
 
     QString docToWrite;
     // Do we print a short documentation block at end of line?
@@ -223,7 +231,6 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         overview.setShowFunctionSignatures(true);
 
         QString arglist = overview.prettyType(lastSymbol->type(), name);
-
         docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
         if(DoxySettings.printBrief)
         {

@@ -1,4 +1,4 @@
-<plugin name="Doxygen" version="0.3.0" compatVersion="2.1.0">
+<plugin name="Doxygen" version="0.3.1" compatVersion="2.1.0">
     <vendor>Kofee</vendor>
     <copyright>(C) 2009-2011 Kevin Tanguy (kofee@kofee.org)</copyright>
     <license>
