@@ -441,7 +441,7 @@ QString Doxygen::getProjectRoot(Core::IEditor* editor)
             projectRoot = project->projectDirectory();
             if(projectRoot.size())
                 projectRoot.append("/");
-            continue;
+            break;
         }
     }
    return projectRoot;
