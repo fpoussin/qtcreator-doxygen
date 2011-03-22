@@ -438,19 +438,9 @@ QString Doxygen::getProjectRoot(Core::IEditor* editor)
         // is it our project ?
         if(files.contains(editor->file()->fileName()))
         {
-            // YES! get the .pro and remove the directory part from our filename
-            // TODO, check if it is smart... (it's not really.)
-            Q_FOREACH(QString f, files)
-            {
-                if(f.contains(QRegExp(".pro$")))
-                {
-                    projectRoot = f.section('/', 0, -2);
-                    if(projectRoot.size()) projectRoot.append("/");
-                    continue;
-                }
-            }
+            projectRoot = project->projectDirectory();
             if(projectRoot.size())
-                continue;
+                projectRoot.append("/");
         }
     }
    return projectRoot;

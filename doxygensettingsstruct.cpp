@@ -161,7 +161,7 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
         DoxyComment.doxBrief                = " * @brief \n";
         DoxyComment.doxEmptyLine            = " *\n";
         DoxyComment.doxNewLine              = " * @";
-        DoxyComment.doxEnding               = "*/\n";
+        DoxyComment.doxEnding               = " */\n";
         DoxyComment.doxShortVarDoc          = " /**< ";
         DoxyComment.doxShortVarDocEnd       = " */";
 
