@@ -44,9 +44,19 @@ isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE = $$QTC_BUILD_DIR
 isEmpty(LIBSROOT) {
     unix: {
         !macx: {
-            LIBS += -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator \
-            -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/Nokia \
-            -L/home/$$(USER)/QtSDK/QtCreator/lib
+            linux-g++ {
+                LIBS += -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator \
+                -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/Nokia \
+                -L/home/$$(USER)/QtSDK/QtCreator/lib
+            } else {
+                LIBS += -L/home/$$(USER)/qtcreator-2.1.0/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.1.0/lib/qtcreator/plugins/Nokia \
+                -L/home/$$(USER)/qtcreator-2.1.0/lib
+                # I'm cross compiling with a 64-bit qmake and linking to 32 bits binaries
+                # so the plugin buildkey is screwed ... have to modify:
+                # /usr/include/qt4/QtCore/qconfig.h because #define QT_BUILD_KEY is not
+                # checked with #ifndef, bugger.
+            }
         }
         macx: {
             LIBS = -L"/Applications/Qt\ Creator.app/Contents/PlugIns" \
