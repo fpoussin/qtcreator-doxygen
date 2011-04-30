@@ -25,6 +25,7 @@
 #include <plugins/coreplugin/icore.h>
 #include <libs/utils/qtcassert.h>
 #include <QtCore/QCoreApplication>
+#include <QIcon>
 
 namespace DoxyPlugin {
 

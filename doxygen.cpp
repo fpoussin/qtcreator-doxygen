@@ -24,7 +24,7 @@
 #include <QObject>
 #include <plugins/cppeditor/cppeditorconstants.h>
 #include <plugins/cpptools/cpptoolsconstants.h>
-#include <plugins/cpptools/cppmodelmanagerinterface.h>
+#include <plugins/cpptools/cppmodelmanager.h>
 #include <plugins/texteditor/basetexteditor.h>
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
@@ -100,8 +100,8 @@ QStringList scopesForSymbol(const Symbol* symbol)
 
 Symbol* currentSymbol(Core::IEditor *editor)
 {
-    CppTools::CppModelManagerInterface *modelManager =
-            ExtensionSystem::PluginManager::instance()->getObject<CppTools::CppModelManagerInterface>();
+    CPlusPlus::CppModelManagerInterface *modelManager =
+            ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if (!modelManager)
         return 0;
 
@@ -125,11 +125,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         return;
 
     // get the widget for later.
-    TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
+    TextEditor::BaseTextEditorWidget *editorWidget = qobject_cast<TextEditor::BaseTextEditorWidget*>(
                 editorManager->currentEditor()->widget());
     // get our symbol
     Symbol *lastSymbol = currentSymbol(editor);
-    editorWidget->moveCursor(QTextCursor::StartOfLine);
+    editorWidget->gotoLineStart();
     int lastLine = editor->currentLine();
     int lastColumn = editor->currentColumn();
     while(lastSymbol
@@ -138,7 +138,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     {
         //qDebug() << lastSymbol->line() << " " << lastSymbol->column();
         //qDebug() << lastLine << " " << lastColumn;
-        editorWidget->moveCursor(QTextCursor::NextWord);
+        editorWidget->gotoNextWord();
         // infinite loop prevention
         if(lastLine == editor->currentLine() && lastColumn == editor->currentColumn())
             return;
@@ -168,8 +168,10 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     bool printAtEnd = false;
 
     // Get current indentation as per bug #5
+    // TODO rewrite, 2 gotos isn't pretty.
     QString indent;
-    editorWidget->moveCursor(QTextCursor::StartOfLine);
+    editorWidget->gotoLineStart();
+    editorWidget->gotoLineStart();
     editorWidget->gotoLineEndWithSelection();
     QString currentText = editorWidget->textCursor().selectedText();
     QStringList textList = currentText.split(QRegExp("\\b"));
@@ -332,6 +334,7 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &s
 {
     if(!symbol || symbol->isBaseClass() || symbol->isGenerated())
         return;
+
     if(symbol->isArgument()
             || symbol->isFunction()
             || symbol->isDeclaration()
@@ -363,28 +366,43 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
 
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
+    {
+        qDebug() << "No editor";
         return;
+    }
 
-    CppTools::CppModelManagerInterface *modelManager =
-            ExtensionSystem::PluginManager::instance()->getObject<CppTools::CppModelManagerInterface>();
+    CPlusPlus::CppModelManagerInterface *modelManager =
+            ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if(!modelManager)
+    {
+        qDebug() << "No modelManager";
         return;
+    }
 
     const Snapshot snapshot = modelManager->snapshot();
     Document::Ptr doc = snapshot.document(editor->file()->fileName());
     if(!doc)
+    {
+        qDebug() << "No document";
         return;
+    }
 
     // TODO : check
     int globalSymbols = doc->globalSymbolCount();
     if(!globalSymbols)
+    {
+        qDebug() << "No global symbols";
         return;
+    }
 
 
     // check that as well...
     Scope* scope = doc->scopeAt(0,0);
     if(!scope)
+    {
+        qDebug() << "No scope";
         return;
+    }
 
     unsigned symbolcount = scope->memberCount();
 
@@ -401,7 +419,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         oldline = sym->line();
     }
 
-    TextEditor::BaseTextEditor *editorWidget = qobject_cast<TextEditor::BaseTextEditor*>(
+    TextEditor::BaseTextEditorWidget *editorWidget = qobject_cast<TextEditor::BaseTextEditorWidget*>(
                 editorManager->currentEditor()->widget());
 
     if (editorWidget)
