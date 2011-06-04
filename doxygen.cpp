@@ -134,7 +134,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     int lastColumn = editor->currentColumn();
     while(lastSymbol
           && (lastSymbol->line() != static_cast<unsigned>(lastLine)
-          || lastSymbol->column() != static_cast<unsigned>(lastColumn)))
+              || lastSymbol->column() != static_cast<unsigned>(lastColumn)))
     {
         //qDebug() << lastSymbol->line() << " " << lastSymbol->column();
         //qDebug() << lastLine << " " << lastColumn;
@@ -270,11 +270,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             // Do it the naive way first before finding better in the API
             arglist.remove(0, arglist.indexOf("(") + 1);
             arglist.remove(arglist.lastIndexOf(")"), arglist.size() - arglist.lastIndexOf(")"));
-            int indexfrom, indexto;
-            while( ((indexfrom = arglist.indexOf('<'))!= -1) && ((indexto = arglist.indexOf('>')) != -1) )
-            {
-                arglist.remove(indexfrom, indexto - indexfrom + 1);
-            }
+
             QStringList args = arglist.trimmed().split(',', QString::SkipEmptyParts);
 
             Q_FOREACH(QString singleArg, args)
@@ -296,9 +292,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
             // FIXME this check is just insane...
             if( arglist.contains(' ')
-                && (((overview.prettyName(name) != scopes.front())
-                && (overview.prettyName(name).at(0) != '~'))
-                || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
+                    && (((overview.prettyName(name) != scopes.front())
+                         && (overview.prettyName(name).at(0) != '~'))
+                        || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
             {
                 QRegExp rx("void *");
                 rx.setPatternSyntax(QRegExp::Wildcard);
@@ -462,6 +458,6 @@ QString Doxygen::getProjectRoot(Core::IEditor* editor)
             break;
         }
     }
-   return projectRoot;
+    return projectRoot;
 }
 
