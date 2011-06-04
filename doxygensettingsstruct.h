@@ -31,6 +31,11 @@ enum DoxygenStyle {
     qtDoc
 };
 
+enum Files2Comment {
+    headers,
+    implementations
+};
+
 struct DoxygenSettingsStruct
 {
     DoxygenSettingsStruct();
@@ -46,6 +51,7 @@ struct DoxygenSettingsStruct
     QString doxygenCommand;
     QString doxywizardCommand;
     unsigned int style;
+    unsigned int fcomment;
     bool printBrief;
     bool shortVarDoc;
     bool verbosePrinting;

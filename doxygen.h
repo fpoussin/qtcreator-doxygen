@@ -37,7 +37,7 @@ public:
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
     void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
     void documentFile(const DoxygenSettingsStruct &DoxySettings);
-
+    void documentProject(const DoxygenSettingsStruct &DoxySettings);
 
 private:
     Doxygen();

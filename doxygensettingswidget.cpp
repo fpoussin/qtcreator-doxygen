@@ -58,6 +58,7 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
     rc.doxygenCommand = ui->pathChooser_doxygen->path();
     rc.doxywizardCommand = ui->pathChooser_wizard->path();
     rc.style = ui->styleChooser->currentIndex();
+    rc.fcomment = ui->fcommentChooser->currentIndex();
     rc.printBrief = ui->printBriefTag->isChecked();
     rc.shortVarDoc = ui->shortVariableDocumentation->isChecked();
     rc.verbosePrinting = ui->verbosePrinting->isChecked();
@@ -76,6 +77,7 @@ void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
     ui->pathChooser_doxygen->setPath(s.doxygenCommand);
     ui->pathChooser_wizard->setPath(s.doxywizardCommand);
     ui->styleChooser->setCurrentIndex(s.style);
+    ui->fcommentChooser->setCurrentIndex(s.fcomment);
     ui->printBriefTag->setChecked(s.printBrief);
     ui->shortVariableDocumentation->setChecked(s.shortVarDoc);
     ui->verbosePrinting->setChecked(s.verbosePrinting);

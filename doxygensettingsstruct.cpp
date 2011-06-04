@@ -28,6 +28,7 @@ static const char *groupC = "Doxygen";
 static const char *commandKeyC = "Command";
 static const char *wizardcommandKeyC = "Wizard";
 static const char *styleKeyC = "Style";
+static const char *fcommentKeyC = "Files2Comment";
 static const char *printBriefKeyC = "PrintBrief";
 static const char *printShortVarDocKeyC = "PrintShortVarDoc";
 static const char *verbosePrintingKeyC = "VerbosePrinting";
@@ -61,6 +62,7 @@ DoxygenSettingsStruct::DoxygenSettingsStruct() :
     doxygenCommand(defaultCommand()),
     doxywizardCommand(defaultWizardCommand()),
     style(qtDoc),
+    fcomment(headers),
     printBrief(true),
     shortVarDoc(true),
     verbosePrinting(false)
@@ -73,6 +75,7 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
     doxygenCommand = settings->value(QLatin1String(commandKeyC), defaultCommand()).toString();
     doxywizardCommand = settings->value(QLatin1String(wizardcommandKeyC), defaultWizardCommand()).toString();
     style = settings->value(QLatin1String(styleKeyC), 0).toInt();
+    fcomment = settings->value(QLatin1String(fcommentKeyC), 0).toInt();
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
     shortVarDoc = settings->value(QLatin1String(printShortVarDocKeyC), 1).toBool();
     verbosePrinting = settings->value(QLatin1String(verbosePrintingKeyC), 0).toBool();
@@ -95,6 +98,7 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
     settings->setValue(QLatin1String(commandKeyC), doxygenCommand);
     settings->setValue(QLatin1String(wizardcommandKeyC), doxywizardCommand);
     settings->setValue(QLatin1String(styleKeyC), style);
+    settings->setValue(QLatin1String(fcommentKeyC), fcomment);
     settings->setValue(QLatin1String(printBriefKeyC), printBrief);
     settings->setValue(QLatin1String(printShortVarDocKeyC), shortVarDoc);
     settings->setValue(QLatin1String(verbosePrintingKeyC), verbosePrinting);
@@ -118,6 +122,7 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
             doxygenCommand         == s.doxygenCommand
             && doxywizardCommand   == s.doxywizardCommand
             && style               == s.style
+            && fcomment            == s.fcomment
             && printBrief          == s.printBrief
             && shortVarDoc         == s.shortVarDoc
             && verbosePrinting     == s.verbosePrinting

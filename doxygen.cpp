@@ -29,6 +29,7 @@
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
 #include <plugins/coreplugin/editormanager/editormanager.h>
+#include <plugins/coreplugin/editormanager/editorview.h>
 #include <plugins/projectexplorer/project.h>
 #include <plugins/projectexplorer/projectexplorer.h>
 #include <plugins/projectexplorer/session.h>
@@ -47,6 +48,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
+#include <QProgressDialog>
 
 using namespace CPlusPlus;
 using namespace ProjectExplorer;
@@ -428,6 +430,53 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
             createDocumentation(DoxySettings);
         }
     }
+}
+
+void Doxygen::documentProject(const DoxygenSettingsStruct &DoxySettings)
+{
+    ExtensionSystem::PluginManager* pm =
+            ExtensionSystem::PluginManager::instance();
+    Core::EditorManager *editorManager = Core::EditorManager::instance();
+    //Core::IEditor *editor = editorManager->currentEditor();
+    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin =
+            pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
+    ProjectExplorer::Project *p = projectExplorerPlugin->currentProject();
+    QStringList files = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
+    QProgressDialog progress("Processing files...", "Cancel", 0, files.size());
+    progress.setWindowModality(Qt::WindowModal);
+    for(int i = 0 ; i < files.size() ; ++i)
+    {
+        progress.setValue(i);
+        if(progress.wasCanceled()){
+            break;
+        }
+
+        bool go = false;
+
+        // FIXME (make it cleaner) is the file of the right kind
+        if(files[i].endsWith(".h") || files[i].endsWith(".hpp"))
+        {
+            if(DoxySettings.fcomment == headers)
+            {
+                go = true;
+            }
+        }
+        else if(files[i].endsWith(".c") || files[i].endsWith(".cpp"))
+        {
+            if(DoxySettings.fcomment == implementations)
+            {
+                go = true;
+            }
+        }
+
+        if(go)
+        {
+            Core::IEditor *editor = editorManager->openEditor(files[i]);
+            if(editor)
+                documentFile(DoxySettings);
+        }
+    }
+    progress.setValue(files.size());
 }
 
 QString Doxygen::getProjectRoot(Core::IEditor* editor)

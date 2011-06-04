@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>352</width>
-    <height>496</height>
+    <width>415</width>
+    <height>529</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -135,46 +135,67 @@
               </item>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QLabel" name="label_2">
               <property name="text">
                <string>Print brief tag:</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="2" column="1">
              <widget class="QCheckBox" name="printBriefTag">
               <property name="text">
                <string/>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
                <string>Verbose (fn, var, class file...): </string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="4" column="1">
              <widget class="QCheckBox" name="verbosePrinting">
               <property name="text">
                <string/>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="label_5">
               <property name="text">
                <string>Short Variable documentation: </string>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
+            <item row="3" column="1">
              <widget class="QCheckBox" name="shortVariableDocumentation">
               <property name="text">
                <string/>
               </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>Files to comment:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="fcommentChooser">
+              <item>
+               <property name="text">
+                <string>Headers</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Implementations</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>

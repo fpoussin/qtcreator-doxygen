@@ -63,6 +63,7 @@ static const char * const CMD_ID_DOXYGEN_MAINVIEW    = "Doxygen.MainView";
 static const char * const CMD_ID_DOXYGEN_MENU        = "Doxygen.Menu";
 static const char * const CMD_ID_CREATEDOCUMENTATION = "Doxygen.CreateDocumentation";
 static const char * const CMD_ID_DOCUMENTFILE        = "Doxygen.DocumentFile";
+static const char * const CMD_ID_DOCUMENTPROJECT     = "Doxygen.DocumentProject";
 static const char * const CMD_ID_BUILDDOCUMENTATION  = "Doxygen.BuildDocumentation";
 static const char * const CMD_ID_DOXYFILEWIZARD      = "Doxygen.RunWizard";
 
@@ -120,6 +121,14 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     connect(m_doxygenDocumentFileAction, SIGNAL(triggered()), this, SLOT(documentFile()));
     doxygenMenu->addAction(command);
 
+    // create documentation for a whole project
+    m_doxygenDocumentProjectAction = new QAction(tr("Document whole project"),  this);
+    command = am->registerAction(m_doxygenDocumentProjectAction, CMD_ID_DOCUMENTPROJECT, globalcontext);
+    command->setAttribute(Core::Command::CA_UpdateText);
+    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F7")));
+    connect(m_doxygenDocumentProjectAction, SIGNAL(triggered()), this, SLOT(documentProject()));
+    doxygenMenu->addAction(command);
+
     // "compile" documentation action
     m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"),  this);
     command = am->registerAction(m_doxygenBuildDocumentationAction, CMD_ID_BUILDDOCUMENTATION, globalcontext);
@@ -161,6 +170,11 @@ void DoxygenPlugin::createDocumentation()
 void DoxygenPlugin::documentFile()
 {
     Doxygen::instance()->documentFile(settings());
+}
+
+void DoxygenPlugin::documentProject()
+{
+    Doxygen::instance()->documentProject(settings());
 }
 
 bool DoxygenPlugin::buildDocumentation() // TODO: refactor
