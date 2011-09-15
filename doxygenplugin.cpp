@@ -39,7 +39,7 @@
 #include <plugins/projectexplorer/projectexplorer.h>
 #include <plugins/projectexplorer/session.h>
 #include <plugins/projectexplorer/projectexplorerconstants.h>
-#include <plugins/projectexplorer/outputwindow.h>
+//#include <plugins/projectexplorer/outputwindow.h>
 #include <libs/utils/qtcassert.h>
 #include <libs/utils/synchronousprocess.h>
 #include <libs/utils/parameteraction.h>

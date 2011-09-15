@@ -38,9 +38,13 @@
 #include <libs/cplusplus/Overview.h>
 
 #include <libs/extensionsystem/pluginmanager.h>
-#include <shared/cplusplus/Scope.h>
-#include <shared/cplusplus/Symbols.h>
-#include <shared/cplusplus/Names.h>
+//#include <shared/cplusplus/Scope.h>
+//#include <shared/cplusplus/Symbols.h>
+//#include <shared/cplusplus/Names.h>
+#include <Scope.h>
+#include <Symbols.h>
+#include <Names.h>
+
 #include <cplusplus/CppDocument.h>
 
 #include <QString>

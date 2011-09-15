@@ -20,8 +20,8 @@
 
 #ifndef DOXYGEN_H
 #define DOXYGEN_H
-#include <shared/cplusplus/Symbols.h>
-
+//#include <shared/cplusplus/Symbols.h>
+#include <Symbols.h>
 #include "doxygensettingsstruct.h"
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
