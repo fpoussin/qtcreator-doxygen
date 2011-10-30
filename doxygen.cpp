@@ -298,9 +298,8 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
             // FIXME this check is just insane...
             if( arglist.contains(' ')
-                    && (((overview.prettyName(name) != scopes.front())
-                         && (overview.prettyName(name).at(0) != '~'))
-                        || (lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))) )
+                    && ((lastSymbol->isFunction() && !overview.prettyName(name).contains("::~"))
+                        || (lastSymbol->isDeclaration() && overview.prettyName(name).at(0) != '~') ))
             {
                 QRegExp rx("void *");
                 rx.setPatternSyntax(QRegExp::Wildcard);

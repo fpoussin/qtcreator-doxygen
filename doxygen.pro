@@ -8,21 +8,21 @@ macx: {
     CONFIG += x86 x86_64
 
     # After compilation:
-    #install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
-    #install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
+    # install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
+    # install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
 }
 
 # Define QTC_SOURCE_DIR to the location of Qt Creator sources (i.e: ~/dev/qtcreator/qt-creator-src/)
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.3.0-src/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.3.1-src/
         }
         macx: {
-            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.3.0-src/
+            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.3.1-src/
         }
     }
-    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.2.0-src/
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.3.1-src/
 }
 isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
@@ -44,22 +44,26 @@ isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE = $$QTC_BUILD_DIR
 isEmpty(LIBSROOT) {
     unix: {
         !macx: {
-            linux-g++ {
+            linux-g++-64 {
                 #LIBS += -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/Nokia \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib
-                LIBS += -L/home/$$(USER)/qtcreator-2.3.0-x86/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.3.0-x86/lib/qtcreator/plugins/Nokia \
-                -L/home/$$(USER)/qtcreator-2.3.0-x86/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.3.1/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.3.1/lib/qtcreator/plugins/Nokia \
+                -L/home/$$(USER)/qtcreator-2.3.1/lib
 
             } else {
-                LIBS += -L/home/$$(USER)/qtcreator-2.3.0-x86/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.3.0-x86/lib/qtcreator/plugins/Nokia \
-                -L/home/$$(USER)/qtcreator-2.3.0-x86/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.3.1-x86/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.3.1-x86/lib/qtcreator/plugins/Nokia \
+                -L/home/$$(USER)/qtcreator-2.3.1-x86/lib
                 # I'm cross compiling with a 64-bit qmake and linking to 32 bits binaries
                 # so the plugin buildkey is screwed ... have to modify:
                 # /usr/include/qt4/QtCore/qconfig.h because #define QT_BUILD_KEY is not
                 # checked with #ifndef, bugger.
+                # //#define QT_BUILD_KEY "x86_64 linux g++-4 full-config"
+                # //#define QT_BUILD_KEY_COMPAT "x86_64 Linux g++-4 full-config"
+                # #define QT_BUILD_KEY "i386 linux g++-4 full-config"
+                # #define QT_BUILD_KEY_COMPAT "i386 linux g++-4 full-config"
             }
         }
         macx: {
@@ -69,11 +73,11 @@ isEmpty(LIBSROOT) {
             -L"/Applications/Qt\ Creator.app/Contents/Frameworks
         }
     }
-    win32:LIBS += -LC:/Qt/qtcreator-2.2.0/bin \
-        -LC:/Qt/qtcreator-2.2.0/lib/qtcreator/plugins/Nokia/ \
-        -LC:/Qt/qtcreator-2.2.0/lib/qtcreator/ \
-        -LC:/Qt/qt-creator-2.2.0-src/lib/qtcreator \
-        -LC:/Qt/qt-creator-2.2.0-src/lib/qtcreator/plugins/Nokia
+    win32:LIBS += -LC:/Qt/qtcreator-2.3.1/bin \
+        -LC:/Qt/qtcreator-2.3.1/lib/qtcreator/plugins/Nokia/ \
+        -LC:/Qt/qtcreator-2.3.1/lib/qtcreator/ \
+        -LC:/Qt/qt-creator-2.3.1-src/lib/qtcreator \
+        -LC:/Qt/qt-creator-2.3.1-src/lib/qtcreator/plugins/Nokia
 } else {
     LIBS += -L$$LIBSROOT \
     -L$$LIBSROOT/qtcreator \
@@ -89,8 +93,11 @@ include( $$IDE_SOURCE_TREE/src/plugins/cppeditor/cppeditor.pri )
 isEmpty(DEST) {
     unix: {
         !macx: {
-            #DESTDIR = /home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/$$PROVIDER
-            DESTDIR = /home/$$(USER)/qtcreator-2.3.0-x86/lib/qtcreator/plugins/$$PROVIDER
+            linux-g++-64 {
+                DESTDIR = /home/$$(USER)/qtcreator-2.3.1/lib/qtcreator/plugins/$$PROVIDER
+            } else {
+                DESTDIR = /home/$$(USER)/qtcreator-2.3.1-x86/lib/qtcreator/plugins/$$PROVIDER
+            }
         }
         macx: {
             DESTDIR = "/Applications/Qt\ Creator.app/Contents/PlugIns/Kofee"
@@ -137,4 +144,4 @@ message(IDE_SOURCE_TREE = $$IDE_SOURCE_TREE)
 message(QTC_BUILD_DIR = $$QTC_BUILD_DIR)
 message(IDE_BUILD_TREE = $$IDE_BUILD_TREE)
 message(DESTDIR = $$DESTDIR)
-message(Good luck with make... :-D)
+message(Good luck with make... drink a Pastis to celebrate rev. 51 :þ)
