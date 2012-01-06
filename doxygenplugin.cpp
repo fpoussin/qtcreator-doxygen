@@ -30,7 +30,6 @@
 #include <plugins/coreplugin/actionmanager/actionmanager.h>
 #include <plugins/coreplugin/actionmanager/actioncontainer.h>
 #include <plugins/coreplugin/actionmanager/command.h>
-#include <plugins/coreplugin/uniqueidmanager.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
 #include <plugins/coreplugin/editormanager/editormanager.h>
 #include <plugins/coreplugin/coreconstants.h>

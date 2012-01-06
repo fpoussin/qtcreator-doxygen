@@ -16,13 +16,13 @@ macx: {
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.3.1-src/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.4.0-src/
         }
         macx: {
-            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.3.1-src/
+            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.4.0-src/
         }
     }
-    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.3.1-src/
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.4.0-src/
 }
 isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
@@ -48,14 +48,14 @@ isEmpty(LIBSROOT) {
                 #LIBS += -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/Nokia \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib
-                LIBS += -L/home/$$(USER)/qtcreator-2.3.1/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.3.1/lib/qtcreator/plugins/Nokia \
-                -L/home/$$(USER)/qtcreator-2.3.1/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.4.0/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.4.0/lib/qtcreator/plugins/Nokia \
+                -L/home/$$(USER)/qtcreator-2.4.0/lib
 
             } else {
-                LIBS += -L/home/$$(USER)/qtcreator-2.3.1-x86/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.3.1-x86/lib/qtcreator/plugins/Nokia \
-                -L/home/$$(USER)/qtcreator-2.3.1-x86/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.4.0-x86/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.4.0-x86/lib/qtcreator/plugins/Nokia \
+                -L/home/$$(USER)/qtcreator-2.4.0-x86/lib
                 # I'm cross compiling with a 64-bit qmake and linking to 32 bits binaries
                 # so the plugin buildkey is screwed ... have to modify:
                 # /usr/include/qt4/QtCore/qconfig.h because #define QT_BUILD_KEY is not
@@ -73,11 +73,11 @@ isEmpty(LIBSROOT) {
             -L"/Applications/Qt\ Creator.app/Contents/Frameworks
         }
     }
-    win32:LIBS += -LC:/Qt/qtcreator-2.3.1/bin \
-        -LC:/Qt/qtcreator-2.3.1/lib/qtcreator/plugins/Nokia/ \
-        -LC:/Qt/qtcreator-2.3.1/lib/qtcreator/ \
-        -LC:/Qt/qt-creator-2.3.1-src/lib/qtcreator \
-        -LC:/Qt/qt-creator-2.3.1-src/lib/qtcreator/plugins/Nokia
+    win32:LIBS += -LC:/Qt/qtcreator-2.4.0/bin \
+        -LC:/Qt/qtcreator-2.4.0/lib/qtcreator/plugins/Nokia/ \
+        -LC:/Qt/qtcreator-2.4.0/lib/qtcreator/ \
+        -LC:/Qt/qt-creator-2.4.0-src/lib/qtcreator \
+        -LC:/Qt/qt-creator-2.4.0-src/lib/qtcreator/plugins/Nokia
 } else {
     LIBS += -L$$LIBSROOT \
     -L$$LIBSROOT/qtcreator \
@@ -94,9 +94,9 @@ isEmpty(DEST) {
     unix: {
         !macx: {
             linux-g++-64 {
-                DESTDIR = /home/$$(USER)/qtcreator-2.3.1/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-2.4.0/lib/qtcreator/plugins/$$PROVIDER
             } else {
-                DESTDIR = /home/$$(USER)/qtcreator-2.3.1-x86/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-2.4.0-x86/lib/qtcreator/plugins/$$PROVIDER
             }
         }
         macx: {
@@ -144,4 +144,4 @@ message(IDE_SOURCE_TREE = $$IDE_SOURCE_TREE)
 message(QTC_BUILD_DIR = $$QTC_BUILD_DIR)
 message(IDE_BUILD_TREE = $$IDE_BUILD_TREE)
 message(DESTDIR = $$DESTDIR)
-message(Good luck with make... drink a Pastis to celebrate rev. 51 :þ)
+message(Good luck with make...)
