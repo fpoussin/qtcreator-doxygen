@@ -109,12 +109,16 @@ Symbol* currentSymbol(Core::IEditor *editor)
     CPlusPlus::CppModelManagerInterface *modelManager =
             ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if (!modelManager)
+    {
         return 0;
+    }
 
     const Snapshot snapshot = modelManager->snapshot();
-    Document::Ptr doc = snapshot.document(editor->file()->fileName());
+    Document::Ptr doc = snapshot.document(editor->document()->fileName());
     if (!doc)
+    {
         return 0;
+    }
 
     Symbol* last = doc->lastVisibleSymbolAt(editor->currentLine(), editor->currentColumn());
     return last;
@@ -154,7 +158,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     }
     //qDebug() << lastLine << " " << lastColumn;
     if (!lastSymbol)
+    {
         return;
+    }
 
     QStringList scopes = scopesForSymbol(lastSymbol);
     Overview overview;
@@ -185,7 +191,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
     // quickfix when calling the method on "};" (end class) or "}" (end namespace)
     if(indent.contains(QRegExp("^\\};?")))
+    {
         return;
+    }
 
     if(indent.endsWith('~'))
         indent.chop(1);
@@ -201,8 +209,8 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         if(DoxySettings.verbosePrinting)
         {
             QString projectRoot = getProjectRoot(editor);
-            QString fileName = editor->file()->fileName().remove(0, editor->file()->fileName().lastIndexOf("/") + 1);
-            QString fileNameProj = editor->file()->fileName().remove(projectRoot);
+            QString fileName = editor->document()->fileName().remove(0, editor->document()->fileName().lastIndexOf("/") + 1);
+            QString fileNameProj = editor->document()->fileName().remove(projectRoot);
             docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"\n";
         }
         docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
@@ -381,7 +389,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     }
 
     const Snapshot snapshot = modelManager->snapshot();
-    Document::Ptr doc = snapshot.document(editor->file()->fileName());
+    Document::Ptr doc = snapshot.document(editor->document()->fileName());
     if(!doc)
     {
         qDebug() << "No document";
@@ -502,7 +510,7 @@ QString Doxygen::getProjectRoot(Core::IEditor* editor)
     {
         QStringList files = project->files(Project::ExcludeGeneratedFiles);
         // is it our project ?
-        if(files.contains(editor->file()->fileName()))
+        if(files.contains(editor->document()->fileName()))
         {
             projectRoot = project->projectDirectory();
             if(projectRoot.size())
