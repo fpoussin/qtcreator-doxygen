@@ -88,7 +88,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     m_doxygenPluginInstance = this;
 
     // settings dialog :)
-    m_settings = new DoxygenSettings(this);
+    m_settings = new DoxygenSettings();
     addAutoReleasedObject(m_settings);
 
     Core::ICore *core = Core::ICore::instance();
@@ -157,8 +157,8 @@ void DoxygenPlugin::shutdown()
 
 DoxygenPlugin* DoxygenPlugin::instance()
 {
-    QTC_ASSERT(m_doxygenPluginInstance, return m_doxygenPluginInstance)
-            return m_doxygenPluginInstance;
+    QTC_ASSERT(m_doxygenPluginInstance, return m_doxygenPluginInstance);
+    return m_doxygenPluginInstance;
 }
 
 void DoxygenPlugin::createDocumentation()

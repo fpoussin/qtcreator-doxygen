@@ -31,42 +31,47 @@ namespace DoxyPlugin {
 
 DoxygenSettings* DoxygenSettings::m_doxygenSettingsInstance = 0;
 
-DoxygenSettings::DoxygenSettings(QObject* parent) : IOptionsPage(parent)
+DoxygenSettings::DoxygenSettings()
 {
     m_doxygenSettingsInstance = this;
     if(QSettings *settings = Core::ICore::instance()->settings())
         m_settings.fromSettings(settings);
+    setId("A.General");
+    setDisplayName(tr("Doxygen"));
+    setCategory(QLatin1String(Constants::DOXYGEN_SETTINGS_CATEGORY));
+    setDisplayCategory("Doxygen");
+    setCategoryIcon(":/doxygen.png");
 }
 
 DoxygenSettings::~DoxygenSettings()
 {
 }
 
-// implementation of interface Core::IOptionsPage
-QString DoxygenSettings::id() const
-{
-    return QLatin1String("DoxygenPlugin");
-}
+//// implementation of interface Core::IOptionsPage
+//QString DoxygenSettings::setId() const
+//{
+//    return QLatin1String("A.General");
+//}
 
-QString DoxygenSettings::displayName() const
-{
-    return tr("Doxygen");
-}
+//QString DoxygenSettings::setDisplayName() const
+//{
+//    return tr("Doxygen");
+//}
 
-QString DoxygenSettings::category() const
-{
-    return QLatin1String(Constants::DOXYGEN_SETTINGS_CATEGORY);
-}
+//QString DoxygenSettings::setCategory() const
+//{
+//    return QLatin1String(Constants::DOXYGEN_SETTINGS_CATEGORY);
+//}
 
-QString DoxygenSettings::displayCategory() const
-{
-    return QCoreApplication::translate("Doxygen", Constants::DOXYGEN_SETTINGS_TR_CATEGORY);
-}
+//QString DoxygenSettings::setDisplayCategory() const
+//{
+//    return "Doxygen";
+//}
 
-QIcon DoxygenSettings::categoryIcon() const
-{
-    return QIcon(":/doxygen.png");
-}
+//QIcon DoxygenSettings::setCategoryIcon() const
+//{
+//    return ":/doxygen.png";
+//}
 
 QWidget* DoxygenSettings::createPage(QWidget *parent)
 {
@@ -102,7 +107,7 @@ void DoxygenSettings::setSettings(const DoxygenSettingsStruct &s)
 
 DoxygenSettings* DoxygenSettings::instance()
 {
-    QTC_ASSERT(m_doxygenSettingsInstance, return m_doxygenSettingsInstance)
+    QTC_ASSERT(m_doxygenSettingsInstance, return m_doxygenSettingsInstance);
     return m_doxygenSettingsInstance;
 }
 }
