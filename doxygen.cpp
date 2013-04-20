@@ -82,8 +82,8 @@ QStringList scopesForSymbol(const Symbol* symbol)
     {
         const Name *name = symbol->name();
         Overview overview;
-        overview.setShowArgumentNames(false);
-        overview.setShowReturnTypes(false);
+        overview.showArgumentNames = false;
+        overview.showReturnTypes = false;
         scopes.prepend(overview.prettyName(name));
         return scopes;
     }
@@ -96,8 +96,8 @@ QStringList scopesForSymbol(const Symbol* symbol)
         {
             const Name *name = owner->name();
             Overview overview;
-            overview.setShowArgumentNames(false);
-            overview.setShowReturnTypes(false);
+            overview.showArgumentNames = false;
+            overview.showReturnTypes = false;
             scopes.prepend(overview.prettyName(name));
         }
     }
@@ -106,8 +106,7 @@ QStringList scopesForSymbol(const Symbol* symbol)
 
 Symbol* currentSymbol(Core::IEditor *editor)
 {
-    CPlusPlus::CppModelManagerInterface *modelManager =
-            ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
+    CPlusPlus::CppModelManagerInterface *modelManager = CPlusPlus::CppModelManagerInterface::instance();
     if (!modelManager)
     {
         return 0;
@@ -146,8 +145,8 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
           && (lastSymbol->line() != static_cast<unsigned>(lastLine)
               || lastSymbol->column() != static_cast<unsigned>(lastColumn)))
     {
-        //qDebug() << lastSymbol->line() << " " << lastSymbol->column();
-        //qDebug() << lastLine << " " << lastColumn;
+        //qDebug() << "lastSymbol: " << lastSymbol->line() << " " << lastSymbol->column();
+        //qDebug() << "lastLine: " << lastLine << " " << lastColumn;
         editorWidget->gotoNextWord();
         // infinite loop prevention
         if(lastLine == editor->currentLine() && lastColumn == editor->currentColumn())
@@ -164,11 +163,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 
     QStringList scopes = scopesForSymbol(lastSymbol);
     Overview overview;
-    overview.setShowArgumentNames(true);
-    overview.setShowDefaultArguments(false);
-    overview.setShowTemplateParameters(false);
-    overview.setShowReturnTypes(true);
-    overview.setShowFunctionSignatures(true);
+    overview.showArgumentNames = true;
+    overview.showDefaultArguments = false;
+    overview.showTemplateParameters = false;
+    overview.showReturnTypes = true;
+    overview.showFunctionSignatures = true;
     const Name *name = lastSymbol->name();
     scopes.append(overview.prettyName(name));
     //qDebug() << overview.prettyName(name);
@@ -240,11 +239,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     // Here comes the bitch.
     else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
     {        
-        overview.setShowArgumentNames(true);
-        overview.setShowReturnTypes(false);
-        overview.setShowDefaultArguments(false);
-        overview.setShowTemplateParameters(false);
-        overview.setShowFunctionSignatures(true);
+        overview.showArgumentNames = true;
+        overview.showReturnTypes = false;
+        overview.showDefaultArguments = false;
+        overview.showTemplateParameters = false;
+        overview.showFunctionSignatures = true;
 
         QString arglist = overview.prettyType(lastSymbol->type(), name);
         docToWrite += indent + DoxySettings.DoxyComment.doxBegin;
@@ -296,11 +295,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
             }
 
             // And now check the return type
-            overview.setShowArgumentNames(false);
-            overview.setShowDefaultArguments(false);
-            overview.setShowTemplateParameters(false);
-            overview.setShowReturnTypes(true);
-            overview.setShowFunctionSignatures(false);
+            overview.showArgumentNames = false;
+            overview.showDefaultArguments = false;
+            overview.showTemplateParameters = false;
+            overview.showReturnTypes = true;
+            overview.showFunctionSignatures = false;
 
             arglist = overview.prettyType(lastSymbol->type(), name);
 
@@ -380,8 +379,8 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         return;
     }
 
-    CPlusPlus::CppModelManagerInterface *modelManager =
-            ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
+    CPlusPlus::CppModelManagerInterface *modelManager = CPlusPlus::CppModelManagerInterface::instance();
+            //ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if(!modelManager)
     {
         qDebug() << "No modelManager";
