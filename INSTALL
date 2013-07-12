@@ -1,0 +1,62 @@
+INSTALLATION INSTRUCTION FROM SOURCE CODE
+
+1) Get the latest source code (if not this one)
+You can get the source code either by using your favourite subversion client or by http.
+
+    a] svn download
+The repository is world readable so it should be pretty straightforward, for downloading trunk from the command line:
+user@host $ svn co http://svn.kofee.org/svn/qtcreator-doxygen/trunk qtcreator-doxygen
+
+    b] http download
+If you want latest source: grab an archive of the trunk at http://svn.kofee.org/dl.php?repname=QtCreator-Doxygen&path=%2Ftrunk%2F&isdir=1
+
+
+2) Compile
+2.1) Find the version of qmake to run
+You need to build this plugin with the same version of qmake as the one that was used to build your install of QtCreator.
+To find out on which version of Qt is based your install of QtCreator, launch QtCreator and go to Help >> About QtCreator.
+
+If the required version of Qt is not installed on your system, you can check it ou here :http://qt-project.org/downloads or there : http://download.qt-project.org/official_releases/qt/
+
+
+2.2) Run qmake
+Go to the source (trunk) directory of this plugin. You now have 2 options :
+    a] Edit the pro file to tweak it to your platform (paths, libs) by setting the correct values for the following variables, and then run qmake (the easiest is to do both via QtCreator) :
+QTC_SOURCE_DIR: The directory containing qtcreator source code
+QTC_BUILD_DIR: The directory where we build the plugin
+QTC_SOURCE: The directory containing the qtcreator installation
+
+You can also set:
+LIBSROOT: The root of the built qtcreator lib directory
+DEST: The directory where the shared library and the plugin spec files will be moved to
+
+    b] Pass arguments to qmake (revision r34 and up):
+Examples passing arguments to qmake:
+user@host ~/qtcreator-doxygen $ /usr/share/qt4.8.4/bin/qmake QTC_SOURCE_DIR=/home/kofee/Dev/Qt/qt-creator-2.7.1-src \
+QTC_BUILD_DIR=/home/kofee/qtcdox_build \
+QTC_SOURCE=/home/kofee/qtcreator-2.7.1
+
+OR:
+user@host ~/qtcreator-doxygen $ qmake QTC_SOURCE_DIR=/home/kofee/Dev/Qt/qt-creator-2.7.1-src \
+QTC_BUILD_DIR=/home/kofee/qtcdox_build \
+QTC_SOURCE=/home/kofee/qtcreator-2.7.1 \
+LIBSROOT=/home/kofee/qtcreator-2.7.1/lib \
+DEST=/home/kofee/qtcreator-2.7.1/lib/qtcreator/plugins/Kofee
+
+
+You should see:
+Project MESSAGE: QTC_SOURCE_DIR = /home/kofee/Dev/Qt/qt-creator-2.7.1-src
+Project MESSAGE: IDE_SOURCE_TREE = /home/kofee/Dev/Qt/qt-creator-2.7.1-src
+Project MESSAGE: QTC_BUILD_DIR = /home/kofee/qtcdox_build
+Project MESSAGE: IDE_BUILD_TREE = /home/kofee/qtcdox_build
+Project MESSAGE: DESTDIR = /home/kofee/qtcreator-2.7.1/lib/qtcreator/plugins/Kofee
+Project MESSAGE: Good luck with make... :-D
+
+
+2.3) Run make
+And finally, do make:
+user@host ~/qtcreator-doxygen $ make
+
+
+3) Use
+If all goes well, it should be installed and (re)starting qtcreator will be enough to use the plugin.
