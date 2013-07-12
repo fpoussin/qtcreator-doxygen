@@ -16,13 +16,13 @@ macx: {
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.7.0-src/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.8.0-src/
         }
         macx: {
-            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.7.0-src/
+            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.8.0-src/
         }
     }
-    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.7.0-src/
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.8.0-src/
 }
 isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
@@ -48,14 +48,14 @@ isEmpty(LIBSROOT) {
                 #LIBS += -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/QtProject \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib
-                LIBS += -L/home/$$(USER)/qtcreator-2.7.0/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.7.0/lib/qtcreator/plugins/QtProject \
-                -L/home/$$(USER)/qtcreator-2.7.0/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.8.0/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.8.0/lib/qtcreator/plugins/QtProject \
+                -L/home/$$(USER)/qtcreator-2.8.0/lib
 
             } else {
-                LIBS += -L/home/$$(USER)/qtcreator-2.7.0-x86/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.7.0-x86/lib/qtcreator/plugins/QtProject \
-                -L/home/$$(USER)/qtcreator-2.7.0-x86/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.8.0-x86/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.8.0-x86/lib/qtcreator/plugins/QtProject \
+                -L/home/$$(USER)/qtcreator-2.8.0-x86/lib
                 # I'm cross compiling with a 64-bit qmake and linking to 32 bits binaries
                 # so the plugin buildkey is screwed ... have to modify:
                 # /usr/include/qt4/QtCore/qconfig.h because #define QT_BUILD_KEY is not
@@ -73,11 +73,11 @@ isEmpty(LIBSROOT) {
             -L"/Applications/Qt\ Creator.app/Contents/Frameworks
         }
     }
-    win32:LIBS += -LC:/Qt/qtcreator-2.7.0/bin \
-        -LC:/Qt/qtcreator-2.7.0/lib/qtcreator/plugins/QtProject \
-        -LC:/Qt/qtcreator-2.7.0/lib/qtcreator/ \
-        -LC:/Qt/qt-creator-2.7.0-src/lib/qtcreator \
-        -LC:/Qt/qt-creator-2.7.0-src/lib/qtcreator/plugins/QtProject
+    win32:LIBS += -LC:/Qt/qtcreator-2.8.0/bin \
+        -LC:/Qt/qtcreator-2.8.0/lib/qtcreator/plugins/QtProject \
+        -LC:/Qt/qtcreator-2.8.0/lib/qtcreator/ \
+        -LC:/Qt/qt-creator-2.8.0-src/lib/qtcreator \
+        -LC:/Qt/qt-creator-2.8.0-src/lib/qtcreator/plugins/QtProject
 } else {
     LIBS += -L$$LIBSROOT \
     -L$$LIBSROOT/qtcreator \
@@ -85,9 +85,10 @@ isEmpty(LIBSROOT) {
 }
 
 include( $$IDE_SOURCE_TREE/src/qtcreatorplugin.pri )
-include( $$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri )
-include( $$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri )
-include( $$IDE_SOURCE_TREE/src/plugins/cppeditor/cppeditor.pri )
+# from QtCreator 2.8.0, the following lines need to be moved to a special dependencies file
+#include( $$IDE_SOURCE_TREE/src/plugins/coreplugin/coreplugin.pri )
+#include( $$IDE_SOURCE_TREE/src/plugins/texteditor/texteditor.pri )
+#include( $$IDE_SOURCE_TREE/src/plugins/cppeditor/cppeditor.pri )
 
 # Remove two defines that screws up with the QStrings.
 DEFINES -= QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII
@@ -97,9 +98,9 @@ isEmpty(DEST) {
     unix: {
         !macx: {
             linux-g++-64 {
-                DESTDIR = /home/$$(USER)/qtcreator-2.7.0/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-2.8.0/lib/qtcreator/plugins/$$PROVIDER
             } else {
-                DESTDIR = /home/$$(USER)/qtcreator-2.7.0-x86/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-2.8.0-x86/lib/qtcreator/plugins/$$PROVIDER
             }
         }
         macx: {
@@ -132,6 +133,7 @@ SOURCES += doxygenplugin.cpp \
 FORMS += doxygensettingswidget.ui
 RESOURCES += doxygen.qrc
 OTHER_FILES += Doxygen.pluginspec \
+    qtcreator-doxygen_dependencies.pri \
     doxygen.png
 INCLUDEPATH += $$QTC_SOURCE_DIR/src \
     $$QTC_SOURCE_DIR/src/plugins \

@@ -235,7 +235,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     {
         const QString outputText = tr("Failed to launch %1\n").arg(executable);
         msgManager->showOutputPane();
-        msgManager->printToOutputPane(outputText);
+        msgManager->printToOutputPane(outputText,Core::MessageManager::WithFocus);
     }
 }
 
@@ -268,7 +268,7 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
     msgManager->showOutputPane();
 
     const QString outputText = tr("Executing: %1 %2\n").arg(executable).arg(DoxygenSettingsStruct::formatArguments(allArgs));
-    msgManager->printToOutputPane(outputText);
+    msgManager->printToOutputPane(outputText,Core::MessageManager::WithFocus);
 
     // Run, connect stderr to the output window
     Utils::SynchronousProcess process;
@@ -309,8 +309,8 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
         break;
     }
     if (response.error)
-        msgManager->printToOutputPane(response.message);
-    else msgManager->printToOutputPane(tr("All good mate!"));
+        msgManager->printToOutputPane(response.message,Core::MessageManager::WithFocus);
+    else msgManager->printToOutputPane(tr("All good mate!"),Core::MessageManager::WithFocus);
 
     return response;
 }

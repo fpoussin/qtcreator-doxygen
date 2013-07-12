@@ -38,7 +38,7 @@ DoxygenSettings::DoxygenSettings()
         m_settings.fromSettings(settings);
     setId("A.General");
     setDisplayName(tr("Doxygen"));
-    setCategory(Core::Id(QString(Constants::DOXYGEN_SETTINGS_CATEGORY)));
+    setCategory(Core::Id::fromString(QString(Constants::DOXYGEN_SETTINGS_CATEGORY)));
     setDisplayCategory("Doxygen");
     setCategoryIcon(":/doxygen.png");
 }

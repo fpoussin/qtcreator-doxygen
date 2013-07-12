@@ -1,6 +1,6 @@
-<plugin name="Doxygen" version="0.3.7" compatVersion="2.7.0">
+<plugin name="Doxygen" version="0.3.7" compatVersion="2.8.0">
     <vendor>Kofee</vendor>
-    <copyright>(C) 2009-2012 Kevin Tanguy (kofee@kofee.org)</copyright>
+    <copyright>(C) 2009-2013 Kevin Tanguy (kofee@kofee.org)</copyright>
     <license>
 This plugin is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -22,11 +22,11 @@ Can launch doxywizard and doxygen through menu or shortcut from your Qt Creator 
     </description>
     <url>http://dev.kofee.org/projects/qtcreator-doxygen/</url>
     <dependencyList>
-        <dependency name="Core" version="2.7.0"/>
-        <dependency name="CppEditor" version="2.7.0"/>
-        <dependency name="CppTools" version="2.7.0"/>
-        <dependency name="Locator" version="2.7.0"/>
-        <dependency name="ProjectExplorer" version="2.7.0"/>
-        <dependency name="TextEditor" version="2.7.0"/>
+        <dependency name="Core" version="2.8.0"/>
+        <dependency name="CppEditor" version="2.8.0"/>
+        <dependency name="CppTools" version="2.8.0"/>
+        <dependency name="Locator" version="2.8.0"/>
+        <dependency name="ProjectExplorer" version="2.8.0"/>
+        <dependency name="TextEditor" version="2.8.0"/>
     </dependencyList>
 </plugin>

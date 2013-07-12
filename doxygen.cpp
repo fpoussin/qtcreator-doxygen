@@ -38,12 +38,12 @@
 #include <libs/cplusplus/Overview.h>
 
 #include <libs/extensionsystem/pluginmanager.h>
-//#include <shared/cplusplus/Scope.h>
-//#include <shared/cplusplus/Symbols.h>
-//#include <shared/cplusplus/Names.h>
-#include <Scope.h>
-#include <Symbols.h>
-#include <Names.h>
+#include <cplusplus/Scope.h>
+#include <cplusplus/Symbols.h>
+#include <cplusplus/Names.h>
+//#include <Scope.h>
+//#include <Symbols.h>
+//#include <Names.h>
 
 #include <cplusplus/CppDocument.h>
 
@@ -106,7 +106,7 @@ QStringList scopesForSymbol(const Symbol* symbol)
 
 Symbol* currentSymbol(Core::IEditor *editor)
 {
-    CPlusPlus::CppModelManagerInterface *modelManager = CPlusPlus::CppModelManagerInterface::instance();
+    CppTools::CppModelManagerInterface *modelManager = CppTools::CppModelManagerInterface::instance();
     if (!modelManager)
     {
         return 0;
@@ -379,8 +379,8 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         return;
     }
 
-    CPlusPlus::CppModelManagerInterface *modelManager = CPlusPlus::CppModelManagerInterface::instance();
-            //ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
+    CppTools::CppModelManagerInterface *modelManager = CppTools::CppModelManagerInterface::instance();
+    //ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if(!modelManager)
     {
         qDebug() << "No modelManager";
