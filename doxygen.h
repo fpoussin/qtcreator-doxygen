@@ -23,6 +23,7 @@
 #include <libs/3rdparty/cplusplus/Symbols.h>
 //#include <Symbols.h>
 #include "doxygensettingsstruct.h"
+#include <plugins/projectexplorer/project.h>
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
 
@@ -37,7 +38,9 @@ public:
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
     void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
     void documentFile(const DoxygenSettingsStruct &DoxySettings);
-    void documentProject(const DoxygenSettingsStruct &DoxySettings);
+    void documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
+    void documentActiveProject(const DoxygenSettingsStruct &DoxySettings);
+    void documentOpenedProject(const DoxygenSettingsStruct &DoxySettings);
 
 private:
     Doxygen();

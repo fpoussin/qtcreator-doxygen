@@ -442,15 +442,27 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     }
 }
 
-void Doxygen::documentProject(const DoxygenSettingsStruct &DoxySettings)
+void Doxygen::documentActiveProject(const DoxygenSettingsStruct &DoxySettings)
 {
-    ExtensionSystem::PluginManager* pm =
-            ExtensionSystem::PluginManager::instance();
-    Core::EditorManager *editorManager = Core::EditorManager::instance();
-    //Core::IEditor *editor = editorManager->currentEditor();
+	ExtensionSystem::PluginManager *pm =
+        ExtensionSystem::PluginManager::instance();
     ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin =
-            pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    ProjectExplorer::Project *p = projectExplorerPlugin->currentProject();
+        pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
+    documentProject(projectExplorerPlugin->startupProject(), DoxySettings);
+}
+
+void Doxygen::documentOpenedProject(const DoxygenSettingsStruct &DoxySettings)
+{
+    ExtensionSystem::PluginManager *pm =
+        ExtensionSystem::PluginManager::instance();
+    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin =
+        pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
+    documentProject(projectExplorerPlugin->currentProject(), DoxySettings);
+}
+
+void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings)
+{
+    Core::EditorManager *editorManager = Core::EditorManager::instance();
     QStringList files = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
     QProgressDialog progress("Processing files...", "Cancel", 0, files.size());
     progress.setWindowModality(Qt::WindowModal);

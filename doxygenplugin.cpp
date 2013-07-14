@@ -58,13 +58,14 @@ using namespace DoxyPlugin::Internal;
 // Timeout for building documentation
 enum { doxygenTimeOut = 120000};
 
-static const char * const CMD_ID_DOXYGEN_MAINVIEW    = "Doxygen.MainView";
-static const char * const CMD_ID_DOXYGEN_MENU        = "Doxygen.Menu";
-static const char * const CMD_ID_CREATEDOCUMENTATION = "Doxygen.CreateDocumentation";
-static const char * const CMD_ID_DOCUMENTFILE        = "Doxygen.DocumentFile";
-static const char * const CMD_ID_DOCUMENTPROJECT     = "Doxygen.DocumentProject";
-static const char * const CMD_ID_BUILDDOCUMENTATION  = "Doxygen.BuildDocumentation";
-static const char * const CMD_ID_DOXYFILEWIZARD      = "Doxygen.RunWizard";
+static const char * const CMD_ID_DOXYGEN_MAINVIEW       = "Doxygen.MainView";
+static const char * const CMD_ID_DOXYGEN_MENU           = "Doxygen.Menu";
+static const char * const CMD_ID_CREATEDOCUMENTATION    = "Doxygen.CreateDocumentation";
+static const char * const CMD_ID_DOCUMENTFILE           = "Doxygen.DocumentFile";
+static const char * const CMD_ID_DOCUMENTOPENEDPROJECT  = "Doxygen.DocumentOpenedProject";
+static const char * const CMD_ID_DOCUMENTACTIVEPROJECT  = "Doxygen.DocumentActiveProject";
+static const char * const CMD_ID_BUILDDOCUMENTATION     = "Doxygen.BuildDocumentation";
+static const char * const CMD_ID_DOXYFILEWIZARD         = "Doxygen.RunWizard";
 
 
 DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
@@ -120,13 +121,26 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     connect(m_doxygenDocumentFileAction, SIGNAL(triggered()), this, SLOT(documentFile()));
     doxygenMenu->addAction(command);
 
-    // create documentation for a whole project
-    m_doxygenDocumentProjectAction = new QAction(tr("Document whole project"),  this);
-    command = am->registerAction(m_doxygenDocumentProjectAction, CMD_ID_DOCUMENTPROJECT, globalcontext);
+    // create documentation for a whole project of the currently opened file
+    m_doxygenDocumentOpenedProjectAction = new QAction(tr("Document whole project of opened file"),  this);
+    command = am->registerAction(m_doxygenDocumentOpenedProjectAction,
+			CMD_ID_DOCUMENTOPENEDPROJECT, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F7")));
-    connect(m_doxygenDocumentProjectAction, SIGNAL(triggered()), this, SLOT(documentProject()));
+    connect(m_doxygenDocumentOpenedProjectAction, SIGNAL(triggered()),
+            this, SLOT(documentOpenedProject()));
     doxygenMenu->addAction(command);
+
+    // create documentation for a whole project
+    m_doxygenDocumentActiveProjectAction = new QAction(tr("Document active project"),  this);
+    command = am->registerAction(m_doxygenDocumentActiveProjectAction,
+            CMD_ID_DOCUMENTACTIVEPROJECT, globalcontext);
+    command->setAttribute(Core::Command::CA_UpdateText);
+    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F8")));
+    connect(m_doxygenDocumentActiveProjectAction, SIGNAL(triggered()),
+            this, SLOT(documentActiveProject()));
+    doxygenMenu->addAction(command);
+
 
     // "compile" documentation action
     m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"),  this);
@@ -171,9 +185,14 @@ void DoxygenPlugin::documentFile()
     Doxygen::instance()->documentFile(settings());
 }
 
-void DoxygenPlugin::documentProject()
+void DoxygenPlugin::documentOpenedProject()
 {
-    Doxygen::instance()->documentProject(settings());
+    Doxygen::instance()->documentOpenedProject(settings());
+}
+
+void DoxygenPlugin::documentActiveProject()
+{
+    Doxygen::instance()->documentActiveProject(settings());
 }
 
 bool DoxygenPlugin::buildDocumentation() // TODO: refactor

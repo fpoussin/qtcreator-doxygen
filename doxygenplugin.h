@@ -61,14 +61,16 @@ private:
     DoxygenSettings* m_settings;
     QAction* m_doxygenCreateDocumentationAction;
     QAction* m_doxygenDocumentFileAction;
-    QAction* m_doxygenDocumentProjectAction;
+    QAction* m_doxygenDocumentOpenedProjectAction;
+    QAction* m_doxygenDocumentActiveProjectAction;
     QAction* m_doxygenBuildDocumentationAction;
     QAction* m_doxygenDoxyfileWizardAction;
 
 private slots:
     void createDocumentation();
     void documentFile();
-    void documentProject();
+    void documentOpenedProject();
+    void documentActiveProject();
     bool buildDocumentation();
     void doxyfileWizard();
 };
