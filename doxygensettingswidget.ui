@@ -177,17 +177,7 @@
           </item>
           <item>
            <property name="text">
-            <string>QML files (work in progress)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Qt/C++ files only</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>All QML and Qt/C++ files (work in progress for QML files)</string>
+            <string>All</string>
            </property>
           </item>
          </widget>

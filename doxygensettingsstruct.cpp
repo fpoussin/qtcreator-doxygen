@@ -181,6 +181,7 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(DoxygenStyle s)
         DoxyComment.doxEnding               = " */\n";
         DoxyComment.doxShortVarDoc          = " /**< ";
         DoxyComment.doxShortVarDocEnd       = " */";
+		break;
 
 
     }
@@ -193,6 +194,7 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(DoxygenStyle s)
         DoxyComment.doxEnding               = customEnding;
         DoxyComment.doxShortVarDoc          = customShortDoc;
         DoxyComment.doxShortVarDocEnd       = customShortDocEnd;
+		break;
     }
     default: //case qtDoc:
     {
@@ -203,6 +205,7 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(DoxygenStyle s)
         DoxyComment.doxEnding               = "*/\n";
         DoxyComment.doxShortVarDoc          = " /*!< ";
         DoxyComment.doxShortVarDocEnd       = " */";
+		break;
 
     }
     }

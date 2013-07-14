@@ -35,9 +35,9 @@ enum DoxygenStyle {
 enum Files2Comment {
     headers = 0,
     implementations = 1,
-    qml = 2,
-    bothqt = 3,
-    all = 4
+    /*qml = 2,*/	// For future use
+    /*bothqt = 3,*/ // For future use
+    all = 2
 };
 
 struct DoxygenSettingsStruct

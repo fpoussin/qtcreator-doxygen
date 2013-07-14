@@ -90,6 +90,8 @@ void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
     ui->edit_newLine->setText(QString(s.customNewLine).replace("\n", "\\n"));
     ui->edit_shortTag->setText(QString(s.customShortDoc).replace("\n", "\\n"));
     ui->edit_shortTagEnd->setText(QString(s.customShortDocEnd).replace("\n", "\\n"));
+
+	updateCustomWidgetPart(s.style);
 }
 
 void DoxygenSettingsWidget::updateCustomWidgetPart(int index)

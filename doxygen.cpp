@@ -477,11 +477,13 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
         QString fileExtension = fileInfo.suffix();
         if(
                 (
-                    (DoxySettings.fcomment == headers || DoxySettings.fcomment == bothqt || DoxySettings.fcomment == all)
+                    (DoxySettings.fcomment == headers /*|| DoxySettings.fcomment == bothqt*/ || 
+					 DoxySettings.fcomment == all)
                     && (fileExtension == "hpp" || fileExtension == "h")
                     )
                 || (
-                    (DoxySettings.fcomment == implementations || DoxySettings.fcomment == bothqt || DoxySettings.fcomment == all)
+                    (DoxySettings.fcomment == implementations /*|| DoxySettings.fcomment == bothqt*/ || 
+					 DoxySettings.fcomment == all)
                     && (fileExtension == "cpp" || fileExtension == "c")
                     )
                 ) { /*|| ( //TODO: add documentation of QML files (see doxyqml comments interpretation)
