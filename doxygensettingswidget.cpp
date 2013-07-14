@@ -56,19 +56,20 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
 {
     DoxygenSettingsStruct rc;
     rc.doxygenCommand = ui->pathChooser_doxygen->path();
+    rc.doxyfileFileName = ui->edit_doxyfileName->text();
     rc.doxywizardCommand = ui->pathChooser_wizard->path();
-    rc.style = ui->styleChooser->currentIndex();
-    rc.fcomment = ui->fcommentChooser->currentIndex();
+    rc.style = DoxygenStyle(ui->styleChooser->currentIndex());
+    rc.fcomment = Files2Comment(ui->fcommentChooser->currentIndex());
     rc.printBrief = ui->printBriefTag->isChecked();
-    rc.shortVarDoc = ui->shortVariableDocumentation->isChecked();
+    rc.shortVarDoc = ui->shortVariableDoc->isChecked();
     rc.verbosePrinting = ui->verbosePrinting->isChecked();
-    rc.customBegin = QString(ui->beginTagEdit->text()).replace("\\n", "\n");
-    rc.customBrief = QString(ui->briefTagEdit->text()).replace("\\n", "\n");
-    rc.customEmptyLine = QString(ui->emptyLineTagEdit->text()).replace("\\n", "\n");
-    rc.customEnding = QString(ui->endTagEdit->text()).replace("\\n", "\n");
-    rc.customNewLine = QString(ui->newLineEdit->text()).replace("\\n", "\n");
-    rc.customShortDoc = QString(ui->shortTagEdit->text()).replace("\\n", "\n");
-    rc.customShortDocEnd = QString(ui->shortTagEndEdit->text()).replace("\\\n", "\n");
+    rc.customBegin = QString(ui->edit_beginTag->text()).replace("\\n", "\n");
+    rc.customBrief = QString(ui->edit_briefTag->text()).replace("\\n", "\n");
+    rc.customEmptyLine = QString(ui->edit_emptyLineTag->text()).replace("\\n", "\n");
+    rc.customEnding = QString(ui->edit_endTag->text()).replace("\\n", "\n");
+    rc.customNewLine = QString(ui->edit_newLine->text()).replace("\\n", "\n");
+    rc.customShortDoc = QString(ui->edit_shortTag->text()).replace("\\n", "\n");
+    rc.customShortDocEnd = QString(ui->edit_shortTagEnd->text()).replace("\\\n", "\n");
     return rc;
 }
 
@@ -76,40 +77,22 @@ void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
 {
     ui->pathChooser_doxygen->setPath(s.doxygenCommand);
     ui->pathChooser_wizard->setPath(s.doxywizardCommand);
+    ui->edit_doxyfileName->setText(s.doxyfileFileName);
     ui->styleChooser->setCurrentIndex(s.style);
     ui->fcommentChooser->setCurrentIndex(s.fcomment);
     ui->printBriefTag->setChecked(s.printBrief);
-    ui->shortVariableDocumentation->setChecked(s.shortVarDoc);
+    ui->shortVariableDoc->setChecked(s.shortVarDoc);
     ui->verbosePrinting->setChecked(s.verbosePrinting);
-    ui->beginTagEdit->setText(QString(s.customBegin).replace("\n", "\\n"));
-    ui->briefTagEdit->setText(QString(s.customBrief).replace("\n", "\\n"));
-    ui->emptyLineTagEdit->setText(QString(s.customEmptyLine).replace("\n", "\\n"));
-    ui->endTagEdit->setText(QString(s.customEnding).replace("\n", "\\n"));
-    ui->newLineEdit->setText(QString(s.customNewLine).replace("\n", "\\n"));
-    ui->shortTagEdit->setText(QString(s.customShortDoc).replace("\n", "\\n"));
-    ui->shortTagEndEdit->setText(QString(s.customShortDocEnd).replace("\n", "\\n"));
+    ui->edit_beginTag->setText(QString(s.customBegin).replace("\n", "\\n"));
+    ui->edit_briefTag->setText(QString(s.customBrief).replace("\n", "\\n"));
+    ui->edit_emptyLineTag->setText(QString(s.customEmptyLine).replace("\n", "\\n"));
+    ui->edit_endTag->setText(QString(s.customEnding).replace("\n", "\\n"));
+    ui->edit_newLine->setText(QString(s.customNewLine).replace("\n", "\\n"));
+    ui->edit_shortTag->setText(QString(s.customShortDoc).replace("\n", "\\n"));
+    ui->edit_shortTagEnd->setText(QString(s.customShortDocEnd).replace("\n", "\\n"));
 }
 
 void DoxygenSettingsWidget::updateCustomWidgetPart(int index)
 {
-    if(index == 2)
-    {
-        ui->beginTagEdit->setEnabled(true);
-        ui->briefTagEdit->setEnabled(true);
-        ui->emptyLineTagEdit->setEnabled(true);
-        ui->endTagEdit->setEnabled(true);
-        ui->newLineEdit->setEnabled(true);
-        ui->shortTagEdit->setEnabled(true);
-        ui->shortTagEndEdit->setEnabled(true);
-    }
-    else
-    {
-        ui->beginTagEdit->setEnabled(false);
-        ui->briefTagEdit->setEnabled(false);
-        ui->emptyLineTagEdit->setEnabled(false);
-        ui->endTagEdit->setEnabled(false);
-        ui->newLineEdit->setEnabled(false);
-        ui->shortTagEdit->setEnabled(false);
-        ui->shortTagEndEdit->setEnabled(false);
-    }
+    ui->customCommentsGroupBox->setVisible(index == customDoc);
 }

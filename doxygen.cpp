@@ -473,26 +473,22 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
             break;
         }
 
-        bool go = false;
-
-        // FIXME (make it cleaner) is the file of the right kind
-        if(files[i].endsWith(".h") || files[i].endsWith(".hpp"))
-        {
-            if(DoxySettings.fcomment == headers)
-            {
-                go = true;
-            }
-        }
-        else if(files[i].endsWith(".c") || files[i].endsWith(".cpp"))
-        {
-            if(DoxySettings.fcomment == implementations)
-            {
-                go = true;
-            }
-        }
-
-        if(go)
-        {
+        QFileInfo fileInfo(files[i]);
+        QString fileExtension = fileInfo.suffix();
+        if(
+                (
+                    (DoxySettings.fcomment == headers || DoxySettings.fcomment == bothqt || DoxySettings.fcomment == all)
+                    && (fileExtension == "hpp" || fileExtension == "h")
+                    )
+                || (
+                    (DoxySettings.fcomment == implementations || DoxySettings.fcomment == bothqt || DoxySettings.fcomment == all)
+                    && (fileExtension == "cpp" || fileExtension == "c")
+                    )
+                ) { /*|| ( //TODO: add documentation of QML files (see doxyqml comments interpretation)
+                    (DoxySettings.fcomment == qml || DoxySettings.fcomment == all)
+                    && fileExtension == "qml"
+                    )
+                ) {*/
             Core::IEditor *editor = editorManager->openEditor(files[i]);
             if(editor)
                 documentFile(DoxySettings);

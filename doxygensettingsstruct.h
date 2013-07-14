@@ -27,13 +27,17 @@ namespace DoxyPlugin {
 namespace Internal {
 
 enum DoxygenStyle {
-    javaDoc,
-    qtDoc
+    javaDoc = 0,
+    qtDoc = 1,
+    customDoc = 2
 };
 
 enum Files2Comment {
-    headers,
-    implementations
+    headers = 0,
+    implementations = 1,
+    qml = 2,
+    bothqt = 3,
+    all = 4
 };
 
 struct DoxygenSettingsStruct
@@ -48,10 +52,11 @@ struct DoxygenSettingsStruct
 
     bool equals(const DoxygenSettingsStruct &s) const;
 
+    QString doxyfileFileName;
     QString doxygenCommand;
     QString doxywizardCommand;
-    unsigned int style;
-    unsigned int fcomment;
+    DoxygenStyle style;
+    Files2Comment fcomment;
     bool printBrief;
     bool shortVarDoc;
     bool verbosePrinting;
@@ -76,7 +81,7 @@ struct DoxygenSettingsStruct
         QString doxShortVarDoc;
         QString doxShortVarDocEnd;
     } DoxyComment;
-    void setDoxygenCommentStyle(const int s);
+    void setDoxygenCommentStyle(DoxygenStyle s);
 };
 
 inline bool operator==(const DoxygenSettingsStruct &p1, const DoxygenSettingsStruct &p2)

@@ -211,7 +211,7 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
         return false;
 
     QString doxyFile = projectRoot;
-    doxyFile += "Doxyfile"; // TODO, let the user configure this
+    doxyFile += settings().doxyfileFileName;
     QStringList args;
 
     // create default Doxyfile if it doesn't exist
@@ -244,7 +244,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
         return;
 
     QString executable = settings().doxywizardCommand;
-    QStringList arglist("Doxyfile"); // TODO, let the user configure this
+    QStringList arglist(settings().doxyfileFileName);
 
     Core::MessageManager* msgManager = Core::MessageManager::instance();
 

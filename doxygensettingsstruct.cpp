@@ -26,6 +26,7 @@ using namespace DoxyPlugin::Internal;
 
 static const char *groupC = "Doxygen";
 static const char *commandKeyC = "Command";
+static const char *doxyfilePathKeyC = "DoxyConfigFile";
 static const char *wizardcommandKeyC = "Wizard";
 static const char *styleKeyC = "Style";
 static const char *fcommentKeyC = "Files2Comment";
@@ -58,7 +59,14 @@ static QString defaultWizardCommand()
     return rc;
 }
 
+static QString defaultDoxyFile()
+{
+    return QLatin1String("Doxyfile");
+}
+
+
 DoxygenSettingsStruct::DoxygenSettingsStruct() :
+    doxyfileFileName(defaultDoxyFile()),
     doxygenCommand(defaultCommand()),
     doxywizardCommand(defaultWizardCommand()),
     style(qtDoc),
@@ -73,9 +81,10 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
 {
     settings->beginGroup(QLatin1String(groupC));
     doxygenCommand = settings->value(QLatin1String(commandKeyC), defaultCommand()).toString();
+    doxyfileFileName = settings->value(QLatin1String(doxyfilePathKeyC), defaultDoxyFile()).toString();
     doxywizardCommand = settings->value(QLatin1String(wizardcommandKeyC), defaultWizardCommand()).toString();
-    style = settings->value(QLatin1String(styleKeyC), 0).toInt();
-    fcomment = settings->value(QLatin1String(fcommentKeyC), 0).toInt();
+    style = DoxygenStyle(settings->value(QLatin1String(styleKeyC), 0).toInt());
+    fcomment = Files2Comment(settings->value(QLatin1String(fcommentKeyC), 0).toInt());
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
     shortVarDoc = settings->value(QLatin1String(printShortVarDocKeyC), 1).toBool();
     verbosePrinting = settings->value(QLatin1String(verbosePrintingKeyC), 0).toBool();
@@ -96,6 +105,7 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
 {
     settings->beginGroup(QLatin1String(groupC));
     settings->setValue(QLatin1String(commandKeyC), doxygenCommand);
+    settings->setValue(QLatin1String(doxyfilePathKeyC),doxyfileFileName);
     settings->setValue(QLatin1String(wizardcommandKeyC), doxywizardCommand);
     settings->setValue(QLatin1String(styleKeyC), style);
     settings->setValue(QLatin1String(fcommentKeyC), fcomment);
@@ -121,6 +131,7 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
     return
             doxygenCommand         == s.doxygenCommand
             && doxywizardCommand   == s.doxywizardCommand
+            && doxyfileFileName    == s.doxyfileFileName
             && style               == s.style
             && fcomment            == s.fcomment
             && printBrief          == s.printBrief
@@ -158,9 +169,10 @@ QString DoxygenSettingsStruct::formatArguments(const QStringList &args)
     return rc;
 }
 
-void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
+void DoxygenSettingsStruct::setDoxygenCommentStyle(DoxygenStyle s)
 {
-    if(!s) // java
+    switch(s) {
+    case javaDoc:
     {
         DoxyComment.doxBegin                = "/**\n";
         DoxyComment.doxBrief                = " * @brief \n";
@@ -172,7 +184,17 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
 
 
     }
-    else if(s == 1) // qt
+    case customDoc :
+    {
+        DoxyComment.doxBegin                = customBegin;
+        DoxyComment.doxBrief                = customBrief;
+        DoxyComment.doxEmptyLine            = customEmptyLine;
+        DoxyComment.doxNewLine              = customNewLine;
+        DoxyComment.doxEnding               = customEnding;
+        DoxyComment.doxShortVarDoc          = customShortDoc;
+        DoxyComment.doxShortVarDocEnd       = customShortDocEnd;
+    }
+    default: //case qtDoc:
     {
         DoxyComment.doxBegin                = "/*!\n";
         DoxyComment.doxBrief                = " \\brief \n";
@@ -183,14 +205,5 @@ void DoxygenSettingsStruct::setDoxygenCommentStyle(const int s)
         DoxyComment.doxShortVarDocEnd       = " */";
 
     }
-    else if(s == 2) // Custom tags
-    {
-        DoxyComment.doxBegin                = customBegin;
-        DoxyComment.doxBrief                = customBrief;
-        DoxyComment.doxEmptyLine            = customEmptyLine;
-        DoxyComment.doxNewLine              = customNewLine;
-        DoxyComment.doxEnding               = customEnding;
-        DoxyComment.doxShortVarDoc          = customShortDoc;
-        DoxyComment.doxShortVarDocEnd       = customShortDocEnd;
     }
 }
