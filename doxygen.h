@@ -37,6 +37,7 @@ public:
     static QString getProjectRoot(Core::IEditor* editor);
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
     void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
+    void addFileComment(const DoxygenSettingsStruct &DoxySettings);
     void documentFile(const DoxygenSettingsStruct &DoxySettings);
     void documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
     void documentActiveProject(const DoxygenSettingsStruct &DoxySettings);

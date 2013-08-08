@@ -70,6 +70,10 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
     rc.customNewLine = QString(ui->edit_newLine->text()).replace("\\n", "\n");
     rc.customShortDoc = QString(ui->edit_shortTag->text()).replace("\\n", "\n");
     rc.customShortDocEnd = QString(ui->edit_shortTagEnd->text()).replace("\\\n", "\n");
+    rc.fileComment = ui->fileCommentText->toPlainText();
+    rc.fileCommentHeaders = ui->commentHeaderFiles->isChecked();
+    rc.fileCommentImpl = ui->commentImplementationFiles->isChecked();
+    rc.fileCommentsEnabled = ui->fileComments->isChecked();
     return rc;
 }
 
@@ -90,11 +94,50 @@ void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
     ui->edit_newLine->setText(QString(s.customNewLine).replace("\n", "\\n"));
     ui->edit_shortTag->setText(QString(s.customShortDoc).replace("\n", "\\n"));
     ui->edit_shortTagEnd->setText(QString(s.customShortDocEnd).replace("\n", "\\n"));
+    ui->fileCommentText->setPlainText(s.fileComment);
+    ui->fileComments->setChecked(s.fileCommentsEnabled);
+    ui->commentHeaderFiles->setChecked(s.fileCommentHeaders);
+    ui->commentImplementationFiles->setChecked(s.fileCommentImpl);
 
 	updateCustomWidgetPart(s.style);
+    on_fileComments_clicked(s.fileCommentsEnabled);
 }
 
 void DoxygenSettingsWidget::updateCustomWidgetPart(int index)
 {
-    ui->customCommentsGroupBox->setVisible(index == customDoc);
+    ui->customCommentsSettings->setEnabled(index == customDoc);
+}
+
+void DoxygenSettingsWidget::on_fileComments_clicked(bool checked)
+{
+    Files2Comment toComment = Files2Comment(ui->fcommentChooser->currentIndex());
+    ui->fileCommentText->setEnabled(checked);
+    if(checked == false || toComment == all)
+    {
+        checked = false;
+        ui->label_filecommentHeaders->setShown(checked);
+        ui->label_filecommentImpl->setShown(checked);
+        ui->commentHeaderFiles->setShown(checked);
+        ui->commentImplementationFiles->setShown(checked);
+    }
+    else if(toComment == headers)
+    {
+        ui->label_filecommentHeaders->setShown(false);
+        ui->label_filecommentImpl->setShown(true);
+
+        ui->commentHeaderFiles->setShown(false);
+        ui->commentImplementationFiles->setShown(true);
+    }
+    else if(toComment == implementations)
+    {
+        ui->label_filecommentHeaders->setShown(true);
+        ui->label_filecommentImpl->setShown(false);
+        ui->commentHeaderFiles->setShown(true);
+        ui->commentImplementationFiles->setShown(false);
+    }
+}
+
+void DoxygenSettingsWidget::on_fcommentChooser_currentIndexChanged(int index)
+{
+    on_fileComments_clicked(ui->fileComments->isChecked());
 }

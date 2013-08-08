@@ -185,7 +185,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="label_printBriefTag">
           <property name="text">
-           <string>Print brief tag:</string>
+           <string>Print brief tag</string>
           </property>
          </widget>
         </item>
@@ -196,29 +196,71 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="label_shortVariableDoc">
           <property name="text">
            <string>Short Variable documentation: </string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="6" column="1">
          <widget class="QCheckBox" name="shortVariableDoc">
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="7" column="0">
          <widget class="QLabel" name="label_verbosePrinting">
           <property name="text">
            <string>Verbose (fn, var, class file...): </string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="7" column="1">
          <widget class="QCheckBox" name="verbosePrinting">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_filecomment">
+          <property name="text">
+           <string>Comment files</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QCheckBox" name="fileComments">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_filecommentHeaders">
+          <property name="text">
+           <string>Comment headers</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QCheckBox" name="commentHeaderFiles">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_filecommentImpl">
+          <property name="text">
+           <string>Comment implementation</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QCheckBox" name="commentImplementationFiles">
           <property name="text">
            <string/>
           </property>
@@ -227,134 +269,152 @@
        </layout>
       </item>
       <item>
-       <widget class="QGroupBox" name="customCommentsGroupBox">
-        <property name="title">
-         <string>Custom Comments Settings</string>
+       <widget class="QTabWidget" name="tabCustomSettings">
+        <property name="currentIndex">
+         <number>0</number>
         </property>
-        <layout class="QFormLayout" name="customCommentsLayout">
-         <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::ExpandingFieldsGrow</enum>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_beginTag">
-           <property name="text">
-            <string>Begin tag:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="edit_beginTag">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_briefTag">
-           <property name="text">
-            <string>Brief tag:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="edit_briefTag">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_emptyLineTag">
-           <property name="text">
-            <string>Empty line tag:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="edit_emptyLineTag">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_newLine">
-           <property name="text">
-            <string>New line tag:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="edit_newLine">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_endTag">
-           <property name="text">
-            <string>End tag:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="edit_endTag">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_shortTag">
-           <property name="text">
-            <string>Short doc tag:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="edit_shortTag">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_shortTagEnd">
-           <property name="text">
-            <string>Short doc end:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="edit_shortTagEnd">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QWidget" name="fileCommentSettings">
+         <attribute name="title">
+          <string>File comments Settings</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPlainTextEdit" name="fileCommentText"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabCustomComments">
+         <attribute name="title">
+          <string>Cutom comments Settings</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QFrame" name="customCommentsSettings">
+            <layout class="QFormLayout" name="formLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_beginTag">
+               <property name="text">
+                <string>Begin tag:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="edit_beginTag">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_briefTag">
+               <property name="text">
+                <string>Brief tag:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="edit_briefTag">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_emptyLineTag">
+               <property name="text">
+                <string>Empty line tag:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="edit_emptyLineTag">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_newLine">
+               <property name="text">
+                <string>New line tag:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="edit_newLine">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_endTag">
+               <property name="text">
+                <string>End tag:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="edit_endTag">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_shortTag">
+               <property name="text">
+                <string>Short doc tag:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLineEdit" name="edit_shortTag">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_shortTagEnd">
+               <property name="text">
+                <string>Short doc end:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLineEdit" name="edit_shortTagEnd">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>

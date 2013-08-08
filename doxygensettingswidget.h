@@ -49,6 +49,8 @@ private:
 
 private slots:
     void updateCustomWidgetPart(int index);
+    void on_fileComments_clicked(bool checked);
+    void on_fcommentChooser_currentIndexChanged(int index);
 };
 
 #endif // DOXYGENSETTINGSWIDGET_H

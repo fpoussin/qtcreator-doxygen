@@ -40,6 +40,10 @@ static const char *customNewLineKeyC= "CustomNewLine";
 static const char *customEndingKeyC= "CustomEnding";
 static const char *customShortDocKeyC= "CustomShortDoc";
 static const char *customShortDocEndKeyC= "CustomShortDocEnd";
+static const char *fileCommentEnabledKeyC = "FileComments";
+static const char *fileCommentHeadersKeyC = "FileCommentHeaders";
+static const char *fileCommentImplKeyC = "FileCommentImplementations";
+static const char *fileCommentKeyC = "FileComment";
 
 static QString defaultCommand()
 {
@@ -95,6 +99,11 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
     customEnding = settings->value(QLatin1String(customEndingKeyC), "").toString();
     customShortDoc = settings->value(QLatin1String(customShortDocKeyC), "").toString();
     customShortDocEnd = settings->value(QLatin1String(customShortDocEndKeyC), "").toString();
+    fileCommentsEnabled = settings->value(QLatin1String(fileCommentEnabledKeyC), false).toBool();
+    fileCommentHeaders = settings->value(QLatin1String(fileCommentHeadersKeyC), false).toBool();
+    fileCommentImpl = settings->value(QLatin1String(fileCommentImplKeyC), false).toBool();
+    fileComment = settings->value(QLatin1String(fileCommentKeyC), "").toString();
+
     settings->endGroup();
 
     // Support java, qt and custom styles
@@ -119,6 +128,10 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
     settings->setValue(QLatin1String(customEndingKeyC), customEnding);
     settings->setValue(QLatin1String(customShortDocKeyC), customShortDoc);
     settings->setValue(QLatin1String(customShortDocEndKeyC), customShortDocEnd);
+    settings->setValue(QLatin1String(fileCommentEnabledKeyC), fileCommentsEnabled);
+    settings->setValue(QLatin1String(fileCommentHeadersKeyC), fileCommentHeaders);
+    settings->setValue(QLatin1String(fileCommentImplKeyC), fileCommentImpl);
+    settings->setValue(QLatin1String(fileCommentKeyC), fileComment);
     settings->endGroup();
 
     // Support java, qt and custom styles
@@ -143,7 +156,11 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
             && customNewLine       == s.customNewLine
             && customEnding        == s.customEnding
             && customShortDoc      == s.customShortDoc
-            && customShortDocEnd   == s.customShortDocEnd;
+            && customShortDocEnd   == s.customShortDocEnd
+            && fileComment         == s.fileComment
+            && fileCommentHeaders  == s.fileCommentHeaders
+            && fileCommentImpl     == s.fileCommentImpl
+            && fileCommentsEnabled == s.fileCommentsEnabled;
 }
 
 QStringList DoxygenSettingsStruct::addOptions(const QStringList &args) const

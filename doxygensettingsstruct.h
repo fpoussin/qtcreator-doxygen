@@ -61,6 +61,12 @@ struct DoxygenSettingsStruct
     bool shortVarDoc;
     bool verbosePrinting;
 
+    bool fileCommentsEnabled;
+    bool fileCommentHeaders;
+    bool fileCommentImpl;
+    QString fileComment;
+
+
     // Custom style
     QString customBegin;
     QString customBrief;

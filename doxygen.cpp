@@ -136,6 +136,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     // get the widget for later.
     TextEditor::BaseTextEditorWidget *editorWidget = qobject_cast<TextEditor::BaseTextEditorWidget*>(
                 editorManager->currentEditor()->widget());
+
     // get our symbol
     Symbol *lastSymbol = currentSymbol(editor);
     editorWidget->gotoLineStart();
@@ -338,6 +339,23 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     }
 }
 
+void Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings)
+{
+    const Core::EditorManager *editorManager = Core::EditorManager::instance();
+    Core::IEditor *editor = editorManager->currentEditor();
+
+    // before continuing, test if the editor is actually showing a file.
+    if(!editor)
+        return;
+
+    // get the widget for later.
+    TextEditor::BaseTextEditorWidget *editorWidget = qobject_cast<TextEditor::BaseTextEditorWidget*>(
+                editorManager->currentEditor()->widget());
+    // get our symbol
+    editorWidget->gotoLine(1, 0);
+    editorWidget->insertPlainText(DoxySettings.fileComment + "\n");
+}
+
 void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &symmap)
 {
     if(!symbol || symbol->isBaseClass() || symbol->isGenerated())
@@ -399,6 +417,10 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     int globalSymbols = doc->globalSymbolCount();
     if(!globalSymbols)
     {
+        if(DoxySettings.fileCommentsEnabled)
+        {
+            addFileComment(DoxySettings);
+        }
         qDebug() << "No global symbols";
         return;
     }
@@ -408,6 +430,10 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     Scope* scope = doc->scopeAt(0,0);
     if(!scope)
     {
+        if(DoxySettings.fileCommentsEnabled)
+        {
+            addFileComment(DoxySettings);
+        }
         qDebug() << "No scope";
         return;
     }
@@ -439,6 +465,11 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
             editorWidget->gotoLine(sym->line());
             createDocumentation(DoxySettings);
         }
+
+        if(DoxySettings.fileCommentsEnabled)
+        {
+            addFileComment(DoxySettings);
+        }
     }
 }
 
@@ -468,6 +499,7 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     progress.setWindowModality(Qt::WindowModal);
     for(int i = 0 ; i < files.size() ; ++i)
     {
+        bool documented = false;
         progress.setValue(i);
         if(progress.wasCanceled()){
             break;
@@ -493,7 +525,32 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
                 ) {*/
             Core::IEditor *editor = editorManager->openEditor(files[i]);
             if(editor)
+            {
+                documented = true;
                 documentFile(DoxySettings);
+            }
+        }
+
+        if(DoxySettings.fileCommentsEnabled && documented == false)
+        {
+            bool commentFile = false;
+            qDebug() << "FileCommentHeaders: " << DoxySettings.fileCommentHeaders;
+            qDebug() << "FileCommentImpl: " << DoxySettings.fileCommentImpl;
+            if(DoxySettings.fileCommentHeaders && (fileExtension == "hpp" || fileExtension == "h"))
+            {
+                commentFile = true;
+            }
+            else if(DoxySettings.fileCommentImpl && (fileExtension == "cpp" || fileExtension == "c"))
+            {
+                commentFile = true;
+            }
+
+            if(commentFile)
+            {
+                Core::IEditor *editor = editorManager->openEditor(files[i]);
+                if(editor)
+                    addFileComment(DoxySettings);
+            }
         }
     }
     progress.setValue(files.size());
