@@ -16,10 +16,10 @@ macx: {
 isEmpty(QTC_SOURCE_DIR) {
     unix: {
         !macx: {
-            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.8.0-src/
+            QTC_SOURCE_DIR = /home/$$(USER)/Dev/Qt/qt-creator-2.8.1-src/
         }
         macx: {
-            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.8.0-src/
+            QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.8.1-src/
         }
     }
     win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.8.1-src/
@@ -48,14 +48,14 @@ isEmpty(LIBSROOT) {
                 #LIBS += -L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib/qtcreator/plugins/QtProject \
                 #-L/home/$$(USER)/QtSDK/QtCreator/lib
-                LIBS += -L/home/$$(USER)/qtcreator-2.8.0/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.8.0/lib/qtcreator/plugins/QtProject \
-                -L/home/$$(USER)/qtcreator-2.8.0/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.8.1/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.8.1/lib/qtcreator/plugins/QtProject \
+                -L/home/$$(USER)/qtcreator-2.8.1/lib
 
             } else {
-                LIBS += -L/home/$$(USER)/qtcreator-2.8.0-x86/lib/qtcreator \
-                -L/home/$$(USER)/qtcreator-2.8.0-x86/lib/qtcreator/plugins/QtProject \
-                -L/home/$$(USER)/qtcreator-2.8.0-x86/lib
+                LIBS += -L/home/$$(USER)/qtcreator-2.8.1-x86/lib/qtcreator \
+                -L/home/$$(USER)/qtcreator-2.8.1-x86/lib/qtcreator/plugins/QtProject \
+                -L/home/$$(USER)/qtcreator-2.8.1-x86/lib
                 # I'm cross compiling with a 64-bit qmake and linking to 32 bits binaries
                 # so the plugin buildkey is screwed ... have to modify:
                 # /usr/include/qt4/QtCore/qconfig.h because #define QT_BUILD_KEY is not
@@ -98,9 +98,9 @@ isEmpty(DEST) {
     unix: {
         !macx: {
             linux-g++-64 {
-                DESTDIR = /home/$$(USER)/qtcreator-2.8.0/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-2.8.1/lib/qtcreator/plugins/$$PROVIDER
             } else {
-                DESTDIR = /home/$$(USER)/qtcreator-2.8.0-x86/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-2.8.1-x86/lib/qtcreator/plugins/$$PROVIDER
             }
         }
         macx: {

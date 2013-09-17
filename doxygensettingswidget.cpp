@@ -99,7 +99,7 @@ void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
     ui->commentHeaderFiles->setChecked(s.fileCommentHeaders);
     ui->commentImplementationFiles->setChecked(s.fileCommentImpl);
 
-	updateCustomWidgetPart(s.style);
+    updateCustomWidgetPart(s.style);
     on_fileComments_clicked(s.fileCommentsEnabled);
 }
 
@@ -139,5 +139,6 @@ void DoxygenSettingsWidget::on_fileComments_clicked(bool checked)
 
 void DoxygenSettingsWidget::on_fcommentChooser_currentIndexChanged(int index)
 {
+    Q_UNUSED(index)
     on_fileComments_clicked(ui->fileComments->isChecked());
 }
