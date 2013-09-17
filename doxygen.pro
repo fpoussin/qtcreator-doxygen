@@ -22,7 +22,7 @@ isEmpty(QTC_SOURCE_DIR) {
             QTC_SOURCE_DIR = /Users/$$(USER)/Dev/qt-creator-2.8.0-src/
         }
     }
-    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.8.0-src/
+    win32:QTC_SOURCE_DIR = C:/Qt/qt-creator-2.8.1-src/
 }
 isEmpty(IDE_SOURCE_TREE):IDE_SOURCE_TREE = $$QTC_SOURCE_DIR
 
@@ -73,11 +73,11 @@ isEmpty(LIBSROOT) {
             -L"/Applications/Qt\ Creator.app/Contents/Frameworks
         }
     }
-    win32:LIBS += -LC:/Qt/qtcreator-2.8.0/bin \
-        -LC:/Qt/qtcreator-2.8.0/lib/qtcreator/plugins/QtProject \
-        -LC:/Qt/qtcreator-2.8.0/lib/qtcreator/ \
-        -LC:/Qt/qt-creator-2.8.0-src/lib/qtcreator \
-        -LC:/Qt/qt-creator-2.8.0-src/lib/qtcreator/plugins/QtProject
+    win32:LIBS += -LC:/Qt/qtcreator-2.8.1/bin \
+        -LC:/Qt/qtcreator-2.8.1/lib/qtcreator/plugins/QtProject \
+        -LC:/Qt/qtcreator-2.8.1/lib/qtcreator/ \
+        -LC:/Qt/qt-creator-2.8.1-src/lib/qtcreator \
+        -LC:/Qt/qt-creator-2.8.1-src/lib/qtcreator/plugins/QtProject
 } else {
     LIBS += -L$$LIBSROOT \
     -L$$LIBSROOT/qtcreator \
