@@ -5,7 +5,7 @@ PROVIDER = Kofee
 
 macx: {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
-    CONFIG += x86 x86_64
+    CONFIG += x86_64
 
     # After compilation:
     # install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore /Applications/Qt\ Creator.app/Contents/PlugIns/Kofee/libDoxygen.dylib
@@ -111,7 +111,7 @@ isEmpty(DEST) {
     DESTDIR = $$DEST
 }
 
-# copy the pluginspec to its "final" destination 
+# copy the pluginspec to its "final" destination
 !isEmpty(DESTDIR) {
     unix: {
         QMAKE_POST_LINK += cp Doxygen.pluginspec $$DESTDIR
