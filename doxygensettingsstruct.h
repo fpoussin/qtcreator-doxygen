@@ -60,6 +60,7 @@ struct DoxygenSettingsStruct
     bool printBrief;
     bool shortVarDoc;
     bool verbosePrinting;
+    bool automaticReturnType;
 
     bool fileCommentsEnabled;
     bool fileCommentHeaders;

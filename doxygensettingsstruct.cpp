@@ -33,6 +33,7 @@ static const char *fcommentKeyC = "Files2Comment";
 static const char *printBriefKeyC = "PrintBrief";
 static const char *printShortVarDocKeyC = "PrintShortVarDoc";
 static const char *verbosePrintingKeyC = "VerbosePrinting";
+static const char *automaticAddReturnType = "AutomaticAddReturnType";
 static const char *customBeginKeyC = "CustomBegin";
 static const char *customBriefKeyC= "CustomBrief";
 static const char *customEmptyLineKeyC= "CustomEmptyLine";
@@ -77,7 +78,8 @@ DoxygenSettingsStruct::DoxygenSettingsStruct() :
     fcomment(headers),
     printBrief(true),
     shortVarDoc(true),
-    verbosePrinting(false)
+    verbosePrinting(false),
+    automaticReturnType(true)
 {
 }
 
@@ -92,6 +94,7 @@ void DoxygenSettingsStruct::fromSettings(QSettings *settings)
     printBrief = settings->value(QLatin1String(printBriefKeyC), 1).toBool();
     shortVarDoc = settings->value(QLatin1String(printShortVarDocKeyC), 1).toBool();
     verbosePrinting = settings->value(QLatin1String(verbosePrintingKeyC), 0).toBool();
+    automaticReturnType = settings->value(QLatin1String(automaticAddReturnType), true).toBool();
     customBegin = settings->value(QLatin1String(customBeginKeyC), "").toString();
     customBrief = settings->value(QLatin1String(customBriefKeyC), "").toString();
     customEmptyLine = settings->value(QLatin1String(customEmptyLineKeyC), "").toString();
@@ -121,6 +124,7 @@ void DoxygenSettingsStruct::toSettings(QSettings *settings)
     settings->setValue(QLatin1String(printBriefKeyC), printBrief);
     settings->setValue(QLatin1String(printShortVarDocKeyC), shortVarDoc);
     settings->setValue(QLatin1String(verbosePrintingKeyC), verbosePrinting);
+    settings->setValue(QLatin1String(automaticAddReturnType), automaticReturnType);
     settings->setValue(QLatin1String(customBeginKeyC),customBegin );
     settings->setValue(QLatin1String(customBriefKeyC), customBrief);
     settings->setValue(QLatin1String(customEmptyLineKeyC), customEmptyLine);
@@ -150,6 +154,7 @@ bool DoxygenSettingsStruct::equals(const DoxygenSettingsStruct &s) const
             && printBrief          == s.printBrief
             && shortVarDoc         == s.shortVarDoc
             && verbosePrinting     == s.verbosePrinting
+            && automaticReturnType == s.automaticReturnType
             && customBegin         == s.customBegin
             && customBrief         == s.customBrief
             && customEmptyLine     == s.customEmptyLine

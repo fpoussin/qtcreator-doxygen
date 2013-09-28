@@ -74,6 +74,7 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
     rc.fileCommentHeaders = ui->commentHeaderFiles->isChecked();
     rc.fileCommentImpl = ui->commentImplementationFiles->isChecked();
     rc.fileCommentsEnabled = ui->fileComments->isChecked();
+    rc.automaticReturnType = ui->autoAddReturnTypes->isChecked();
     return rc;
 }
 
@@ -98,6 +99,7 @@ void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
     ui->fileComments->setChecked(s.fileCommentsEnabled);
     ui->commentHeaderFiles->setChecked(s.fileCommentHeaders);
     ui->commentImplementationFiles->setChecked(s.fileCommentImpl);
+    ui->autoAddReturnTypes->setChecked(s.automaticReturnType);
 
     updateCustomWidgetPart(s.style);
     on_fileComments_clicked(s.fileCommentsEnabled);

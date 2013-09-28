@@ -321,6 +321,11 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
                         last = arglist.lastIndexOf(' ');
 
                     arglist.chop(arglist.size() - last);
+                    if(DoxySettings.automaticReturnType == false)
+                    {
+                        arglist.clear();
+                    }
+
                     docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "return " +  arglist + "\n";
                 }
             }
