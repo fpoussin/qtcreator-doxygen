@@ -92,8 +92,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     m_settings = new DoxygenSettings();
     addAutoReleasedObject(m_settings);
 
-    Core::ICore *core = Core::ICore::instance();
-    Core::ActionManager *am = core->actionManager();
+    Core::ActionManager *am = Core::ActionManager::instance();
     Core::Context globalcontext(C_GLOBAL);
     //Core::Context context(CMD_ID_DOXYGEN_MAINVIEW);
     Core::ActionContainer *toolsContainer = am->actionContainer(Core::Constants::M_TOOLS);
@@ -246,7 +245,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     QString executable = settings().doxywizardCommand;
     QStringList arglist(settings().doxyfileFileName);
 
-    Core::MessageManager* msgManager = Core::MessageManager::instance();
+    Core::MessageManager* msgManager = dynamic_cast<Core::MessageManager*>(Core::MessageManager::instance());
 
     bool ret = QProcess::startDetached(settings().doxywizardCommand, arglist, projectRoot);
 
@@ -254,7 +253,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     {
         const QString outputText = tr("Failed to launch %1\n").arg(executable);
         msgManager->showOutputPane();
-        msgManager->printToOutputPane(outputText,Core::MessageManager::WithFocus);
+        msgManager->write(outputText,Core::MessageManager::WithFocus);
     }
 }
 
@@ -283,18 +282,18 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
     const QStringList allArgs = settings().addOptions(arguments);
 
     // TODO, get a better output with printError...
-    Core::MessageManager* msgManager = Core::MessageManager::instance();
+    Core::MessageManager* msgManager = dynamic_cast<Core::MessageManager*>(Core::MessageManager::instance());
     msgManager->showOutputPane();
 
     const QString outputText = tr("Executing: %1 %2\n").arg(executable).arg(DoxygenSettingsStruct::formatArguments(allArgs));
-    msgManager->printToOutputPane(outputText,Core::MessageManager::WithFocus);
+    msgManager->write(outputText,Core::MessageManager::WithFocus);
 
     // Run, connect stderr to the output window
     Utils::SynchronousProcess process;
     if(!workingDirectory.isEmpty())
         process.setWorkingDirectory(workingDirectory);
     process.setTimeout(timeOut);
-    process.setStdOutCodec(outputCodec);
+    process.setCodec(outputCodec);
 
     process.setStdErrBufferedSignalsEnabled(true);
     connect(&process, SIGNAL(stdErrBuffered(QString,bool)), msgManager, SLOT(printToOutputPane(QString)));
@@ -328,8 +327,8 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
         break;
     }
     if (response.error)
-        msgManager->printToOutputPane(response.message,Core::MessageManager::WithFocus);
-    else msgManager->printToOutputPane(tr("All good mate!"),Core::MessageManager::WithFocus);
+        msgManager->write(response.message,Core::MessageManager::WithFocus);
+    else msgManager->write(tr("All good mate!"),Core::MessageManager::WithFocus);
 
     return response;
 }

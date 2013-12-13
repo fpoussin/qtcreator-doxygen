@@ -133,6 +133,7 @@ SOURCES += doxygenplugin.cpp \
 FORMS += doxygensettingswidget.ui
 RESOURCES += doxygen.qrc
 OTHER_FILES += Doxygen.pluginspec \
+    Doxygen.json \
     qtcreator-doxygen_dependencies.pri \
     doxygen.png
 INCLUDEPATH += $$QTC_SOURCE_DIR/src \

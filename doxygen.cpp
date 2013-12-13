@@ -113,7 +113,7 @@ Symbol* currentSymbol(Core::IEditor *editor)
     }
 
     const Snapshot snapshot = modelManager->snapshot();
-    Document::Ptr doc = snapshot.document(editor->document()->fileName());
+    Document::Ptr doc = snapshot.document(editor->document()->filePath());
     if (!doc)
     {
         return 0;
@@ -209,8 +209,8 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         if(DoxySettings.verbosePrinting)
         {
             QString projectRoot = getProjectRoot(editor);
-            QString fileName = editor->document()->fileName().remove(0, editor->document()->fileName().lastIndexOf("/") + 1);
-            QString fileNameProj = editor->document()->fileName().remove(projectRoot);
+            QString fileName = editor->document()->filePath().remove(0, editor->document()->filePath().lastIndexOf("/") + 1);
+            QString fileNameProj = editor->document()->filePath().remove(projectRoot);
             docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"\n";
         }
         docToWrite += indent + DoxySettings.DoxyComment.doxEnding;
@@ -411,7 +411,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     }
 
     const Snapshot snapshot = modelManager->snapshot();
-    Document::Ptr doc = snapshot.document(editor->document()->fileName());
+    Document::Ptr doc = snapshot.document(editor->document()->filePath());
     if(!doc)
     {
         qDebug() << "No document";
@@ -478,22 +478,15 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     }
 }
 
+// TODO fix this!!!
 void Doxygen::documentActiveProject(const DoxygenSettingsStruct &DoxySettings)
 {
-	ExtensionSystem::PluginManager *pm =
-        ExtensionSystem::PluginManager::instance();
-    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin =
-        pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    documentProject(projectExplorerPlugin->startupProject(), DoxySettings);
+    documentProject(ProjectExplorer::SessionManager::startupProject(), DoxySettings);
 }
 
 void Doxygen::documentOpenedProject(const DoxygenSettingsStruct &DoxySettings)
 {
-    ExtensionSystem::PluginManager *pm =
-        ExtensionSystem::PluginManager::instance();
-    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin =
-        pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    documentProject(projectExplorerPlugin->currentProject(), DoxySettings);
+    documentProject(ProjectExplorer::ProjectExplorerPlugin::currentProject(), DoxySettings);
 }
 
 void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings)
@@ -571,13 +564,13 @@ QString Doxygen::getProjectRoot(Core::IEditor* editor)
     ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
             = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
     // Fetch a list of all open projects
-    QList<ProjectExplorer::Project*> projects
-            = projectExplorerPlugin->session()->projects();
+    /*QList<ProjectExplorer::Project*> projects
+            = projectExplorerPlugin->openProjects();*/
     // Project root directory
     QString projectRoot;
 
     // Attempt to find our project
-    Q_FOREACH(ProjectExplorer::Project* project, projects)
+    /*Q_FOREACH(ProjectExplorer::Project* project, projects)
     {
         QStringList files = project->files(Project::ExcludeGeneratedFiles);
         // is it our project ?
@@ -588,6 +581,12 @@ QString Doxygen::getProjectRoot(Core::IEditor* editor)
                 projectRoot.append("/");
             break;
         }
+    }*/
+
+    ProjectExplorer::Project* proj = projectExplorerPlugin->openProject(editor->document()->filePath(), NULL);
+    if(proj != NULL)
+    {
+    	projectRoot = proj->projectDirectory();
     }
     return projectRoot;
 }

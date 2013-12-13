@@ -117,25 +117,25 @@ void DoxygenSettingsWidget::on_fileComments_clicked(bool checked)
     if(checked == false || toComment == all)
     {
         checked = false;
-        ui->label_filecommentHeaders->setShown(checked);
-        ui->label_filecommentImpl->setShown(checked);
-        ui->commentHeaderFiles->setShown(checked);
-        ui->commentImplementationFiles->setShown(checked);
+        ui->label_filecommentHeaders->setVisible(checked);
+        ui->label_filecommentImpl->setVisible(checked);
+        ui->commentHeaderFiles->setVisible(checked);
+        ui->commentImplementationFiles->setVisible(checked);
     }
     else if(toComment == headers)
     {
-        ui->label_filecommentHeaders->setShown(false);
-        ui->label_filecommentImpl->setShown(true);
+        ui->label_filecommentHeaders->setVisible(false);
+        ui->label_filecommentImpl->setVisible(true);
 
-        ui->commentHeaderFiles->setShown(false);
-        ui->commentImplementationFiles->setShown(true);
+        ui->commentHeaderFiles->setVisible(false);
+        ui->commentImplementationFiles->setVisible(true);
     }
     else if(toComment == implementations)
     {
-        ui->label_filecommentHeaders->setShown(true);
-        ui->label_filecommentImpl->setShown(false);
-        ui->commentHeaderFiles->setShown(true);
-        ui->commentImplementationFiles->setShown(false);
+        ui->label_filecommentHeaders->setVisible(true);
+        ui->label_filecommentImpl->setVisible(false);
+        ui->commentHeaderFiles->setVisible(true);
+        ui->commentImplementationFiles->setVisible(false);
     }
 }
 
