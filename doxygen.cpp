@@ -180,11 +180,9 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     bool printAtEnd = false;
 
     // Get current indentation as per bug #5
-    // TODO rewrite, 2 gotos isn't pretty.
     QString indent;
     editorWidget->gotoLineStart();
-    editorWidget->gotoLineStart();
-    editorWidget->gotoLineEndWithSelection();
+    editorWidget->gotoLineStartWithSelection();
     QString currentText = editorWidget->textCursor().selectedText();
     QStringList textList = currentText.split(QRegExp("\\b"));
     indent = textList.at(0);

@@ -1,6 +1,6 @@
 <plugin name="Doxygen" version="0.3.7" compatVersion="3.0.0">
     <vendor>Kofee</vendor>
-    <copyright>(C) 2009-2013 Kevin Tanguy (kofee@kofee.org)</copyright>
+    <copyright>(C) 2009-2014 Kevin Tanguy (kofee@kofee.org)</copyright>
     <license>
 This plugin is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -17,7 +17,7 @@ along with Doxygen plugin. If not, see http://www.gnu.org/licenses.</license>
     <description>
 Doxygen plugin for creating Doxygen tags inside source code and handle interaction with Doxygen binaries.
 Allows you to create basic tag structure for a single symbol or a whole file.
-Allows you to define your doxygen tags as well as providing "standard" Qt/Javadoc styles.
+Allows you to define your doxygen tags as well as providing Qt/Javadoc styles.
 Can launch doxywizard and doxygen through menu or shortcut from your Qt Creator project.
     </description>
     <url>http://dev.kofee.org/projects/qtcreator-doxygen/</url>
