@@ -21,7 +21,6 @@
 #ifndef DOXYGEN_H
 #define DOXYGEN_H
 #include <libs/3rdparty/cplusplus/Symbols.h>
-//#include <Symbols.h>
 #include "doxygensettingsstruct.h"
 #include <plugins/projectexplorer/project.h>
 #include <plugins/coreplugin/icore.h>
