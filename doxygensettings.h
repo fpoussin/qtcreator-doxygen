@@ -37,13 +37,6 @@ class DoxygenSettings : public Core::IOptionsPage
     Q_OBJECT
 public:
     DoxygenSettings();
-    ~DoxygenSettings();
-    // IOptionsPage implementation
-//    QString setId() const;
-//    QString setDisplayName() const;
-//    QString setDisplayCategory() const;
-//    QString setCategory() const;
-//    QIcon setCategoryIcon() const;
 
     QWidget *createPage(QWidget *parent);
     void apply();

@@ -24,7 +24,6 @@
 
 #include <plugins/cppeditor/cppeditorconstants.h>
 #include <plugins/cpptools/cpptoolsconstants.h>
-
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/coreconstants.h>
 #include <plugins/coreplugin/actionmanager/actionmanager.h>
@@ -38,7 +37,6 @@
 #include <plugins/projectexplorer/projectexplorer.h>
 #include <plugins/projectexplorer/session.h>
 #include <plugins/projectexplorer/projectexplorerconstants.h>
-//#include <plugins/projectexplorer/outputwindow.h>
 #include <libs/utils/qtcassert.h>
 #include <libs/utils/synchronousprocess.h>
 #include <libs/utils/parameteraction.h>
@@ -69,14 +67,6 @@ static const char * const CMD_ID_DOXYFILEWIZARD         = "Doxygen.RunWizard";
 
 
 DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
-
-DoxygenPlugin::DoxygenPlugin()
-{
-}
-
-DoxygenPlugin::~DoxygenPlugin()
-{
-}
 
 bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_message)
 {
@@ -123,7 +113,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     // create documentation for a whole project of the currently opened file
     m_doxygenDocumentOpenedProjectAction = new QAction(tr("Document whole project of opened file"),  this);
     command = am->registerAction(m_doxygenDocumentOpenedProjectAction,
-			CMD_ID_DOCUMENTOPENEDPROJECT, globalcontext);
+            CMD_ID_DOCUMENTOPENEDPROJECT, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F7")));
     connect(m_doxygenDocumentOpenedProjectAction, SIGNAL(triggered()),
@@ -231,6 +221,7 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
 
 void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 {
+    qDebug() << "DoxygenPlugin::doxyfileWizard()";
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
 

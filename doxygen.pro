@@ -53,7 +53,7 @@ isEmpty(LIBSROOT) {
                 -L/home/$$(USER)/qtcreator-3.0.1/lib
 
             } else {
-                LIBS += -L/home/$$(USER)/qtcreator-opensource-x86/lib/qtcreator \
+                LIBS += -L/home/$$(USER)/qtcreator-3.0.1-x86/lib/qtcreator \
                 -L/home/$$(USER)/qtcreator-3.0.1-x86/lib/qtcreator/plugins/QtProject \
                 -L/home/$$(USER)/qtcreator-3.0.1-x86/lib
                 # I'm cross compiling with a 64-bit qmake and linking to 32 bits binaries
@@ -73,7 +73,7 @@ isEmpty(LIBSROOT) {
             -L"/Applications/Qt\ Creator.app/Contents/Frameworks
         }
     }
-    win32:LIBS += -LC:/Qt/qtcreator-opensource/bin \
+    win32:LIBS += -LC:/Qt/qtcreator-3.0.1/bin \
         -LC:/Qt/qtcreator-3.0.1/lib/qtcreator/plugins/QtProject \
         -LC:/Qt/qtcreator-3.0.1/lib/qtcreator/ \
         -LC:/Qt/qt-creator-opensource-src-3.0.1/lib/qtcreator \
@@ -100,7 +100,7 @@ isEmpty(DEST) {
             linux-g++-64 {
                 DESTDIR = /home/$$(USER)/qtcreator-3.0.1/lib/qtcreator/plugins/$$PROVIDER
             } else {
-                DESTDIR = /home/$$(USER)/qtcreator-3.0.1/lib/qtcreator/plugins/$$PROVIDER
+                DESTDIR = /home/$$(USER)/qtcreator-3.0.1-x86/lib/qtcreator/plugins/$$PROVIDER
             }
         }
         macx: {

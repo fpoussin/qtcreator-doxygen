@@ -20,7 +20,6 @@
 
 #include "doxygen.h"
 
-
 #include <QObject>
 #include <plugins/cppeditor/cppeditorconstants.h>
 #include <plugins/cpptools/cpptoolsconstants.h>
@@ -34,17 +33,11 @@
 #include <plugins/projectexplorer/projectexplorer.h>
 #include <plugins/projectexplorer/session.h>
 #include <plugins/projectexplorer/projectexplorerconstants.h>
-
 #include <libs/cplusplus/Overview.h>
-
 #include <libs/extensionsystem/pluginmanager.h>
 #include <cplusplus/Scope.h>
 #include <cplusplus/Symbols.h>
 #include <cplusplus/Names.h>
-//#include <Scope.h>
-//#include <Symbols.h>
-//#include <Names.h>
-
 #include <cplusplus/CppDocument.h>
 
 #include <QString>
@@ -237,7 +230,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     }
     // Here comes the bitch.
     else if(lastSymbol->isDeclaration() || lastSymbol->isFunction())
-    {        
+    {
         overview.showArgumentNames = true;
         overview.showReturnTypes = false;
         overview.showDefaultArguments = false;
@@ -396,7 +389,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
     {
-        qDebug() << "No editor";
+        //qDebug() << "No editor";
         return;
     }
 
@@ -404,7 +397,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     //ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if(!modelManager)
     {
-        qDebug() << "No modelManager";
+        //qDebug() << "No modelManager";
         return;
     }
 
@@ -412,7 +405,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     Document::Ptr doc = snapshot.document(editor->document()->filePath());
     if(!doc)
     {
-        qDebug() << "No document";
+        //qDebug() << "No document";
         return;
     }
 
@@ -424,7 +417,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         {
             addFileComment(DoxySettings);
         }
-        qDebug() << "No global symbols";
+        //qDebug() << "No global symbols";
         return;
     }
 
@@ -437,7 +430,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         {
             addFileComment(DoxySettings);
         }
-        qDebug() << "No scope";
+        //qDebug() << "No scope";
         return;
     }
 
@@ -505,13 +498,13 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
         QString fileExtension = fileInfo.suffix();
         if(
                 (
-                    (DoxySettings.fcomment == headers /*|| DoxySettings.fcomment == bothqt*/ || 
-					 DoxySettings.fcomment == all)
+                    (DoxySettings.fcomment == headers /*|| DoxySettings.fcomment == bothqt*/ ||
+                     DoxySettings.fcomment == all)
                     && (fileExtension == "hpp" || fileExtension == "h")
                     )
                 || (
-                    (DoxySettings.fcomment == implementations /*|| DoxySettings.fcomment == bothqt*/ || 
-					 DoxySettings.fcomment == all)
+                    (DoxySettings.fcomment == implementations /*|| DoxySettings.fcomment == bothqt*/ ||
+                     DoxySettings.fcomment == all)
                     && (fileExtension == "cpp" || fileExtension == "c")
                     )
                 ) { /*|| ( //TODO: add documentation of QML files (see doxyqml comments interpretation)
@@ -530,8 +523,8 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
         if(DoxySettings.fileCommentsEnabled && documented == false)
         {
             bool commentFile = false;
-            qDebug() << "FileCommentHeaders: " << DoxySettings.fileCommentHeaders;
-            qDebug() << "FileCommentImpl: " << DoxySettings.fileCommentImpl;
+            //qDebug() << "FileCommentHeaders: " << DoxySettings.fileCommentHeaders;
+            //qDebug() << "FileCommentImpl: " << DoxySettings.fileCommentImpl;
             if(DoxySettings.fileCommentHeaders && (fileExtension == "hpp" || fileExtension == "h"))
             {
                 commentFile = true;
@@ -554,37 +547,11 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
 
 QString Doxygen::getProjectRoot(Core::IEditor* editor)
 {
-    // TODO, only do that if class and verbosePrinting
-    // Catch hold of the plugin-manager
-    ExtensionSystem::PluginManager* pm
-            = ExtensionSystem::PluginManager::instance();
-    // Look for the ProjectExplorerPlugin object
-    ProjectExplorer::ProjectExplorerPlugin* projectExplorerPlugin
-            = pm->getObject<ProjectExplorer::ProjectExplorerPlugin>();
-    // Fetch a list of all open projects
-    /*QList<ProjectExplorer::Project*> projects
-            = projectExplorerPlugin->openProjects();*/
-    // Project root directory
     QString projectRoot;
-
-    // Attempt to find our project
-    /*Q_FOREACH(ProjectExplorer::Project* project, projects)
+    ProjectExplorer::Project* proj = ProjectExplorer::SessionManager::projectForFile(editor->document()->filePath());
+    if(proj)
     {
-        QStringList files = project->files(Project::ExcludeGeneratedFiles);
-        // is it our project ?
-        if(files.contains(editor->document()->fileName()))
-        {
-            projectRoot = project->projectDirectory();
-            if(projectRoot.size())
-                projectRoot.append("/");
-            break;
-        }
-    }*/
-
-    ProjectExplorer::Project* proj = projectExplorerPlugin->openProject(editor->document()->filePath(), NULL);
-    if(proj != NULL)
-    {
-    	projectRoot = proj->projectDirectory();
+        projectRoot = proj->projectDirectory() + "/";
     }
     return projectRoot;
 }

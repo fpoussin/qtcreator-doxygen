@@ -43,36 +43,6 @@ DoxygenSettings::DoxygenSettings()
     setCategoryIcon(":/doxygen.png");
 }
 
-DoxygenSettings::~DoxygenSettings()
-{
-}
-
-//// implementation of interface Core::IOptionsPage
-//QString DoxygenSettings::setId() const
-//{
-//    return QLatin1String("A.General");
-//}
-
-//QString DoxygenSettings::setDisplayName() const
-//{
-//    return tr("Doxygen");
-//}
-
-//QString DoxygenSettings::setCategory() const
-//{
-//    return QLatin1String(Constants::DOXYGEN_SETTINGS_CATEGORY);
-//}
-
-//QString DoxygenSettings::setDisplayCategory() const
-//{
-//    return "Doxygen";
-//}
-
-//QIcon DoxygenSettings::setCategoryIcon() const
-//{
-//    return ":/doxygen.png";
-//}
-
 QWidget* DoxygenSettings::createPage(QWidget *parent)
 {
     m_widget = new DoxygenSettingsWidget(parent);

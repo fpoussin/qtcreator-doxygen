@@ -44,9 +44,6 @@ class DoxygenPlugin  : public ExtensionSystem::IPlugin
     Q_PLUGIN_METADATA(IID "org.kofee.dev.Doxygen" FILE "Doxygen.json")
 
 public:
-    DoxygenPlugin();
-    ~DoxygenPlugin();
-
     bool initialize(const QStringList &arguments, QString *error_message);
     void extensionsInitialized();
     void shutdown();
