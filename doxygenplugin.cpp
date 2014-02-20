@@ -248,6 +248,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     }
 }
 
+
 void DoxygenPlugin::setSettings(const DoxygenSettingsStruct &s)
 {
     m_settings->setSettings(s);
@@ -287,12 +288,12 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
     process.setCodec(outputCodec);
 
     process.setStdErrBufferedSignalsEnabled(true);
-    connect(&process, SIGNAL(stdErrBuffered(QString,bool)), msgManager, SLOT(printToOutputPane(QString)));
+    connect(&process, SIGNAL(stdErrBuffered(QString,bool)), this, SLOT(externalString(const QString&, bool)));
 
     // connect stdout to the output window if desired
     if (showStdOutInOutputWindow) {
         process.setStdOutBufferedSignalsEnabled(true);
-        connect(&process, SIGNAL(stdOutBuffered(QString,bool)), msgManager, SLOT(printToOutputPane(QString)));
+        connect(&process, SIGNAL(stdOutBuffered(QString,bool)), this, SLOT(externalString(const QString&, bool)));
     }
 
     const Utils::SynchronousProcessResponse sp_resp = process.run(executable, allArgs);
@@ -323,5 +324,11 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
 
     return response;
 }
+
+void DoxygenPlugin::externalString(const QString& text, bool)
+{
+    Core::MessageManager::write(text);
+}
+
 
 Q_EXPORT_PLUGIN(DoxygenPlugin)

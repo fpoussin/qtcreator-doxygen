@@ -63,6 +63,7 @@ private:
     QAction* m_doxygenBuildDocumentationAction;
     QAction* m_doxygenDoxyfileWizardAction;
 
+
 private slots:
     void createDocumentation();
     void documentFile();
@@ -70,6 +71,7 @@ private slots:
     void documentActiveProject();
     bool buildDocumentation();
     void doxyfileWizard();
+    void externalString(const QString&, bool);
 };
 
 } // namespace Internal
