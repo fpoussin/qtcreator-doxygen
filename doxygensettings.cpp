@@ -50,6 +50,13 @@ QWidget* DoxygenSettings::createPage(QWidget *parent)
     return m_widget;
 }
 
+QWidget* DoxygenSettings::widget()
+{
+    m_widget = new DoxygenSettingsWidget;
+    m_widget->setSettings(settings());
+    return m_widget;
+}
+
 void DoxygenSettings::apply()
 {
     DoxygenPlugin::instance()->setSettings(m_widget->settings());
@@ -57,7 +64,7 @@ void DoxygenSettings::apply()
 
 void DoxygenSettings::finish()
 {
-// TODO
+ delete m_widget;
 }
 
 DoxygenSettingsStruct DoxygenSettings::settings() const

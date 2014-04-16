@@ -70,6 +70,8 @@ DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
 
 bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_message)
 {
+    //qDebug() << "INITIALIZE";
+
     using namespace Constants;
     using namespace Core::Constants;
     using namespace ExtensionSystem;
@@ -79,7 +81,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
     m_doxygenPluginInstance = this;
 
     // settings dialog :)
-    m_settings = new DoxygenSettings();
+    m_settings = new DoxygenSettings;
     addAutoReleasedObject(m_settings);
 
     Core::ActionManager *am = Core::ActionManager::instance();
@@ -152,14 +154,17 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *error_mess
 
 void DoxygenPlugin::extensionsInitialized()
 {
+    //qDebug() << "INITIALIZED";
 }
 
 void DoxygenPlugin::shutdown()
 {
+    //qDebug() << "SHUTDOWN";
 }
 
 DoxygenPlugin* DoxygenPlugin::instance()
 {
+    //qDebug() << "ASSERT";
     QTC_ASSERT(m_doxygenPluginInstance, return m_doxygenPluginInstance);
     return m_doxygenPluginInstance;
 }
@@ -221,7 +226,7 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
 
 void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 {
-    qDebug() << "DoxygenPlugin::doxyfileWizard()";
+    //qDebug() << "DoxygenPlugin::doxyfileWizard()";
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
 

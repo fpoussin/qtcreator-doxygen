@@ -39,6 +39,7 @@ public:
     DoxygenSettings();
 
     QWidget *createPage(QWidget *parent);
+    QWidget *widget();
     void apply();
     void finish();
     static DoxygenSettings* instance();
