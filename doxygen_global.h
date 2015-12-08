@@ -1,0 +1,13 @@
+#ifndef DOXYGEN_GLOBAL_H
+#define DOXYGEN_GLOBAL_H
+
+#include <QtGlobal>
+
+#if defined(DOXYGEN_LIBRARY)
+#  define DOXYGENSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define DOXYGENSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // DOXYGEN_GLOBAL_H
+

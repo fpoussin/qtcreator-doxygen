@@ -1,0 +1,12 @@
+{
+    \"Name\" : \"Doxygen\",
+    \"Version\" : \"0.0.1\",
+    \"CompatVersion\" : \"0.0.1\",
+    \"Vendor\" : \"QtCommunity\",
+    \"Copyright\" : \"Fabien Poussin\",
+    \"License\" : \"LGPL\",
+    \"Description\" : \"Doxygen for Qt Creator\",
+    \"Url\" : \"https://github.com/fpoussin/qtcreator-doxygen\",
+    $$dependencyList
+}
+
