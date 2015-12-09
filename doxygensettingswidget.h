@@ -2,6 +2,7 @@
 **
 ** This file is part of Doxygen plugin for Qt Creator
 **
+** Copyright (c) 2009 Kevin Tanguy (kofee@kofee.org).
 ** Copyright (c) 2015 Fabien Poussin (fabien.poussin@gmail.com).
 **
 ** This plugin is free software: you can redistribute it and/or modify
@@ -18,16 +19,39 @@
 ** along with Doxygen Plugin. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef DOXYGEN_GLOBAL_H
-#define DOXYGEN_GLOBAL_H
+#ifndef DOXYGENSETTINGSWIDGET_H
+#define DOXYGENSETTINGSWIDGET_H
 
-#include <QtGlobal>
+#include <QWidget>
+#include <libs/utils/pathchooser.h>
+#include "doxygensettingsstruct.h"
 
-#if defined(DOXYGEN_LIBRARY)
-#  define DOXYGENSHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define DOXYGENSHARED_EXPORT Q_DECL_IMPORT
-#endif
+using namespace Doxygen;
+using namespace Doxygen::Internal;
 
-#endif // DOXYGEN_GLOBAL_H
+namespace Ui {
+    class DoxygenSettingsWidget;
+}
 
+class DoxygenSettingsWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    DoxygenSettingsWidget(QWidget *parent = 0);
+    ~DoxygenSettingsWidget();
+    DoxygenSettingsStruct settings() const;
+    void setSettings(const DoxygenSettingsStruct &);
+
+protected:
+    void changeEvent(QEvent *e);
+
+private:
+    Ui::DoxygenSettingsWidget *ui;
+
+private slots:
+    void updateCustomWidgetPart(int index);
+    void on_fileComments_clicked(bool checked);
+    void on_fcommentChooser_currentIndexChanged(int index);
+};
+
+#endif // DOXYGENSETTINGSWIDGET_H

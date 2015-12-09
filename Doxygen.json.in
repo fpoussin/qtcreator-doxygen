@@ -1,8 +1,8 @@
 {
     \"Name\" : \"Doxygen\",
     \"Version\" : \"0.0.1\",
-    \"CompatVersion\" : \"0.0.1\",
-    \"Vendor\" : \"QtCommunity\",
+    \"CompatVersion\" : \"3.5.0\",
+    \"Vendor\" : \"Fabien Poussin\",
     \"Copyright\" : \"Fabien Poussin\",
     \"License\" : \"LGPL\",
     \"Description\" : \"Doxygen for Qt Creator\",

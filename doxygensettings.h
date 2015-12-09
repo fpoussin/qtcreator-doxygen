@@ -2,6 +2,7 @@
 **
 ** This file is part of Doxygen plugin for Qt Creator
 **
+** Copyright (c) 2009 Kevin Tanguy (kofee@kofee.org).
 ** Copyright (c) 2015 Fabien Poussin (fabien.poussin@gmail.com).
 **
 ** This plugin is free software: you can redistribute it and/or modify
@@ -18,35 +19,41 @@
 ** along with Doxygen Plugin. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef DOXYGENPLUGIN_H
-#define DOXYGENPLUGIN_H
+#ifndef DOXYGENSETTINGS_H
+#define DOXYGENSETTINGS_H
 
-#include "doxygen_global.h"
+#include <coreplugin/dialogs/ioptionspage.h>
+#include "doxygensettingsstruct.h"
+#include "doxygensettingswidget.h"
 
-#include <extensionsystem/iplugin.h>
+QT_BEGIN_NAMESPACE
+class QSettings;
+QT_END_NAMESPACE
 
 namespace Doxygen {
 namespace Internal {
 
-class DoxygenPlugin : public ExtensionSystem::IPlugin
+class DoxygenSettings : public Core::IOptionsPage
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "Doxygen.json")
-
 public:
-    DoxygenPlugin();
-    ~DoxygenPlugin();
+    DoxygenSettings();
 
-    bool initialize(const QStringList &arguments, QString *errorString);
-    void extensionsInitialized();
-    ShutdownFlag aboutToShutdown();
+    QWidget *createPage(QWidget *parent);
+    QWidget *widget();
+    void apply();
+    void finish();
+    static DoxygenSettings* instance();
+    DoxygenSettingsStruct settings() const;
+    void setSettings(const DoxygenSettingsStruct &s);
 
-private slots:
-    void triggerAction();
+private:
+    DoxygenSettingsStruct m_settings;
+    static DoxygenSettings* m_doxygenSettingsInstance;
+    DoxygenSettingsWidget* m_widget;
 };
 
 } // namespace Internal
-} // namespace Doxygen
+} // namespace DoxyPlugin
 
-#endif // DOXYGENPLUGIN_H
-
+#endif // DOXYGENSETTINGS_H

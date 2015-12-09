@@ -2,13 +2,17 @@ DEFINES += DOXYGEN_LIBRARY
 
 # Doxygen files
 
-SOURCES += doxygenplugin.cpp
+SOURCES += doxygenplugin.cpp \
+    doxygensettings.cpp \
+    doxygensettingsstruct.cpp \
+    doxygensettingswidget.cpp
 
 HEADERS += doxygenplugin.h \
         doxygen_global.h \
-        doxygenconstants.h
-
-INCLUDES += ""
+        doxygenconstants.h \
+    doxygensettings.h \
+    doxygensettingsstruct.h \
+    doxygensettingswidget.h
 
 # Qt Creator linking
 
@@ -26,7 +30,7 @@ isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/home/fpoussin/src/qt-creator-opensource-
 ##    "%LOCALAPPDATA%\QtProject\qtcreator" on Windows Vista and later
 ##    "$XDG_DATA_HOME/data/QtProject/qtcreator" or "~/.local/share/data/QtProject/qtcreator" on Linux
 ##    "~/Library/Application Support/QtProject/Qt Creator" on Mac
-# USE_USER_DESTDIR = yes
+USE_USER_DESTDIR = yes
 
 ###### If the plugin can be depended upon by other plugins, this code needs to be outsourced to
 ###### <dirname>_dependencies.pri, where <dirname> is the name of the directory containing the
@@ -37,7 +41,9 @@ QTC_LIB_DEPENDS += \
     # nothing here at this time
 
 QTC_PLUGIN_DEPENDS += \
-    coreplugin
+    coreplugin \
+    cpptools \
+    cppeditor
 
 QTC_PLUGIN_RECOMMENDS += \
     # optional plugin dependencies. nothing here at this time
@@ -46,3 +52,9 @@ QTC_PLUGIN_RECOMMENDS += \
 
 include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
 
+INCLUDEPATH += $$QTCREATOR_SOURCES/src
+
+DEFINES -= QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
+
+FORMS += \
+    doxygensettingswidget.ui
