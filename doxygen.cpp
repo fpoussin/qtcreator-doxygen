@@ -155,6 +155,27 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
         return;
     }
 
+    // We don't want to document multiple times.
+    //QRegExp duplicate("\\brief\s*([^\n\r])+");
+    // Todo: fix when doc is not saved
+    QRegExp duplicate("^(\\s|\t)?\\*/");
+    QString text(editorWidget->document()->toPlainText());
+    QStringList lines(text.split(QRegExp("\n|\r\n|\r")));
+
+    for (int i= 1; i <= 10; i++)
+    {
+        int prevLine = lastLine - i;
+        if (prevLine < 0) break;
+        QString checkText(lines.at(prevLine));
+        if (checkText.contains(duplicate))
+        {
+            qDebug() << "Duplicate found in" << editor->document()->filePath().toString() << prevLine;
+            qDebug() << checkText;
+            return;
+        }
+    }
+
+
     QStringList scopes = scopesForSymbol(lastSymbol);
     Overview overview;
     overview.showArgumentNames = true;
