@@ -119,7 +119,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F3")));
-    connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered()), this, SLOT(createDocumentation()));
+    connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered(bool)), this, SLOT(createDocumentation()));
     doxygenMenu->addAction(command);
     // Don't forget the contextual menu
     Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
@@ -129,7 +129,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     command = am->registerAction(m_doxygenDocumentFileAction, CMD_ID_DOCUMENTFILE, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F5")));
-    connect(m_doxygenDocumentFileAction, SIGNAL(triggered()), this, SLOT(documentFile()));
+    connect(m_doxygenDocumentFileAction, SIGNAL(triggered(bool)), this, SLOT(documentFile()));
     doxygenMenu->addAction(command);
 
     // create documentation for a whole project of the currently opened file
@@ -138,7 +138,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
             CMD_ID_DOCUMENTOPENEDPROJECT, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F7")));
-    connect(m_doxygenDocumentOpenedProjectAction, SIGNAL(triggered()),
+    connect(m_doxygenDocumentOpenedProjectAction, SIGNAL(triggered(bool)),
             this, SLOT(documentOpenedProject()));
     doxygenMenu->addAction(command);
 
@@ -148,7 +148,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
             CMD_ID_DOCUMENTACTIVEPROJECT, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F8")));
-    connect(m_doxygenDocumentActiveProjectAction, SIGNAL(triggered()),
+    connect(m_doxygenDocumentActiveProjectAction, SIGNAL(triggered(bool)),
             this, SLOT(documentActiveProject()));
     doxygenMenu->addAction(command);
 
@@ -158,7 +158,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     command = am->registerAction(m_doxygenBuildDocumentationAction, CMD_ID_BUILDDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F4")));
-    connect(m_doxygenBuildDocumentationAction, SIGNAL(triggered()), this, SLOT(buildDocumentation()));
+    connect(m_doxygenBuildDocumentationAction, SIGNAL(triggered(bool)), this, SLOT(buildDocumentation()));
     doxygenMenu->addAction(command);
 
     // edit Doxyfile action
@@ -166,7 +166,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     command = am->registerAction(m_doxygenDoxyfileWizardAction, CMD_ID_DOXYFILEWIZARD, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F6")));
-    connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered()), this, SLOT(doxyfileWizard()));
+    connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered(bool)), this, SLOT(doxyfileWizard()));
     doxygenMenu->addAction(command);
 
     return true;
@@ -250,13 +250,15 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
 
 void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 {
-    //qDebug() << "DoxygenPlugin::doxyfileWizard()";
+//    qDebug() << "DoxygenPlugin::doxyfileWizard()";
     const Core::EditorManager *editorManager = Core::EditorManager::instance();
     Core::IEditor *editor = editorManager->currentEditor();
 
     // prevent a crash if user launches this command with no editor opened
-    if(!editor)
+    if(!editor) {
+//        qWarning() << "No editor!";
         return;
+    }
 
     QString projectRoot = Doxygen::getProjectRoot(editor);
     if(!projectRoot.size())
