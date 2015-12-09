@@ -2,6 +2,7 @@
 **
 ** This file is part of Doxygen plugin for Qt Creator
 **
+** Copyright (c) 2009 Kevin Tanguy (kofee@kofee.org).
 ** Copyright (c) 2015 Fabien Poussin (fabien.poussin@gmail.com).
 **
 ** This plugin is free software: you can redistribute it and/or modify
@@ -24,9 +25,20 @@
 #include "doxygen_global.h"
 
 #include <extensionsystem/iplugin.h>
+#include "doxygensettings.h"
+#include "doxygensettingsstruct.h"
 
-namespace Doxygen {
+namespace DoxyPlugin {
 namespace Internal {
+
+struct DoxygenResponse
+{
+    DoxygenResponse() : error(false) {}
+    bool error;
+    QString stdOut;
+    QString stdErr;
+    QString message;
+};
 
 class DoxygenPlugin : public ExtensionSystem::IPlugin
 {
@@ -41,8 +53,30 @@ public:
     void extensionsInitialized();
     ShutdownFlag aboutToShutdown();
 
+    static DoxygenPlugin* instance();
+    void setSettings(const DoxygenSettingsStruct &s);
+    DoxygenSettingsStruct settings() const;
+    DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut,
+                               bool showStdOutInOutputWindow, QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
+
+private:
+    static DoxygenPlugin *m_doxygenPluginInstance;
+    DoxygenSettings* m_settings;
+    QAction* m_doxygenCreateDocumentationAction;
+    QAction* m_doxygenDocumentFileAction;
+    QAction* m_doxygenDocumentOpenedProjectAction;
+    QAction* m_doxygenDocumentActiveProjectAction;
+    QAction* m_doxygenBuildDocumentationAction;
+    QAction* m_doxygenDoxyfileWizardAction;
+
 private slots:
-    void triggerAction();
+    void createDocumentation();
+    void documentFile();
+    void documentOpenedProject();
+    void documentActiveProject();
+    bool buildDocumentation();
+    void doxyfileWizard();
+    void externalString(const QString&, bool);
 };
 
 } // namespace Internal

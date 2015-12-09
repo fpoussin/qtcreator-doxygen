@@ -21,11 +21,8 @@
 #ifndef DOXYGENCONSTANTS_H
 #define DOXYGENCONSTANTS_H
 
-namespace Doxygen {
+namespace DoxyPlugin {
 namespace Constants {
-
-const char ACTION_ID[] = "Doxygen.Action";
-const char MENU_ID[] = "Doxygen.Menu";
 
 const char CREATE_DOCUMENTATION_DOXYGEN[] = "Doxygen.createDocumentation";
 const char DOCUMENT_FILE_DOXYGEN[]        = "Doxygen.documentFile";

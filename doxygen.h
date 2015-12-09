@@ -19,41 +19,36 @@
 ** along with Doxygen Plugin. If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef DOXYGENSETTINGS_H
-#define DOXYGENSETTINGS_H
-
-#include <coreplugin/dialogs/ioptionspage.h>
+#ifndef DOXYGEN_H
+#define DOXYGEN_H
+#include <libs/3rdparty/cplusplus/Symbols.h>
 #include "doxygensettingsstruct.h"
-#include "doxygensettingswidget.h"
-
-QT_BEGIN_NAMESPACE
-class QSettings;
-QT_END_NAMESPACE
+#include <plugins/projectexplorer/project.h>
+#include <plugins/coreplugin/icore.h>
+#include <plugins/coreplugin/editormanager/ieditor.h>
 
 namespace DoxyPlugin {
 namespace Internal {
 
-class DoxygenSettings : public Core::IOptionsPage
+class Doxygen
 {
-    Q_OBJECT
 public:
-    DoxygenSettings();
-
-    QWidget *createPage(QWidget *parent);
-    QWidget *widget();
-    void apply();
-    void finish();
-    static DoxygenSettings* instance();
-    DoxygenSettingsStruct settings() const;
-    void setSettings(const DoxygenSettingsStruct &s);
+    static Doxygen* instance();
+    static QString getProjectRoot(Core::IEditor* editor);
+    void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
+    void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
+    void addFileComment(const DoxygenSettingsStruct &DoxySettings);
+    void documentFile(const DoxygenSettingsStruct &DoxySettings);
+    void documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
+    void documentActiveProject(const DoxygenSettingsStruct &DoxySettings);
+    void documentOpenedProject(const DoxygenSettingsStruct &DoxySettings);
 
 private:
-    DoxygenSettingsStruct m_settings;
-    static DoxygenSettings* m_doxygenSettingsInstance;
-    DoxygenSettingsWidget* m_widget;
+    Doxygen();
+
+    static Doxygen* m_instance;
 };
 
 } // namespace Internal
 } // namespace DoxyPlugin
-
-#endif // DOXYGENSETTINGS_H
+#endif // DOXYGEN_H

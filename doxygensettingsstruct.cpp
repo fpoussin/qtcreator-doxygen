@@ -22,8 +22,8 @@
 #include <QStringList>
 #include <QTextStream>
 #include "doxygensettingsstruct.h"
-using namespace Doxygen;
-using namespace Doxygen::Internal;
+using namespace DoxyPlugin;
+using namespace DoxyPlugin::Internal;
 
 static const char *groupC = "Doxygen";
 static const char *commandKeyC = "Command";

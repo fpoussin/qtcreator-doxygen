@@ -26,8 +26,8 @@
 #include <libs/utils/pathchooser.h>
 #include "doxygensettingsstruct.h"
 
-using namespace Doxygen;
-using namespace Doxygen::Internal;
+using namespace DoxyPlugin;
+using namespace DoxyPlugin::Internal;
 
 namespace Ui {
     class DoxygenSettingsWidget;

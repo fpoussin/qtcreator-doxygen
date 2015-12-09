@@ -5,23 +5,30 @@ DEFINES += DOXYGEN_LIBRARY
 SOURCES += doxygenplugin.cpp \
     doxygensettings.cpp \
     doxygensettingsstruct.cpp \
-    doxygensettingswidget.cpp
+    doxygensettingswidget.cpp \
+    doxygen.cpp
 
 HEADERS += doxygenplugin.h \
         doxygen_global.h \
         doxygenconstants.h \
     doxygensettings.h \
     doxygensettingsstruct.h \
-    doxygensettingswidget.h
+    doxygensettingswidget.h \
+    doxygen.h
+
+FORMS += \
+    doxygensettingswidget.ui
 
 # Qt Creator linking
 
 ## set the QTC_SOURCE environment variable to override the setting here
 QTCREATOR_SOURCES = $$(QTC_SOURCE)
+#isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/usr/src/qtcreator
 isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/home/fpoussin/src/qt-creator-opensource-src-3.5.1
 
 ## set the QTC_BUILD environment variable to override the setting here
 IDE_BUILD_TREE = $$(QTC_BUILD)
+#isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/usr
 isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/home/fpoussin/src/qt-creator-opensource-src-3.5.1/build
 
 ## uncomment to build plugin into user config directory
@@ -53,8 +60,10 @@ QTC_PLUGIN_RECOMMENDS += \
 include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
 
 INCLUDEPATH += $$QTCREATOR_SOURCES/src
+linux-g++-64 {
+    LIBS += -L/usr/lib/x86_64-linux-gnu/qtcreator \
+            -L/usr/lib/x86_64-linux-gnu/qtcreator/plugins
+}
 
 DEFINES -= QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
 
-FORMS += \
-    doxygensettingswidget.ui

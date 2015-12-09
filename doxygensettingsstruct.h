@@ -24,7 +24,7 @@
 
 #include <QSettings>
 
-namespace Doxygen {
+namespace DoxyPlugin {
 namespace Internal {
 
 enum DoxygenStyle {

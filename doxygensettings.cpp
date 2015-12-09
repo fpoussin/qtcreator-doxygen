@@ -3,6 +3,7 @@
 ** This file is part of Doxygen plugin for Qt Creator
 **
 ** Copyright (c) 2009 Kevin Tanguy (kofee@kofee.org).
+** Copyright (c) 2015 Fabien Poussin (fabien.poussin@gmail.com).
 **
 ** This plugin is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as
@@ -27,7 +28,7 @@
 #include <QtCore/QCoreApplication>
 #include <QIcon>
 
-namespace Doxygen {
+namespace DoxyPlugin {
 
 DoxygenSettings* DoxygenSettings::m_doxygenSettingsInstance = 0;
 

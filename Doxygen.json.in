@@ -5,6 +5,7 @@
     \"Vendor\" : \"Fabien Poussin\",
     \"Copyright\" : \"Fabien Poussin\",
     \"License\" : \"LGPL\",
+    \"Category\" : \"C++\",
     \"Description\" : \"Doxygen for Qt Creator\",
     \"Url\" : \"https://github.com/fpoussin/qtcreator-doxygen\",
     $$dependencyList
