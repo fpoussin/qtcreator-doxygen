@@ -34,7 +34,7 @@ class Doxygen
 {
 public:
     static Doxygen* instance();
-    static QString getProjectRoot(Core::IEditor* editor);
+    static QString getProjectRoot();
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
     void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
     void addFileComment(const DoxygenSettingsStruct &DoxySettings);

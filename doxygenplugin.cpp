@@ -38,11 +38,13 @@
 #include <plugins/projectexplorer/projectexplorer.h>
 #include <plugins/projectexplorer/session.h>
 #include <plugins/projectexplorer/projectexplorerconstants.h>
+#include <plugins/projectexplorer/projecttree.h>
 
 #include <libs/utils/qtcassert.h>
 #include <libs/utils/synchronousprocess.h>
 #include <libs/utils/parameteraction.h>
 #include <libs/extensionsystem/pluginmanager.h>
+#include <projectexplorer/project.h>
 
 #include <QAction>
 #include <QMessageBox>
@@ -152,7 +154,6 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
             this, SLOT(documentActiveProject()));
     doxygenMenu->addAction(command);
 
-
     // "compile" documentation action
     m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"),  this);
     command = am->registerAction(m_doxygenBuildDocumentationAction, CMD_ID_BUILDDOCUMENTATION, globalcontext);
@@ -224,7 +225,7 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
     if(!editor)
         return false;
 
-    QString projectRoot = Doxygen::getProjectRoot(editor);
+    QString projectRoot = Doxygen::getProjectRoot();
     if(!projectRoot.size())
         return false;
 
@@ -251,23 +252,22 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
 void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 {
 //    qDebug() << "DoxygenPlugin::doxyfileWizard()";
-    const Core::EditorManager *editorManager = Core::EditorManager::instance();
-    Core::IEditor *editor = editorManager->currentEditor();
+    Core::MessageManager* msgManager = dynamic_cast<Core::MessageManager*>(Core::MessageManager::instance());
 
-    // prevent a crash if user launches this command with no editor opened
-    if(!editor) {
-//        qWarning() << "No editor!";
+    // prevent a crash if user launches this command with no project opened
+    // You don't need to have an editor open for that.
+    ProjectExplorer::Project *p = ProjectExplorer::ProjectTree::currentProject();
+    if (!p) {
+        QMessageBox::warning((QWidget*)parent(),
+                             tr("No Current Project"),
+                             tr("You don't have any current project."),
+                             QMessageBox::Ok, QMessageBox::NoButton);
         return;
     }
 
-    QString projectRoot = Doxygen::getProjectRoot(editor);
-    if(!projectRoot.size())
-        return;
-
+    QString projectRoot = p->projectFilePath().parentDir().toString();
     QString executable = settings().doxywizardCommand;
     QStringList arglist(settings().doxyfileFileName);
-
-    Core::MessageManager* msgManager = dynamic_cast<Core::MessageManager*>(Core::MessageManager::instance());
 
     bool ret = QProcess::startDetached(settings().doxywizardCommand, arglist, projectRoot);
 

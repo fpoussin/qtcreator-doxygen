@@ -201,8 +201,8 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
         }
         if(DoxySettings.verbosePrinting)
         {
-            QString projectRoot = getProjectRoot(editor);
-            QString fileNameStr = editor->document()->filePath().toUserOutput();
+            QString projectRoot = getProjectRoot();
+            QString fileNameStr = editor->document()->filePath().toString();
             QString fileName = fileNameStr.remove(0, fileNameStr.lastIndexOf("/") + 1);
             QString fileNameProj = fileNameStr.remove(projectRoot);
             docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "class " + overview.prettyName(name) + " " + fileName + " \"" + fileNameProj + "\"\n";
@@ -548,14 +548,15 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     progress.setValue(files.size());
 }
 
-QString Doxygen::getProjectRoot(Core::IEditor* editor)
+QString Doxygen::getProjectRoot()
 {
     QString projectRoot;
-    ProjectExplorer::Project* proj = ProjectExplorer::SessionManager::projectForFile(editor->document()->filePath());
+    Project* proj = ProjectTree::currentProject();
     if(proj)
     {
-        projectRoot = proj->projectDirectory().toUserOutput() + "/";
+        projectRoot = proj->projectDirectory().toString() + "/";
     }
+
     return projectRoot;
 }
 
