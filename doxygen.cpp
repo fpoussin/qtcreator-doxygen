@@ -120,18 +120,15 @@ Symbol* currentSymbol(Core::IEditor *editor)
 
 // TODO: Recode it entirely.
 // TODO: Duplicate detection.
-void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
+void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
-    const Core::EditorManager *editorManager = Core::EditorManager::instance();
-    Core::IEditor *editor = editorManager->currentEditor();
-
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
         return;
 
     // get the widget for later.
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(
-                editorManager->currentEditor()->widget());
+                editor->widget());
 
     // get our symbol
     Symbol *lastSymbol = currentSymbol(editor);
@@ -339,18 +336,15 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
     }
 }
 
-void Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings)
+void Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
-    const Core::EditorManager *editorManager = Core::EditorManager::instance();
-    Core::IEditor *editor = editorManager->currentEditor();
-
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
         return;
 
     // get the widget for later.
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(
-                editorManager->currentEditor()->widget());
+                editor->widget());
     // get our symbol
     editorWidget->gotoLine(1, 0);
     editorWidget->insertPlainText(DoxySettings.fileComment + "\n");
@@ -385,11 +379,8 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &s
     }
 }
 
-void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
+void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
-    const Core::EditorManager *editorManager = Core::EditorManager::instance();
-    Core::IEditor *editor = editorManager->currentEditor();
-
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
     {
@@ -419,7 +410,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     {
         if(DoxySettings.fileCommentsEnabled)
         {
-            addFileComment(DoxySettings);
+            addFileComment(DoxySettings, editor);
         }
         //qDebug() << "No global symbols";
         return;
@@ -432,7 +423,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
     {
         if(DoxySettings.fileCommentsEnabled)
         {
-            addFileComment(DoxySettings);
+            addFileComment(DoxySettings, editor);
         }
         //qDebug() << "No scope";
         return;
@@ -453,8 +444,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         oldline = sym->line();
     }
 
-    TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(
-                editorManager->currentEditor()->widget());
+    TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(editor->widget());
 
     if (editorWidget)
     {
@@ -463,12 +453,12 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings)
         {
             const Symbol* sym = *(it-1);
             editorWidget->gotoLine(sym->line());
-            createDocumentation(DoxySettings);
+            createDocumentation(DoxySettings, editor);
         }
 
         if(DoxySettings.fileCommentsEnabled)
         {
-            addFileComment(DoxySettings);
+            addFileComment(DoxySettings, editor);
         }
     }
 }
@@ -516,11 +506,13 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
                     && fileExtension == "qml"
                     )
                 ) {*/
-            Core::IEditor *editor = editorManager->openEditor(files[i]);
+            Core::IEditor *editor = editorManager->openEditor(files[i], Core::Id(),
+                                                              Core::EditorManager::DoNotChangeCurrentEditor
+                                                              | Core::EditorManager::IgnoreNavigationHistory);
             if(editor)
             {
                 documented = true;
-                documentFile(DoxySettings);
+                documentFile(DoxySettings, editor);
             }
         }
 
@@ -542,7 +534,7 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
             {
                 Core::IEditor *editor = editorManager->openEditor(files[i]);
                 if(editor)
-                    addFileComment(DoxySettings);
+                    addFileComment(DoxySettings, editor);
             }
         }
     }

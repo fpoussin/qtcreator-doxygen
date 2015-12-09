@@ -36,9 +36,9 @@ public:
     static Doxygen* instance();
     static QString getProjectRoot();
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
-    void createDocumentation(const DoxygenSettingsStruct &DoxySettings);
-    void addFileComment(const DoxygenSettingsStruct &DoxySettings);
-    void documentFile(const DoxygenSettingsStruct &DoxySettings);
+    void createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    void addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    void documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
     void documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
     void documentActiveProject(const DoxygenSettingsStruct &DoxySettings);
     void documentOpenedProject(const DoxygenSettingsStruct &DoxySettings);

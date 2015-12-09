@@ -197,12 +197,14 @@ DoxygenPlugin* DoxygenPlugin::instance()
 
 void DoxygenPlugin::createDocumentation()
 {
-    Doxygen::instance()->createDocumentation(settings());
+    Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
+    Doxygen::instance()->createDocumentation(settings(), editor);
 }
 
 void DoxygenPlugin::documentFile()
 {
-    Doxygen::instance()->documentFile(settings());
+    Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
+    Doxygen::instance()->documentFile(settings(), editor);
 }
 
 void DoxygenPlugin::documentOpenedProject()
