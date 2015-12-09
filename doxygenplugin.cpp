@@ -120,7 +120,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     m_doxygenCreateDocumentationAction = new QAction(tr("Create Doxygen Documentation"),  this);
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
-    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F3")));
+    command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F9")));
     connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered(bool)), this, SLOT(createDocumentation()));
     doxygenMenu->addAction(command);
     // Don't forget the contextual menu
@@ -261,11 +261,11 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
         QMessageBox::warning((QWidget*)parent(),
                              tr("No Current Project"),
                              tr("You don't have any current project."),
-                             QMessageBox::Ok, QMessageBox::NoButton);
+                             QMessageBox::Close, QMessageBox::NoButton);
         return;
     }
 
-    QString projectRoot = p->projectFilePath().parentDir().toString();
+    QString projectRoot = p->projectDirectory().toString();
     QString executable = settings().doxywizardCommand;
     QStringList arglist(settings().doxyfileFileName);
 
@@ -275,7 +275,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     {
         const QString outputText = tr("Failed to launch %1\n").arg(executable);
         msgManager->showOutputPane();
-        msgManager->write(outputText,Core::MessageManager::WithFocus);
+        msgManager->write(outputText, Core::MessageManager::WithFocus);
     }
 }
 
