@@ -118,7 +118,8 @@ Symbol* currentSymbol(Core::IEditor *editor)
     return last;
 }
 
-// TODO, recode it entirely.
+// TODO: Recode it entirely.
+// TODO: Duplicate detection.
 void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings)
 {
     const Core::EditorManager *editorManager = Core::EditorManager::instance();

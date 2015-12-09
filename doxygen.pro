@@ -19,17 +19,17 @@ HEADERS += doxygenplugin.h \
 FORMS += \
     doxygensettingswidget.ui
 
+RESOURCES += doxygen.qrc
+
 # Qt Creator linking
 
 ## set the QTC_SOURCE environment variable to override the setting here
 QTCREATOR_SOURCES = $$(QTC_SOURCE)
 isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/usr/src/qtcreator
-#isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/home/fpoussin/src/qt-creator-opensource-src-3.5.1
 
 ## set the QTC_BUILD environment variable to override the setting here
 IDE_BUILD_TREE = $$(QTC_BUILD)
 isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/usr
-#isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/home/fpoussin/src/qt-creator-opensource-src-3.5.1/build
 
 ## uncomment to build plugin into user config directory
 ## <localappdata>/plugins/<ideversion>
@@ -50,7 +50,9 @@ QTC_LIB_DEPENDS += \
 QTC_PLUGIN_DEPENDS += \
     coreplugin \
     cpptools \
-    cppeditor
+    cppeditor \
+    projectexplorer \
+    texteditor
 
 QTC_PLUGIN_RECOMMENDS += \
     # optional plugin dependencies. nothing here at this time
@@ -66,7 +68,4 @@ linux-g++-64 {
 }
 
 DEFINES -= QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
-
-RESOURCES += \
-    doxygen.qrc
 

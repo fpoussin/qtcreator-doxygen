@@ -117,7 +117,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     // put action in our own menu in "Tools"
     // create documentation for symbol under cursor
     Core::Command *command;
-    m_doxygenCreateDocumentationAction = new QAction(tr("Create Doxygen Documentation"),  this);
+    m_doxygenCreateDocumentationAction = new QAction(tr("Document current entity"),  this);
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F9")));
@@ -126,14 +126,15 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     // Don't forget the contextual menu
     Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
     contextMenu->addAction(command);
+
     // create documentation for a whole file
-    m_doxygenDocumentFileAction = new QAction(tr("Document whole file"),  this);
+    m_doxygenDocumentFileAction = new QAction(tr("Document current file"),  this);
     command = am->registerAction(m_doxygenDocumentFileAction, CMD_ID_DOCUMENTFILE, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F5")));
     connect(m_doxygenDocumentFileAction, SIGNAL(triggered(bool)), this, SLOT(documentFile()));
     doxygenMenu->addAction(command);
-
+/*
     // create documentation for a whole project of the currently opened file
     m_doxygenDocumentOpenedProjectAction = new QAction(tr("Document whole project of opened file"),  this);
     command = am->registerAction(m_doxygenDocumentOpenedProjectAction,
@@ -143,9 +144,9 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     connect(m_doxygenDocumentOpenedProjectAction, SIGNAL(triggered(bool)),
             this, SLOT(documentOpenedProject()));
     doxygenMenu->addAction(command);
-
+*/
     // create documentation for a whole project
-    m_doxygenDocumentActiveProjectAction = new QAction(tr("Document active project"),  this);
+    m_doxygenDocumentActiveProjectAction = new QAction(tr("Document current project"),  this);
     command = am->registerAction(m_doxygenDocumentActiveProjectAction,
             CMD_ID_DOCUMENTACTIVEPROJECT, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
