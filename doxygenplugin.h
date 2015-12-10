@@ -72,11 +72,11 @@ private:
 private slots:
     void createDocumentation();
     void documentFile();
-    void documentOpenedProject();
-    void documentActiveProject();
+    void documentSpecificProject();
+    void documentCurrentProject();
     bool buildDocumentation();
     void doxyfileWizard();
-    void externalString(const QString&, bool);
+    void externalString(const QString&);
 };
 
 } // namespace Internal

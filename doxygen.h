@@ -30,18 +30,21 @@
 namespace DoxyPlugin {
 namespace Internal {
 
-class Doxygen
+class Doxygen : public QObject
 {
 public:
     static Doxygen* instance();
     static QString getProjectRoot();
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
-    void createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
-    void addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
-    void documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
-    void documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
-    void documentActiveProject(const DoxygenSettingsStruct &DoxySettings);
-    void documentOpenedProject(const DoxygenSettingsStruct &DoxySettings);
+    bool createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    bool addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    uint documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    uint documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
+    uint documentSpecificProject(const DoxygenSettingsStruct &DoxySettings);
+    uint documentCurrentProject(const DoxygenSettingsStruct &DoxySettings);
+
+signals:
+    void message(QString);
 
 private:
     Doxygen();

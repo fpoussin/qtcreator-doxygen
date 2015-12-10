@@ -48,6 +48,7 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QProgressDialog>
+#include <QMessageBox>
 
 using namespace CPlusPlus;
 using namespace ProjectExplorer;
@@ -120,11 +121,11 @@ Symbol* currentSymbol(Core::IEditor *editor)
 
 // TODO: Recode it entirely.
 // TODO: Duplicate detection.
-void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
+bool Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
-        return;
+        return false;
 
     // get the widget for later.
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(
@@ -144,7 +145,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
         editorWidget->gotoNextWord();
         // infinite loop prevention
         if(lastLine == editor->currentLine() && lastColumn == editor->currentColumn())
-            return;
+            return false;
         lastLine = editor->currentLine();
         lastColumn = editor->currentColumn();
         lastSymbol = currentSymbol(editor);
@@ -152,29 +153,27 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
     //qDebug() << lastLine << " " << lastColumn;
     if (!lastSymbol)
     {
-        return;
+        return false;
     }
 
     // We don't want to document multiple times.
     //QRegExp duplicate("\\brief\s*([^\n\r])+");
-    // Todo: fix when doc is not saved
-    QRegExp duplicate("^(\\s|\t)?\\*/");
+    QRegExp commentClosing("\\*/");
     QString text(editorWidget->document()->toPlainText());
     QStringList lines(text.split(QRegExp("\n|\r\n|\r")));
 
-    for (int i= 1; i <= 10; i++)
+    for (int i= 1; i <= 5; i++)
     {
         int prevLine = lastLine - i;
         if (prevLine < 0) break;
         QString checkText(lines.at(prevLine));
-        if (checkText.contains(duplicate))
+        if (checkText.contains(commentClosing))
         {
-            qDebug() << "Duplicate found in" << editor->document()->filePath().toString() << prevLine;
-            qDebug() << checkText;
-            return;
+            //qDebug() << "Duplicate found in" << editor->document()->filePath().toString() << prevLine;
+            //qDebug() << checkText;
+            return false;
         }
     }
-
 
     QStringList scopes = scopesForSymbol(lastSymbol);
     Overview overview;
@@ -204,7 +203,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
     // quickfix when calling the method on "};" (end class) or "}" (end namespace)
     if(indent.contains(QRegExp("^\\};?")))
     {
-        return;
+        return false;
     }
 
     if(indent.endsWith('~'))
@@ -273,7 +272,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
             if(DoxySettings.shortVarDoc)
             {
                 printAtEnd = true;
-                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO" + DoxySettings.DoxyComment.doxShortVarDocEnd;
+                docToWrite = DoxySettings.DoxyComment.doxShortVarDoc + "TODO: describe" + DoxySettings.DoxyComment.doxShortVarDocEnd;
             }
             else
             {
@@ -288,7 +287,7 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
             // Never noticed it before, a useless comment block because of the Q_OBJECT macro
             // so let's just ignore that will we?
             if(overview.prettyName(name) == "qt_metacall")
-                return;
+                return false;
 
             if(DoxySettings.verbosePrinting)
                 docToWrite += indent + DoxySettings.DoxyComment.doxNewLine + "fn " + overview.prettyName(name) + "\n";
@@ -353,15 +352,18 @@ void Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
             editorWidget->moveCursor(QTextCursor::EndOfLine);
         else
             editorWidget->moveCursor(QTextCursor::StartOfBlock);
+
         editorWidget->insertPlainText(docToWrite);
+        return true;
     }
+     return false;
 }
 
-void Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
+bool Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
-        return;
+        return false;
 
     // get the widget for later.
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(
@@ -369,6 +371,8 @@ void Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IE
     // get our symbol
     editorWidget->gotoLine(1, 0);
     editorWidget->insertPlainText(DoxySettings.fileComment + "\n");
+
+    return true;
 }
 
 void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &symmap)
@@ -400,13 +404,13 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &s
     }
 }
 
-void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
+uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
     {
         //qDebug() << "No editor";
-        return;
+        return 0;
     }
 
     CppTools::CppModelManager *modelManager = CppTools::CppModelManager::instance();
@@ -414,7 +418,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
     if(!modelManager)
     {
         //qDebug() << "No modelManager";
-        return;
+        return 0;
     }
 
     const Snapshot snapshot = modelManager->snapshot();
@@ -422,7 +426,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
     if(!doc)
     {
         //qDebug() << "No document";
-        return;
+        return 0;
     }
 
     // TODO : check
@@ -434,9 +438,8 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
             addFileComment(DoxySettings, editor);
         }
         //qDebug() << "No global symbols";
-        return;
+        return 0;
     }
-
 
     // check that as well...
     Scope* scope = doc->scopeAt(0,0);
@@ -447,7 +450,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
             addFileComment(DoxySettings, editor);
         }
         //qDebug() << "No scope";
-        return;
+        return 0;
     }
 
     unsigned symbolcount = scope->memberCount();
@@ -467,6 +470,7 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
 
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(editor->widget());
 
+    uint count = 0;
     if (editorWidget)
     {
         QList<const Symbol*>::iterator it = symmap.end();
@@ -474,29 +478,45 @@ void Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
         {
             const Symbol* sym = *(it-1);
             editorWidget->gotoLine(sym->line());
-            createDocumentation(DoxySettings, editor);
+            if (createDocumentation(DoxySettings, editor))
+                count++;
         }
 
         if(DoxySettings.fileCommentsEnabled)
         {
-            addFileComment(DoxySettings, editor);
+            if (addFileComment(DoxySettings, editor))
+                count++;
         }
     }
+    //qDebug() << "Count" << count;
+
+    return count;
 }
 
-// TODO fix this!!!
-void Doxygen::documentActiveProject(const DoxygenSettingsStruct &DoxySettings)
+// TODO: fix this! Unused at the moment.
+uint Doxygen::documentSpecificProject(const DoxygenSettingsStruct &DoxySettings)
 {
-    documentProject(ProjectExplorer::SessionManager::startupProject(), DoxySettings);
+    return documentProject(ProjectExplorer::SessionManager::startupProject(), DoxySettings);
 }
 
-void Doxygen::documentOpenedProject(const DoxygenSettingsStruct &DoxySettings)
+uint Doxygen::documentCurrentProject(const DoxygenSettingsStruct &DoxySettings)
 {
-    documentProject(ProjectExplorer::ProjectTree::currentProject(), DoxySettings);
+    return documentProject(ProjectExplorer::ProjectTree::currentProject(), DoxySettings);
 }
 
-void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings)
+uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings)
 {
+    // prevent a crash if user launches this command with no project opened
+    // You don't need to have an editor open for that.
+    if (!p) {
+        QMessageBox::warning((QWidget*)parent(),
+                             tr("Doxygen"),
+                             tr("You don't have any current project."),
+                             QMessageBox::Close, QMessageBox::NoButton);
+        return 0;
+    }
+
+    uint count = 0;
     Core::EditorManager *editorManager = Core::EditorManager::instance();
     QStringList files = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
     QProgressDialog progress("Processing files...", "Cancel", 0, files.size());
@@ -533,7 +553,7 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
             if(editor)
             {
                 documented = true;
-                documentFile(DoxySettings, editor);
+                count += documentFile(DoxySettings, editor);
             }
         }
 
@@ -555,11 +575,12 @@ void Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
             {
                 Core::IEditor *editor = editorManager->openEditor(files[i]);
                 if(editor)
-                    addFileComment(DoxySettings, editor);
+                    count += addFileComment(DoxySettings, editor);
             }
         }
     }
     progress.setValue(files.size());
+    return count;
 }
 
 QString Doxygen::getProjectRoot()

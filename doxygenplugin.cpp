@@ -53,6 +53,7 @@
 #include <QKeySequence>
 #include <QStringList>
 #include <QFileInfo>
+#include <QString>
 
 #include <QtPlugin>
 
@@ -152,7 +153,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F8")));
     connect(m_doxygenDocumentActiveProjectAction, SIGNAL(triggered(bool)),
-            this, SLOT(documentActiveProject()));
+            this, SLOT(documentCurrentProject()));
     doxygenMenu->addAction(command);
 
     // "compile" documentation action
@@ -203,18 +204,32 @@ void DoxygenPlugin::createDocumentation()
 
 void DoxygenPlugin::documentFile()
 {
-    Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
-    Doxygen::instance()->documentFile(settings(), editor);
+    if (QMessageBox::question((QWidget*)this->parent(),
+                              "Doxygen", "Document current File?",
+                              QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    {
+        Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
+        uint count = Doxygen::instance()->documentFile(settings(), editor);
+        QString msg;
+        this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
+    }
 }
 
-void DoxygenPlugin::documentOpenedProject()
+void DoxygenPlugin::documentSpecificProject()
 {
-    Doxygen::instance()->documentOpenedProject(settings());
+    Doxygen::instance()->documentSpecificProject(settings());
 }
 
-void DoxygenPlugin::documentActiveProject()
+void DoxygenPlugin::documentCurrentProject()
 {
-    Doxygen::instance()->documentActiveProject(settings());
+    if (QMessageBox::question((QWidget*)this->parent(),
+                              "Doxygen", "Document current project?",
+                              QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    {
+        uint count = Doxygen::instance()->documentCurrentProject(settings());
+        QString msg;
+        this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
+    }
 }
 
 bool DoxygenPlugin::buildDocumentation() // TODO: refactor
@@ -262,7 +277,7 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     ProjectExplorer::Project *p = ProjectExplorer::ProjectTree::currentProject();
     if (!p) {
         QMessageBox::warning((QWidget*)parent(),
-                             tr("No Current Project"),
+                             tr("Doxygen"),
                              tr("You don't have any current project."),
                              QMessageBox::Close, QMessageBox::NoButton);
         return;
@@ -348,9 +363,10 @@ DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int time
     return response;
 }
 
-void DoxygenPlugin::externalString(const QString& text, bool)
+void DoxygenPlugin::externalString(const QString& text)
 {
     Core::MessageManager::write(text);
+    Core::MessageManager::showOutputPane();
 }
 
 DoxygenSettingsStruct DoxygenPlugin::settings() const
