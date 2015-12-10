@@ -26,11 +26,13 @@
 #include <plugins/projectexplorer/project.h>
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
+#include <QThread>
+#include <QProgressDialog>
 
 namespace DoxyPlugin {
 namespace Internal {
 
-class Doxygen : public QObject
+class Doxygen : public QThread
 {
 public:
     static Doxygen* instance();
@@ -38,7 +40,7 @@ public:
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
     bool createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
     bool addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
-    uint documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    uint documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor, QProgressDialog *progress = 0);
     uint documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
     uint documentSpecificProject(const DoxygenSettingsStruct &DoxySettings);
     uint documentCurrentProject(const DoxygenSettingsStruct &DoxySettings);

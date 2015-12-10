@@ -59,6 +59,7 @@ Doxygen* Doxygen::m_instance = 0;
 
 Doxygen::Doxygen()
 {
+
 }
 
 Doxygen* Doxygen::instance()
@@ -120,7 +121,6 @@ Symbol* currentSymbol(Core::IEditor *editor)
 }
 
 // TODO: Recode it entirely.
-// TODO: Duplicate detection.
 bool Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
     // before continuing, test if the editor is actually showing a file.
@@ -162,7 +162,7 @@ bool Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
     QString text(editorWidget->document()->toPlainText());
     QStringList lines(text.split(QRegExp("\n|\r\n|\r")));
 
-    for (int i= 1; i <= 5; i++)
+    for (int i= 1; i <= 3; i++)
     {
         int prevLine = lastLine - i;
         if (prevLine < 0) break;
@@ -404,7 +404,7 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &s
     }
 }
 
-uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
+uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor, QProgressDialog *mainProgress)
 {
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
@@ -469,13 +469,44 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
     }
 
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(editor->widget());
+    QProgressDialog fileProgress("Processing large file...", "Cancel", 0, symmap.size());
+    fileProgress.setWindowModality(Qt::WindowModal);
+    fileProgress.hide();
 
     uint count = 0;
+
+    if (symmap.size() > 100)
+    {
+        if (mainProgress)
+            mainProgress->hide();
+
+        fileProgress.show();
+    }
+
     if (editorWidget)
     {
         QList<const Symbol*>::iterator it = symmap.end();
-        for(; it != symmap.begin(); --it)
+        for (int i = 0 ; it != symmap.begin(); --it)
         {
+            if (i++ % 20 == 0) // Every n occurences
+            {
+                if (mainProgress)
+                {
+                    if(mainProgress->wasCanceled()) break;
+                }
+
+                if(fileProgress.wasCanceled())
+                {
+                    if (mainProgress)
+                        mainProgress->cancel();
+                    break;
+                }
+
+                fileProgress.setValue(i);
+                fileProgress.update();
+
+                qApp->processEvents(); // Need to repaint the progress bar
+            }
             const Symbol* sym = *(it-1);
             editorWidget->gotoLine(sym->line());
             if (createDocumentation(DoxySettings, editor))
@@ -488,7 +519,9 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
                 count++;
         }
     }
-    //qDebug() << "Count" << count;
+
+    if (mainProgress)
+        mainProgress->show();
 
     return count;
 }
@@ -521,16 +554,19 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     QStringList files = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
     QProgressDialog progress("Processing files...", "Cancel", 0, files.size());
     progress.setWindowModality(Qt::WindowModal);
+
     for(int i = 0 ; i < files.size() ; ++i)
     {
         bool documented = false;
         progress.setValue(i);
+        //qDebug() << "Current file:" << i;
         if(progress.wasCanceled()){
             break;
         }
 
         QFileInfo fileInfo(files[i]);
         QString fileExtension = fileInfo.suffix();
+        //qDebug() << "Current file:" << files.at(i);
         if(
                 (
                     (DoxySettings.fcomment == headers /*|| DoxySettings.fcomment == bothqt*/ ||
@@ -548,12 +584,13 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
                     )
                 ) {*/
             Core::IEditor *editor = editorManager->openEditor(files[i], Core::Id(),
-                                                              Core::EditorManager::DoNotChangeCurrentEditor
-                                                              | Core::EditorManager::IgnoreNavigationHistory);
+                                                                Core::EditorManager::DoNotChangeCurrentEditor
+                                                              | Core::EditorManager::IgnoreNavigationHistory
+                                                              | Core::EditorManager::DoNotMakeVisible);
             if(editor)
             {
                 documented = true;
-                count += documentFile(DoxySettings, editor);
+                count += documentFile(DoxySettings, editor, &progress);
             }
         }
 
