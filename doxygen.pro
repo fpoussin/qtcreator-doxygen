@@ -6,7 +6,8 @@ SOURCES += doxygenplugin.cpp \
     doxygensettings.cpp \
     doxygensettingsstruct.cpp \
     doxygensettingswidget.cpp \
-    doxygen.cpp
+    doxygen.cpp \
+    doxygenfilesdialog.cpp
 
 HEADERS += doxygenplugin.h \
         doxygen_global.h \
@@ -14,10 +15,12 @@ HEADERS += doxygenplugin.h \
     doxygensettings.h \
     doxygensettingsstruct.h \
     doxygensettingswidget.h \
-    doxygen.h
+    doxygen.h \
+    doxygenfilesdialog.h
 
 FORMS += \
-    doxygensettingswidget.ui
+    doxygensettingswidget.ui \
+    doxygenfilesdialog.ui
 
 RESOURCES += doxygen.qrc
 

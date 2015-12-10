@@ -20,6 +20,7 @@
 **/
 
 #include "doxygen.h"
+#include "doxygenfilesdialog.h"
 
 #include <QObject>
 #include <plugins/cppeditor/cppeditorconstants.h>
@@ -552,7 +553,20 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
 
     uint count = 0;
     Core::EditorManager *editorManager = Core::EditorManager::instance();
-    QStringList files = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
+    QStringList allFiles = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
+    QStringList files;
+
+    allFiles = allFiles.filter(QRegExp("\\.(h|hpp|c|cpp)$"));
+    DoxygenFilesDialog *dialog = new DoxygenFilesDialog(allFiles, NULL);
+
+    if (dialog->result() != QDialog::Accepted)
+    {
+        delete dialog;
+        return 0;
+    }
+    dialog->getFilesList(&files);
+    delete dialog;
+
     QProgressDialog progress("Processing files...", "Cancel", 0, files.size());
     progress.setWindowModality(Qt::WindowModal);
 

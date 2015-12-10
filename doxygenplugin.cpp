@@ -222,14 +222,9 @@ void DoxygenPlugin::documentSpecificProject()
 
 void DoxygenPlugin::documentCurrentProject()
 {
-    if (QMessageBox::question((QWidget*)this->parent(),
-                              "Doxygen", "Document current project?",
-                              QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
-    {
-        uint count = Doxygen::instance()->documentCurrentProject(settings());
-        QString msg;
-        this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
-    }
+    uint count = Doxygen::instance()->documentCurrentProject(settings());
+    QString msg;
+    this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
 }
 
 bool DoxygenPlugin::buildDocumentation() // TODO: refactor
