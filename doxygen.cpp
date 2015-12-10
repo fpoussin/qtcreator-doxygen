@@ -469,7 +469,8 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
     }
 
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(editor->widget());
-    QProgressDialog fileProgress("Processing large file...", "Cancel", 0, symmap.size());
+    QString fileName("Processing "+editor->document()->filePath().fileName()+"...");
+    QProgressDialog fileProgress(fileName, "Cancel", 0, symmap.size());
     fileProgress.setWindowModality(Qt::WindowModal);
     fileProgress.hide();
 
