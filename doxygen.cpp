@@ -162,7 +162,7 @@ bool Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Cor
     QString text(editorWidget->document()->toPlainText());
     QStringList lines(text.split(QRegExp("\n|\r\n|\r")));
 
-    for (int i= 1; i <= 3; i++)
+    for (int i= 1; i <= 5; i++)
     {
         int prevLine = lastLine - i;
         if (prevLine < 0) break;
