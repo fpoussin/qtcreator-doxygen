@@ -369,9 +369,16 @@ bool Doxygen::addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IE
     // get the widget for later.
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(
                 editor->widget());
+
+    QString text = DoxySettings.DoxyComment.doxBegin + DoxySettings.DoxyComment.doxNewLine;
+    text += "file " + editor->document()->filePath().fileName() + "\n";
+    text += DoxySettings.DoxyComment.doxEmptyLine;
+    text += DoxySettings.fileComment;
+    text += DoxySettings.DoxyComment.doxEnding + "\n";
+
     // get our symbol
     editorWidget->gotoLine(1, 0);
-    editorWidget->insertPlainText(DoxySettings.fileComment + "\n");
+    editorWidget->insertPlainText(text);
 
     return true;
 }
