@@ -29,6 +29,7 @@
 #include <QIcon>
 
 namespace DoxyPlugin {
+namespace Internal {
 
 DoxygenSettings* DoxygenSettings::m_doxygenSettingsInstance = 0;
 
@@ -60,12 +61,12 @@ QWidget* DoxygenSettings::widget()
 
 void DoxygenSettings::apply()
 {
-    //DoxygenPlugin::instance()->setSettings(m_widget->settings());
+    setSettings(m_widget->settings());
 }
 
 void DoxygenSettings::finish()
 {
- delete m_widget;
+    delete m_widget;
 }
 
 DoxygenSettingsStruct DoxygenSettings::settings() const
@@ -87,5 +88,7 @@ DoxygenSettings* DoxygenSettings::instance()
 {
     QTC_ASSERT(m_doxygenSettingsInstance, return m_doxygenSettingsInstance);
     return m_doxygenSettingsInstance;
+}
+
 }
 }
