@@ -28,11 +28,13 @@ RESOURCES += doxygen.qrc
 
 ## set the QTC_SOURCE environment variable to override the setting here
 QTCREATOR_SOURCES = $$(QTC_SOURCE)
-isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/usr/src/qtcreator
+unix:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=/usr/src/qtcreator
+win32:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=D:\src\qt-creator-opensource-src-3.6.0
 
 ## set the QTC_BUILD environment variable to override the setting here
 IDE_BUILD_TREE = $$(QTC_BUILD)
-isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/usr
+unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=/usr
+win32:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=D:\src\build-qtcreator-5_5_1_msvc2013-Release
 
 ## uncomment to build plugin into user config directory
 ## <localappdata>/plugins/<ideversion>
