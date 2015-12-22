@@ -24,6 +24,8 @@
 
 #include "doxygen_global.h"
 
+#include <plugins/coreplugin/icore.h>
+#include <plugins/coreplugin/editormanager/ieditor.h>
 #include <extensionsystem/iplugin.h>
 #include "doxygensettings.h"
 #include "doxygensettingsstruct.h"
@@ -69,11 +71,18 @@ private:
     QAction* m_doxygenBuildDocumentationAction;
     QAction* m_doxygenDoxyfileWizardAction;
 
+signals:
+    void doxyDocumentEntity(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    void doxyDocumentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+    void doxyDocumentSpecificProject(const DoxygenSettingsStruct &DoxySettings);
+    void doxyDocumentCurrentProject(const DoxygenSettingsStruct &DoxySettingss);
+
 private slots:
-    void createDocumentation();
+    void documentEntity();
     void documentFile();
     void documentSpecificProject();
     void documentCurrentProject();
+
     bool buildDocumentation();
     void doxyfileWizard();
     void externalString(const QString&);

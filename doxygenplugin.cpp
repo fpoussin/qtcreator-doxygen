@@ -77,7 +77,7 @@ DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
 
 DoxygenPlugin::DoxygenPlugin()
 {
-    // Create your members
+
 }
 
 DoxygenPlugin::~DoxygenPlugin()
@@ -122,7 +122,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F9")));
-    connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered(bool)), this, SLOT(createDocumentation()));
+    connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered(bool)), this, SLOT(documentEntity()));
     doxygenMenu->addAction(command);
     // Don't forget the contextual menu
     Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
@@ -172,6 +172,15 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered(bool)), this, SLOT(doxyfileWizard()));
     doxygenMenu->addAction(command);
 
+    // Internal stuff
+    connect(Doxygen::instance(), SIGNAL(message(QString)), DoxygenPlugin::instance(), SLOT(externalString(QString)));
+    connect(DoxygenPlugin::instance(), SIGNAL(doxyDocumentEntity(DoxygenSettingsStruct,Core::IEditor*)),
+            Doxygen::instance(), SLOT(documentEntity(DoxygenSettingsStruct,Core::IEditor*)));
+    connect(DoxygenPlugin::instance(), SIGNAL(doxyDocumentFile(DoxygenSettingsStruct,Core::IEditor*)),
+            Doxygen::instance(), SLOT(documentFile(DoxygenSettingsStruct,Core::IEditor*)));
+    connect(DoxygenPlugin::instance(), SIGNAL(doxyDocumentCurrentProject(DoxygenSettingsStruct)(DoxygenSettingsStruct,Core::IEditor*)),
+            Doxygen::instance(), SLOT(documentCurrentProject(DoxygenSettingsStruct)(DoxygenSettingsStruct,Core::IEditor*)));
+
     return true;
 }
 
@@ -196,10 +205,11 @@ DoxygenPlugin* DoxygenPlugin::instance()
     return m_doxygenPluginInstance;
 }
 
-void DoxygenPlugin::createDocumentation()
+void DoxygenPlugin::documentEntity()
 {
     Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
-    Doxygen::instance()->createDocumentation(settings(), editor);
+    emit doxyDocumentEntity(settings(), editor);
+    //Doxygen::instance()->documentEntity(settings(), editor);
 }
 
 void DoxygenPlugin::documentFile()
@@ -209,9 +219,10 @@ void DoxygenPlugin::documentFile()
                               QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
     {
         Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
-        uint count = Doxygen::instance()->documentFile(settings(), editor);
+        emit doxyDocumentFile(settings(), editor);
+/*        uint count = Doxygen::instance()->documentFile(settings(), editor);
         QString msg;
-        this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
+        this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));*/
     }
 }
 
@@ -222,9 +233,12 @@ void DoxygenPlugin::documentSpecificProject()
 
 void DoxygenPlugin::documentCurrentProject()
 {
+    emit doxyDocumentCurrentProject(settings());
+    /*
     uint count = Doxygen::instance()->documentCurrentProject(settings());
     QString msg;
     this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
+    */
 }
 
 bool DoxygenPlugin::buildDocumentation() // TODO: refactor

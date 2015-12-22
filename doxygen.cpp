@@ -60,7 +60,26 @@ Doxygen* Doxygen::m_instance = 0;
 
 Doxygen::Doxygen()
 {
+    m_cancel = false;
 
+    m_projectProgress = new QProgressDialog();
+    m_projectProgress->setWindowModality(Qt::WindowModal);
+    m_projectProgress->hide();
+/*
+    m_fileProgress = new QProgressDialog();
+    m_fileProgress->setWindowModality(Qt::WindowModal);
+    m_fileProgress->hide();
+*/
+    connect(Doxygen::instance()->m_projectProgress, SIGNAL(canceled()), Doxygen::instance(), SLOT(cancelOperation()));
+    connect(Doxygen::instance()->m_fileProgress, SIGNAL(canceled()), Doxygen::instance(), SLOT(cancelOperation()));
+
+    this->start();
+}
+
+Doxygen::~Doxygen()
+{
+    delete m_projectProgress;
+    delete m_fileProgress;
 }
 
 Doxygen* Doxygen::instance()
@@ -122,7 +141,7 @@ Symbol* currentSymbol(Core::IEditor *editor)
 }
 
 // TODO: Recode it entirely.
-bool Doxygen::createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
+bool Doxygen::documentEntity(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
@@ -412,7 +431,7 @@ void Doxygen::addSymbol(const CPlusPlus::Symbol* symbol, QList<const Symbol*> &s
     }
 }
 
-uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor, QProgressDialog *mainProgress)
+uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor)
 {
     // before continuing, test if the editor is actually showing a file.
     if(!editor)
@@ -486,9 +505,10 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
 
     if (symmap.size() > 100)
     {
-        if (mainProgress)
-            mainProgress->hide();
+        m_projectProgress->hide();
 
+        //emit showProjectProgress(false);
+        //emit showFileProgress(true);
         fileProgress.show();
     }
 
@@ -499,26 +519,19 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
         {
             if (i++ % 20 == 0) // Every n occurences
             {
-                if (mainProgress)
+                if (m_cancel)
                 {
-                    if(mainProgress->wasCanceled()) break;
-                }
-
-                if(fileProgress.wasCanceled())
-                {
-                    if (mainProgress)
-                        mainProgress->cancel();
                     break;
                 }
 
                 fileProgress.setValue(i);
                 fileProgress.update();
 
-                qApp->processEvents(); // Need to repaint the progress bar
+                //qApp->processEvents(); // Need to repaint the progress bar
             }
             const Symbol* sym = *(it-1);
             editorWidget->gotoLine(sym->line());
-            if (createDocumentation(DoxySettings, editor))
+            if (documentEntity(DoxySettings, editor))
                 count++;
         }
 
@@ -528,9 +541,11 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
                 count++;
         }
     }
+    emit showProjectProgress(true);
+    emit showFileProgress(false);
 
-    if (mainProgress)
-        mainProgress->show();
+    fileProgress.hide();
+    m_projectProgress->show();
 
     return count;
 }
@@ -544,6 +559,11 @@ uint Doxygen::documentSpecificProject(const DoxygenSettingsStruct &DoxySettings)
 uint Doxygen::documentCurrentProject(const DoxygenSettingsStruct &DoxySettings)
 {
     return documentProject(ProjectExplorer::ProjectTree::currentProject(), DoxySettings);
+}
+
+void Doxygen::cancelOperation()
+{
+    m_cancel = true;
 }
 
 uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings)
@@ -612,7 +632,7 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
             if(editor)
             {
                 documented = true;
-                count += documentFile(DoxySettings, editor, &progress);
+                count += documentFile(DoxySettings, editor);
             }
         }
 

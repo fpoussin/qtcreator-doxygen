@@ -1,6 +1,6 @@
 {
     \"Name\" : \"Doxygen\",
-    \"Version\" : \"0.4.1\",
+    \"Version\" : \"0.4.2\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
     \"Vendor\" : \"Fabien Poussin\",
     \"Copyright\" : \"Fabien Poussin\",

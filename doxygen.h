@@ -37,19 +37,35 @@ class Doxygen : public QThread
 public:
     static Doxygen* instance();
     static QString getProjectRoot();
-    void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
-    bool createDocumentation(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
+
+public slots:
+    bool documentEntity(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
     bool addFileComment(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
-    uint documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor, QProgressDialog *progress = 0);
+    uint documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
     uint documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings);
     uint documentSpecificProject(const DoxygenSettingsStruct &DoxySettings);
     uint documentCurrentProject(const DoxygenSettingsStruct &DoxySettings);
 
 signals:
+    void showProjectProgress(bool);
+    void projectProgress(int, QString);
+
+    void showFileProgress(bool);
+    void fileProgress(int, QString);
+
     void message(QString);
+
+private slots:
+    void cancelOperation(void);
 
 private:
     Doxygen();
+    ~Doxygen();
+    void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
+
+    QProgressDialog* m_projectProgress;
+    QProgressDialog* m_fileProgress;
+    bool m_cancel;
 
     static Doxygen* m_instance;
 };
