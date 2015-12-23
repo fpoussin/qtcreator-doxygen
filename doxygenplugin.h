@@ -24,8 +24,8 @@
 
 #include "doxygen_global.h"
 
-#include <plugins/coreplugin/icore.h>
-#include <plugins/coreplugin/editormanager/ieditor.h>
+#include <coreplugin/icore.h>
+#include <coreplugin/editormanager/ieditor.h>
 #include <extensionsystem/iplugin.h>
 #include "doxygensettings.h"
 #include "doxygensettingsstruct.h"
@@ -55,14 +55,12 @@ public:
     void extensionsInitialized();
     ShutdownFlag aboutToShutdown();
 
-    static DoxygenPlugin* instance();
     void setSettings(const DoxygenSettingsStruct &s);
     DoxygenSettingsStruct settings() const;
     DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut, bool showStdOutInOutputWindow,
                                QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
 
 private:
-    static DoxygenPlugin *m_doxygenPluginInstance;
     DoxygenSettings* m_settings;
     QAction* m_doxygenCreateDocumentationAction;
     QAction* m_doxygenDocumentFileAction;

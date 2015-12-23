@@ -71,8 +71,6 @@ static const char CMD_ID_DOCUMENTACTIVEPROJECT[]  = "Doxygen.DocumentActiveProje
 static const char CMD_ID_BUILDDOCUMENTATION[]     = "Doxygen.BuildDocumentation";
 static const char CMD_ID_DOXYFILEWIZARD[]         = "Doxygen.RunWizard";
 
-DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
-
 DoxygenPlugin::DoxygenPlugin()
 {
 
@@ -99,7 +97,6 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
 
     Q_UNUSED(arguments);
     Q_UNUSED(errorString);
-    m_doxygenPluginInstance = this;
 
     // settings dialog :)
     m_settings = new DoxygenSettings;
@@ -198,12 +195,6 @@ ExtensionSystem::IPlugin::ShutdownFlag DoxygenPlugin::aboutToShutdown()
     // Disconnect from signals that are not needed during shutdown
     // Hide UI (if you add UI that is not in the main window directly)
     return SynchronousShutdown;
-}
-
-DoxygenPlugin* DoxygenPlugin::instance()
-{
-    QTC_ASSERT(m_doxygenPluginInstance, return m_doxygenPluginInstance);
-    return m_doxygenPluginInstance;
 }
 
 void DoxygenPlugin::documentEntity()

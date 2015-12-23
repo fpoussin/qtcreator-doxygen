@@ -93,7 +93,7 @@ Doxygen::~Doxygen()
 Doxygen* Doxygen::instance()
 {
     if (!m_instance)
-        m_instance = new Doxygen();
+        m_instance = new Doxygen;
     return m_instance;
 }
 

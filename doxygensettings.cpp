@@ -31,11 +31,8 @@
 namespace DoxyPlugin {
 namespace Internal {
 
-DoxygenSettings* DoxygenSettings::m_doxygenSettingsInstance = 0;
-
 DoxygenSettings::DoxygenSettings()
 {
-    m_doxygenSettingsInstance = this;
     if(QSettings *settings = Core::ICore::instance()->settings())
         m_settings.fromSettings(settings);
     setId("A.General");
@@ -43,13 +40,6 @@ DoxygenSettings::DoxygenSettings()
     setCategory(Core::Id::fromString(QString(Constants::DOXYGEN_SETTINGS_CATEGORY)));
     setDisplayCategory("Doxygen");
     setCategoryIcon(":/doxygen.png");
-}
-
-QWidget* DoxygenSettings::createPage(QWidget *parent)
-{
-    m_widget = new DoxygenSettingsWidget(parent);
-    m_widget->setSettings(settings());
-    return m_widget;
 }
 
 QWidget* DoxygenSettings::widget()
@@ -82,12 +72,6 @@ void DoxygenSettings::setSettings(const DoxygenSettingsStruct &s)
         if(QSettings *settings = Core::ICore::instance()->settings())
             m_settings.toSettings(settings);
     }
-}
-
-DoxygenSettings* DoxygenSettings::instance()
-{
-    QTC_ASSERT(m_doxygenSettingsInstance, return m_doxygenSettingsInstance);
-    return m_doxygenSettingsInstance;
 }
 
 }
