@@ -54,12 +54,13 @@ QWidget* DoxygenSettings::widget()
 
 void DoxygenSettings::apply()
 {
+    if (!m_widget)
+        return;
     setSettings(m_widget->settings());
 }
 
 void DoxygenSettings::finish()
 {
-    delete m_widget;
 }
 
 DoxygenSettingsStruct DoxygenSettings::settings() const
