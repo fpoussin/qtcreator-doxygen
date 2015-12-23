@@ -21,12 +21,13 @@
 
 #ifndef DOXYGEN_H
 #define DOXYGEN_H
-#include <libs/3rdparty/cplusplus/Symbols.h>
-#include "doxygensettingsstruct.h"
-#include <plugins/projectexplorer/project.h>
-#include <plugins/coreplugin/icore.h>
-#include <plugins/coreplugin/editormanager/ieditor.h>
+
+#include <3rdparty/cplusplus/Symbols.h>
+#include <projectexplorer/project.h>
+#include <coreplugin/icore.h>
+#include <coreplugin/editormanager/ieditor.h>
 #include <QProgressDialog>
+#include "doxygensettingsstruct.h"
 
 namespace DoxyPlugin {
 namespace Internal {

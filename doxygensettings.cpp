@@ -23,8 +23,8 @@
 #include "doxygen.h"
 #include "doxygenplugin.h"
 #include "doxygenconstants.h"
-#include <plugins/coreplugin/icore.h>
-#include <libs/utils/qtcassert.h>
+#include <coreplugin/icore.h>
+#include <utils/qtcassert.h>
 #include <QtCore/QCoreApplication>
 #include <QIcon>
 

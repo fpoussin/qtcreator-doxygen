@@ -31,20 +31,18 @@
 #include <coreplugin/coreconstants.h>
 #include <coreplugin/messagemanager.h>
 #include <coreplugin/editormanager/editormanager.h>
-
-#include <plugins/cppeditor/cppeditorconstants.h>
-#include <plugins/cpptools/cpptoolsconstants.h>
-#include <plugins/projectexplorer/project.h>
-#include <plugins/projectexplorer/projectexplorer.h>
-#include <plugins/projectexplorer/session.h>
-#include <plugins/projectexplorer/projectexplorerconstants.h>
-#include <plugins/projectexplorer/projecttree.h>
-
-#include <libs/utils/qtcassert.h>
-#include <libs/utils/synchronousprocess.h>
-#include <libs/utils/parameteraction.h>
-#include <libs/extensionsystem/pluginmanager.h>
+#include <cppeditor/cppeditorconstants.h>
+#include <cpptools/cpptoolsconstants.h>
 #include <projectexplorer/project.h>
+#include <projectexplorer/projectexplorer.h>
+#include <projectexplorer/session.h>
+#include <projectexplorer/projectexplorerconstants.h>
+#include <projectexplorer/projecttree.h>
+
+#include <utils/qtcassert.h>
+#include <utils/synchronousprocess.h>
+#include <utils/parameteraction.h>
+#include <extensionsystem/pluginmanager.h>
 
 #include <QAction>
 #include <QMessageBox>
