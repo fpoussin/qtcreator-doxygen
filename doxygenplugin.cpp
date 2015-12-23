@@ -172,7 +172,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered(bool)), this, SLOT(doxyfileWizard()));
     doxygenMenu->addAction(command);
 
-    // Internal connections to worker thread
+    // Internal connections
     Doxygen* dox = Doxygen::instance();
 
     connect(dox, SIGNAL(message(QString)), this, SLOT(externalString(QString)));

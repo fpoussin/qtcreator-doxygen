@@ -58,7 +58,8 @@ using namespace DoxyPlugin::Internal;
 
 Doxygen* Doxygen::m_instance = 0;
 
-Doxygen::Doxygen()
+Doxygen::Doxygen(QObject *parent) :
+    QObject(parent)
 {
     m_cancel = false;
 
@@ -66,18 +67,18 @@ Doxygen::Doxygen()
     m_projectProgress->setWindowModality(Qt::WindowModal);
     m_projectProgress->setMinimumWidth(300);
     m_projectProgress->setMinimum(0);
+    m_projectProgress->setWindowTitle("Processing project...");
     m_projectProgress->close();
 
     m_fileProgress = new QProgressDialog();
     m_fileProgress->setWindowModality(Qt::WindowModal);
     m_fileProgress->setMinimumWidth(300);
     m_fileProgress->setMinimum(0);
+    m_fileProgress->setWindowTitle("Processing file...");
     m_fileProgress->close();
 
     connect(m_projectProgress, SIGNAL(canceled()), this, SLOT(cancelOperation()));
     connect(m_fileProgress, SIGNAL(canceled()), this, SLOT(cancelOperation()));
-
-    this->start();
 }
 
 Doxygen::~Doxygen()
@@ -511,6 +512,7 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
     QString fileName("Processing "+editor->document()->filePath().fileName()+"...");
 
     uint count = 0;
+    emit message(fileName);
 
     if (symCount > symMin)
     {

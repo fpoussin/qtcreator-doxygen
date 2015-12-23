@@ -82,6 +82,7 @@ DoxygenSettingsStruct::DoxygenSettingsStruct() :
     verbosePrinting(false),
     automaticReturnType(true)
 {
+    qRegisterMetaType<DoxygenSettingsStruct>("DoxygenSettingsStruct");
 }
 
 void DoxygenSettingsStruct::fromSettings(QSettings *settings)

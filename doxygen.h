@@ -26,13 +26,12 @@
 #include <plugins/projectexplorer/project.h>
 #include <plugins/coreplugin/icore.h>
 #include <plugins/coreplugin/editormanager/ieditor.h>
-#include <QThread>
 #include <QProgressDialog>
 
 namespace DoxyPlugin {
 namespace Internal {
 
-class Doxygen : public QThread
+class Doxygen : public QObject
 {
     Q_OBJECT
 public:
@@ -54,7 +53,7 @@ private slots:
     void cancelOperation(void);
 
 private:
-    Doxygen();
+    Doxygen(QObject *parent = 0);
     ~Doxygen();
     void addSymbol(const CPlusPlus::Symbol* symbol, QList<const CPlusPlus::Symbol*> &symmap);
 

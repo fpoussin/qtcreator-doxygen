@@ -99,4 +99,7 @@ inline bool operator!=(const DoxygenSettingsStruct &p1, const DoxygenSettingsStr
 
 } // namespace Internal
 } // namespace DoxyPlugin
+
+Q_DECLARE_METATYPE(DoxyPlugin::Internal::DoxygenSettingsStruct)
+
 #endif // DOXYGENSETTINGSSTRUCT_H
