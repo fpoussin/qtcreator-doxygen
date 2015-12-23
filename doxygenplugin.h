@@ -58,8 +58,8 @@ public:
     static DoxygenPlugin* instance();
     void setSettings(const DoxygenSettingsStruct &s);
     DoxygenSettingsStruct settings() const;
-    DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut,
-                               bool showStdOutInOutputWindow, QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
+    DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut, bool showStdOutInOutputWindow,
+                               QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
 
 private:
     static DoxygenPlugin *m_doxygenPluginInstance;

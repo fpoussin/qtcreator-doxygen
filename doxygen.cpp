@@ -64,20 +64,27 @@ Doxygen::Doxygen()
 
     m_projectProgress = new QProgressDialog();
     m_projectProgress->setWindowModality(Qt::WindowModal);
-    m_projectProgress->hide();
-/*
+    m_projectProgress->setMinimumWidth(300);
+    m_projectProgress->setMinimum(0);
+    m_projectProgress->close();
+
     m_fileProgress = new QProgressDialog();
     m_fileProgress->setWindowModality(Qt::WindowModal);
-    m_fileProgress->hide();
-*/
-    connect(Doxygen::instance()->m_projectProgress, SIGNAL(canceled()), Doxygen::instance(), SLOT(cancelOperation()));
-    connect(Doxygen::instance()->m_fileProgress, SIGNAL(canceled()), Doxygen::instance(), SLOT(cancelOperation()));
+    m_fileProgress->setMinimumWidth(300);
+    m_fileProgress->setMinimum(0);
+    m_fileProgress->close();
+
+    connect(m_projectProgress, SIGNAL(canceled()), this, SLOT(cancelOperation()));
+    connect(m_fileProgress, SIGNAL(canceled()), this, SLOT(cancelOperation()));
 
     this->start();
 }
 
 Doxygen::~Doxygen()
 {
+    disconnect(m_projectProgress, SIGNAL(canceled()), this, SLOT(cancelOperation()));
+    disconnect(m_fileProgress, SIGNAL(canceled()), this, SLOT(cancelOperation()));
+
     delete m_projectProgress;
     delete m_fileProgress;
 }
@@ -177,12 +184,13 @@ bool Doxygen::documentEntity(const DoxygenSettingsStruct &DoxySettings, Core::IE
     }
 
     // We don't want to document multiple times.
-    //QRegExp duplicate("\\brief\s*([^\n\r])+");
+    // TODO: Find a better, faster way.
     QRegExp commentClosing("\\*/");
     QString text(editorWidget->document()->toPlainText());
     QStringList lines(text.split(QRegExp("\n|\r\n|\r")));
 
-    for (int i= 1; i <= 5; i++)
+    // We check the 4 previous lines for comments block closing.
+    for (int i= 1; i <= 4; i++)
     {
         int prevLine = lastLine - i;
         if (prevLine < 0) break;
@@ -440,6 +448,8 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
         return 0;
     }
 
+    m_cancel = false;
+
     CppTools::CppModelManager *modelManager = CppTools::CppModelManager::instance();
     //ExtensionSystem::PluginManager::instance()->getObject<CPlusPlus::CppModelManagerInterface>();
     if(!modelManager)
@@ -495,21 +505,19 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
         oldline = sym->line();
     }
 
+    const int symCount = symmap.size();
+    const int symMin = 100;
     TextEditor::TextEditorWidget *editorWidget = qobject_cast<TextEditor::TextEditorWidget*>(editor->widget());
     QString fileName("Processing "+editor->document()->filePath().fileName()+"...");
-    QProgressDialog fileProgress(fileName, "Cancel", 0, symmap.size());
-    fileProgress.setWindowModality(Qt::WindowModal);
-    fileProgress.hide();
 
     uint count = 0;
 
-    if (symmap.size() > 100)
+    if (symCount > symMin)
     {
-        m_projectProgress->hide();
-
-        //emit showProjectProgress(false);
-        //emit showFileProgress(true);
-        fileProgress.show();
+        m_fileProgress->setLabelText(fileName);
+        m_fileProgress->setMaximum(symCount);
+        m_fileProgress->setValue(0);
+        m_fileProgress->show();
     }
 
     if (editorWidget)
@@ -517,17 +525,15 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
         QList<const Symbol*>::iterator it = symmap.end();
         for (int i = 0 ; it != symmap.begin(); --it)
         {
-            if (i++ % 20 == 0) // Every n occurences
+            if (symCount > symMin && i++ % 20 == 0) // Every n occurences
             {
                 if (m_cancel)
                 {
                     break;
                 }
 
-                fileProgress.setValue(i);
-                fileProgress.update();
-
-                //qApp->processEvents(); // Need to repaint the progress bar
+                m_fileProgress->setValue(i);
+                m_fileProgress->update();
             }
             const Symbol* sym = *(it-1);
             editorWidget->gotoLine(sym->line());
@@ -541,11 +547,9 @@ uint Doxygen::documentFile(const DoxygenSettingsStruct &DoxySettings, Core::IEdi
                 count++;
         }
     }
-    emit showProjectProgress(true);
-    emit showFileProgress(false);
 
-    fileProgress.hide();
-    m_projectProgress->show();
+    if (symCount > symMin)
+        m_fileProgress->setValue(symCount);
 
     return count;
 }
@@ -564,6 +568,7 @@ uint Doxygen::documentCurrentProject(const DoxygenSettingsStruct &DoxySettings)
 void Doxygen::cancelOperation()
 {
     m_cancel = true;
+    emit message("Operation canceled");
 }
 
 uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettingsStruct &DoxySettings)
@@ -579,6 +584,7 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     }
 
     uint count = 0;
+    m_cancel = false;
     Core::EditorManager *editorManager = Core::EditorManager::instance();
     QStringList allFiles = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
     QStringList files;
@@ -594,15 +600,15 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     dialog->getFilesList(&files);
     delete dialog;
 
-    QProgressDialog progress("Processing files...", "Cancel", 0, files.size());
-    progress.setWindowModality(Qt::WindowModal);
+    m_projectProgress->setMaximum(files.size());
+    m_projectProgress->show();
 
     for(int i = 0 ; i < files.size() ; ++i)
     {
         bool documented = false;
-        progress.setValue(i);
+        m_projectProgress->setValue(i);
         //qDebug() << "Current file:" << i;
-        if(progress.wasCanceled()){
+        if(m_cancel) {
             break;
         }
 
@@ -658,7 +664,12 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
             }
         }
     }
-    progress.setValue(files.size());
+    m_projectProgress->setValue(files.size());
+
+    QString msg;
+    msg.sprintf("Doxygen blocs generated: %u", count);
+    emit message(msg);
+
     return count;
 }
 

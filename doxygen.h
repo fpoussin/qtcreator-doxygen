@@ -34,6 +34,7 @@ namespace Internal {
 
 class Doxygen : public QThread
 {
+    Q_OBJECT
 public:
     static Doxygen* instance();
     static QString getProjectRoot();
@@ -47,12 +48,6 @@ public slots:
     uint documentCurrentProject(const DoxygenSettingsStruct &DoxySettings);
 
 signals:
-    void showProjectProgress(bool);
-    void projectProgress(int, QString);
-
-    void showFileProgress(bool);
-    void fileProgress(int, QString);
-
     void message(QString);
 
 private slots:

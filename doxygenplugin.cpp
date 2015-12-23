@@ -172,14 +172,17 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     connect(m_doxygenDoxyfileWizardAction, SIGNAL(triggered(bool)), this, SLOT(doxyfileWizard()));
     doxygenMenu->addAction(command);
 
-    // Internal stuff
-    connect(Doxygen::instance(), SIGNAL(message(QString)), DoxygenPlugin::instance(), SLOT(externalString(QString)));
-    connect(DoxygenPlugin::instance(), SIGNAL(doxyDocumentEntity(DoxygenSettingsStruct,Core::IEditor*)),
-            Doxygen::instance(), SLOT(documentEntity(DoxygenSettingsStruct,Core::IEditor*)));
-    connect(DoxygenPlugin::instance(), SIGNAL(doxyDocumentFile(DoxygenSettingsStruct,Core::IEditor*)),
-            Doxygen::instance(), SLOT(documentFile(DoxygenSettingsStruct,Core::IEditor*)));
-    connect(DoxygenPlugin::instance(), SIGNAL(doxyDocumentCurrentProject(DoxygenSettingsStruct)(DoxygenSettingsStruct,Core::IEditor*)),
-            Doxygen::instance(), SLOT(documentCurrentProject(DoxygenSettingsStruct)(DoxygenSettingsStruct,Core::IEditor*)));
+    // Internal connections to worker thread
+    Doxygen* dox = Doxygen::instance();
+
+    connect(dox, SIGNAL(message(QString)), this, SLOT(externalString(QString)));
+
+    connect(this, SIGNAL(doxyDocumentEntity(DoxygenSettingsStruct,Core::IEditor*)),
+            dox, SLOT(documentEntity(DoxygenSettingsStruct,Core::IEditor*)));
+    connect(this, SIGNAL(doxyDocumentFile(DoxygenSettingsStruct,Core::IEditor*)),
+            dox, SLOT(documentFile(DoxygenSettingsStruct,Core::IEditor*)));
+    connect(this, SIGNAL(doxyDocumentCurrentProject(DoxygenSettingsStruct)),
+            dox, SLOT(documentCurrentProject(DoxygenSettingsStruct)));
 
     return true;
 }
@@ -209,7 +212,6 @@ void DoxygenPlugin::documentEntity()
 {
     Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
     emit doxyDocumentEntity(settings(), editor);
-    //Doxygen::instance()->documentEntity(settings(), editor);
 }
 
 void DoxygenPlugin::documentFile()
@@ -220,9 +222,6 @@ void DoxygenPlugin::documentFile()
     {
         Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
         emit doxyDocumentFile(settings(), editor);
-/*        uint count = Doxygen::instance()->documentFile(settings(), editor);
-        QString msg;
-        this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));*/
     }
 }
 
@@ -234,11 +233,6 @@ void DoxygenPlugin::documentSpecificProject()
 void DoxygenPlugin::documentCurrentProject()
 {
     emit doxyDocumentCurrentProject(settings());
-    /*
-    uint count = Doxygen::instance()->documentCurrentProject(settings());
-    QString msg;
-    this->externalString(msg.sprintf("Doxygen blocs generated: %u", count));
-    */
 }
 
 bool DoxygenPlugin::buildDocumentation() // TODO: refactor
