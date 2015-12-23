@@ -71,15 +71,18 @@ static const char CMD_ID_DOCUMENTACTIVEPROJECT[]  = "Doxygen.DocumentActiveProje
 static const char CMD_ID_BUILDDOCUMENTATION[]     = "Doxygen.BuildDocumentation";
 static const char CMD_ID_DOXYFILEWIZARD[]         = "Doxygen.RunWizard";
 
+DoxygenPlugin* DoxygenPlugin::m_instance = 0;
+
 DoxygenPlugin::DoxygenPlugin()
 {
-
+    m_instance = this;
 }
 
 DoxygenPlugin::~DoxygenPlugin()
 {
     // Unregister objects from the plugin manager's object pool
     // Delete members
+    m_instance = 0;
 }
 
 bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorString)
@@ -364,4 +367,9 @@ void DoxygenPlugin::externalString(const QString& text)
 DoxygenSettingsStruct DoxygenPlugin::settings() const
 {
     return m_settings->settings();
+}
+
+DoxygenPlugin* DoxygenPlugin::instance()
+{
+    return m_instance;
 }

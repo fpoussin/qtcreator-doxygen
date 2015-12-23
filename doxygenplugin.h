@@ -60,7 +60,10 @@ public:
     DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut, bool showStdOutInOutputWindow,
                                QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
 
+    static DoxygenPlugin* instance();
+
 private:
+    static DoxygenPlugin* m_instance;
     DoxygenSettings* m_settings;
     QAction* m_doxygenCreateDocumentationAction;
     QAction* m_doxygenDocumentFileAction;
