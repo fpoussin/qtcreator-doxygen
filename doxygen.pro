@@ -36,6 +36,13 @@ IDE_BUILD_TREE = $$(QTC_BUILD)
 unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=$$(HOME)/qtcreator-3.6.0
 win32:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=D:\src\build-qtcreator-5_5_1_msvc2013-Release
 
+## set the QTC_LIB_BASENAME environment variable to override the setting here
+## this variable points to the library installation path, relative to IDE_BUILD_TREE,
+## so that $$IDE_BUILD_TREE/$$IDE_LIBRARY_BASENAME/qtcreator will be used by
+## qtcreatorplugin.pri automatically as the qtcreator library path
+IDE_LIBRARY_BASENAME = $$(QTC_LIB_BASENAME)
+unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=usr/lib/x86_64-linux-gnu
+
 ## uncomment to build plugin into user config directory
 ## <localappdata>/plugins/<ideversion>
 ##    where <localappdata> is e.g.
@@ -65,12 +72,6 @@ QTC_PLUGIN_RECOMMENDS += \
 ###### End _dependencies.pri contents ######
 
 include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
-
-INCLUDEPATH += $$QTCREATOR_SOURCES/src
-linux-g++-64 {
-    LIBS += -L/usr/lib/x86_64-linux-gnu/qtcreator \
-            -L/usr/lib/x86_64-linux-gnu/qtcreator/plugins
-}
 
 DEFINES -= QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
 

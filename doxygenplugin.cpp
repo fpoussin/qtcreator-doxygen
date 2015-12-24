@@ -31,20 +31,18 @@
 #include <coreplugin/coreconstants.h>
 #include <coreplugin/messagemanager.h>
 #include <coreplugin/editormanager/editormanager.h>
-
-#include <plugins/cppeditor/cppeditorconstants.h>
-#include <plugins/cpptools/cpptoolsconstants.h>
-#include <plugins/projectexplorer/project.h>
-#include <plugins/projectexplorer/projectexplorer.h>
-#include <plugins/projectexplorer/session.h>
-#include <plugins/projectexplorer/projectexplorerconstants.h>
-#include <plugins/projectexplorer/projecttree.h>
-
-#include <libs/utils/qtcassert.h>
-#include <libs/utils/synchronousprocess.h>
-#include <libs/utils/parameteraction.h>
-#include <libs/extensionsystem/pluginmanager.h>
+#include <cppeditor/cppeditorconstants.h>
+#include <cpptools/cpptoolsconstants.h>
 #include <projectexplorer/project.h>
+#include <projectexplorer/projectexplorer.h>
+#include <projectexplorer/session.h>
+#include <projectexplorer/projectexplorerconstants.h>
+#include <projectexplorer/projecttree.h>
+
+#include <utils/qtcassert.h>
+#include <utils/synchronousprocess.h>
+#include <utils/parameteraction.h>
+#include <extensionsystem/pluginmanager.h>
 
 #include <QAction>
 #include <QMessageBox>
@@ -73,17 +71,18 @@ static const char CMD_ID_DOCUMENTACTIVEPROJECT[]  = "Doxygen.DocumentActiveProje
 static const char CMD_ID_BUILDDOCUMENTATION[]     = "Doxygen.BuildDocumentation";
 static const char CMD_ID_DOXYFILEWIZARD[]         = "Doxygen.RunWizard";
 
-DoxygenPlugin* DoxygenPlugin::m_doxygenPluginInstance = 0;
+DoxygenPlugin* DoxygenPlugin::m_instance = 0;
 
 DoxygenPlugin::DoxygenPlugin()
 {
-
+    m_instance = this;
 }
 
 DoxygenPlugin::~DoxygenPlugin()
 {
     // Unregister objects from the plugin manager's object pool
     // Delete members
+    m_instance = 0;
 }
 
 bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorString)
@@ -101,7 +100,6 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
 
     Q_UNUSED(arguments);
     Q_UNUSED(errorString);
-    m_doxygenPluginInstance = this;
 
     // settings dialog :)
     m_settings = new DoxygenSettings;
@@ -200,12 +198,6 @@ ExtensionSystem::IPlugin::ShutdownFlag DoxygenPlugin::aboutToShutdown()
     // Disconnect from signals that are not needed during shutdown
     // Hide UI (if you add UI that is not in the main window directly)
     return SynchronousShutdown;
-}
-
-DoxygenPlugin* DoxygenPlugin::instance()
-{
-    QTC_ASSERT(m_doxygenPluginInstance, return m_doxygenPluginInstance);
-    return m_doxygenPluginInstance;
 }
 
 void DoxygenPlugin::documentEntity()
@@ -375,4 +367,9 @@ void DoxygenPlugin::externalString(const QString& text)
 DoxygenSettingsStruct DoxygenPlugin::settings() const
 {
     return m_settings->settings();
+}
+
+DoxygenPlugin* DoxygenPlugin::instance()
+{
+    return m_instance;
 }

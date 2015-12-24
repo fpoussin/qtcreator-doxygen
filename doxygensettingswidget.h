@@ -23,7 +23,7 @@
 #define DOXYGENSETTINGSWIDGET_H
 
 #include <QWidget>
-#include <libs/utils/pathchooser.h>
+#include <utils/pathchooser.h>
 #include "doxygensettingsstruct.h"
 
 using namespace DoxyPlugin;

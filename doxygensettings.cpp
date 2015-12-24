@@ -23,19 +23,17 @@
 #include "doxygen.h"
 #include "doxygenplugin.h"
 #include "doxygenconstants.h"
-#include <plugins/coreplugin/icore.h>
-#include <libs/utils/qtcassert.h>
+#include <coreplugin/icore.h>
+#include <utils/qtcassert.h>
 #include <QtCore/QCoreApplication>
 #include <QIcon>
 
 namespace DoxyPlugin {
 namespace Internal {
 
-DoxygenSettings* DoxygenSettings::m_doxygenSettingsInstance = 0;
-
-DoxygenSettings::DoxygenSettings()
+DoxygenSettings::DoxygenSettings() :
+    m_widget(0)
 {
-    m_doxygenSettingsInstance = this;
     if(QSettings *settings = Core::ICore::instance()->settings())
         m_settings.fromSettings(settings);
     setId("A.General");
@@ -45,28 +43,24 @@ DoxygenSettings::DoxygenSettings()
     setCategoryIcon(":/doxygen.png");
 }
 
-QWidget* DoxygenSettings::createPage(QWidget *parent)
-{
-    m_widget = new DoxygenSettingsWidget(parent);
-    m_widget->setSettings(settings());
-    return m_widget;
-}
-
 QWidget* DoxygenSettings::widget()
 {
-    m_widget = new DoxygenSettingsWidget;
-    m_widget->setSettings(settings());
+    if (! m_widget) {
+        m_widget = new DoxygenSettingsWidget;
+        m_widget->setSettings(settings());
+    }
     return m_widget;
 }
 
 void DoxygenSettings::apply()
 {
+    if (!m_widget)
+        return;
     setSettings(m_widget->settings());
 }
 
 void DoxygenSettings::finish()
 {
-    delete m_widget;
 }
 
 DoxygenSettingsStruct DoxygenSettings::settings() const
@@ -82,12 +76,6 @@ void DoxygenSettings::setSettings(const DoxygenSettingsStruct &s)
         if(QSettings *settings = Core::ICore::instance()->settings())
             m_settings.toSettings(settings);
     }
-}
-
-DoxygenSettings* DoxygenSettings::instance()
-{
-    QTC_ASSERT(m_doxygenSettingsInstance, return m_doxygenSettingsInstance);
-    return m_doxygenSettingsInstance;
 }
 
 }
