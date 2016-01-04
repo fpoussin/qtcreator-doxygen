@@ -29,6 +29,7 @@
 #include <extensionsystem/iplugin.h>
 #include "doxygensettings.h"
 #include "doxygensettingsstruct.h"
+#include <QProcess>
 
 namespace DoxyPlugin {
 namespace Internal {
@@ -57,8 +58,8 @@ public:
 
     void setSettings(const DoxygenSettingsStruct &s);
     DoxygenSettingsStruct settings() const;
-    DoxygenResponse runDoxygen(const QStringList &arguments, int timeOut, bool showStdOutInOutputWindow,
-                               QString workingDirectory = QString(), QTextCodec *outputCodec = 0);
+    void runDoxygen(const QStringList &arguments,
+                               QString workingDirectory = QString());
 
     static DoxygenPlugin* instance();
 
@@ -71,6 +72,7 @@ private:
     QAction* m_doxygenDocumentActiveProjectAction;
     QAction* m_doxygenBuildDocumentationAction;
     QAction* m_doxygenDoxyfileWizardAction;
+    QProcess m_process;
 
 signals:
     void doxyDocumentEntity(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
@@ -87,6 +89,9 @@ private slots:
     bool buildDocumentation();
     void doxyfileWizard();
     void externalString(const QString&);
+
+    void processExited(int returnCode, QProcess::ExitStatus exitStatus);
+    void readProcessOutput(void);
 };
 
 } // namespace Internal

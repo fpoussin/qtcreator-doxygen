@@ -52,6 +52,7 @@
 #include <QStringList>
 #include <QFileInfo>
 #include <QString>
+#include <QProcess>
 
 #include <QtPlugin>
 
@@ -182,6 +183,12 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     connect(this, SIGNAL(doxyDocumentCurrentProject(DoxygenSettingsStruct)),
             dox, SLOT(documentCurrentProject(DoxygenSettingsStruct)));
 
+    // Process connection for Doxygen
+    connect(&m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(processExited(int,QProcess::ExitStatus)));
+    connect(&m_process, SIGNAL(readyRead()),
+            this, SLOT(readProcessOutput()));
+
     return true;
 }
 
@@ -231,12 +238,15 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
 {
     // TODO, allow configuration of the command
     // the default here will just run doxygen at the project root
-    const Core::EditorManager *editorManager = Core::EditorManager::instance();
-    Core::IEditor *editor = editorManager->currentEditor();
 
-    // prevent a crash if user launches this command with no editor opened
-    if(!editor)
+    ProjectExplorer::Project *p = ProjectExplorer::ProjectTree::currentProject();
+    if (!p) {
+        QMessageBox::warning((QWidget*)parent(),
+                             tr("Doxygen"),
+                             tr("You don't have any current project."),
+                             QMessageBox::Close, QMessageBox::NoButton);
         return false;
+    }
 
     QString projectRoot = Doxygen::getProjectRoot();
     if(!projectRoot.size())
@@ -252,21 +262,16 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
     if(!doxyFileInfo.exists())
     {
         args << "-g" << doxyFile;
-        DoxygenResponse response = runDoxygen(args, doxygenTimeOut, true, projectRoot);
-        if(!response.error)
-            args.clear();
-        else return !response.error;
+        runDoxygen(args, projectRoot);
+        return true;
     }
     args << doxyFile;
-    DoxygenResponse response = runDoxygen(args, doxygenTimeOut, true, projectRoot);
-    return !response.error;
+    runDoxygen(args, projectRoot);
+    return false;
 }
 
 void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 {
-//    qDebug() << "DoxygenPlugin::doxyfileWizard()";
-    Core::MessageManager* msgManager = dynamic_cast<Core::MessageManager*>(Core::MessageManager::instance());
-
     // prevent a crash if user launches this command with no project opened
     // You don't need to have an editor open for that.
     ProjectExplorer::Project *p = ProjectExplorer::ProjectTree::currentProject();
@@ -287,81 +292,63 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
     if(!ret)
     {
         const QString outputText = tr("Failed to launch %1\n").arg(executable);
-        msgManager->showOutputPane();
-        msgManager->write(outputText, Core::MessageManager::WithFocus);
+        externalString(outputText);
     }
 }
 
-DoxygenResponse DoxygenPlugin::runDoxygen(const QStringList &arguments, int timeOut,
-                                          bool showStdOutInOutputWindow, QString workingDirectory,
-                                          QTextCodec *outputCodec)
+void DoxygenPlugin::runDoxygen(const QStringList &arguments, QString workingDirectory)
 {
     const QString executable = settings().doxygenCommand;
-    DoxygenResponse response;
     if(executable.isEmpty())
     {
-        response.error = true;
-        response.message = tr("No doxygen executable specified");
-        return response;
+        externalString(tr("No doxygen executable specified"));
+        return;
     }
     const QStringList allArgs = settings().addOptions(arguments);
-
-    // TODO, get a better output with printError...
-    Core::MessageManager* msgManager = dynamic_cast<Core::MessageManager*>(Core::MessageManager::instance());
-    msgManager->showOutputPane();
-
     const QString outputText = tr("Executing: %1 %2\n").arg(executable).arg(DoxygenSettingsStruct::formatArguments(allArgs));
-    msgManager->write(outputText,Core::MessageManager::WithFocus);
+    externalString(outputText);
 
-    // Run, connect stderr to the output window
-    Utils::SynchronousProcess process;
-    if(!workingDirectory.isEmpty())
-        process.setWorkingDirectory(workingDirectory);
-    process.setTimeoutS(timeOut);
-    process.setCodec(outputCodec);
+    m_process.close();
+    m_process.waitForFinished();
 
-    process.setStdErrBufferedSignalsEnabled(true);
-    connect(&process, SIGNAL(stdErrBuffered(QString,bool)), this, SLOT(externalString(const QString&, bool)));
+    m_process.setWorkingDirectory(workingDirectory);
 
-    // connect stdout to the output window if desired
-    if (showStdOutInOutputWindow) {
-        process.setStdOutBufferedSignalsEnabled(true);
-        connect(&process, SIGNAL(stdOutBuffered(QString,bool)), this, SLOT(externalString(const QString&, bool)));
-    }
+    m_process.start(executable, allArgs);
+    m_process.waitForStarted();
 
-    const Utils::SynchronousProcessResponse sp_resp = process.run(executable, allArgs);
-    response.error = true;
-    response.stdErr = sp_resp.stdErr;
-    response.stdOut = sp_resp.stdOut;
-    switch (sp_resp.result)
-    {
-    case Utils::SynchronousProcessResponse::Finished:
-        response.error = false;
-        break;
-    case Utils::SynchronousProcessResponse::FinishedError:
-        response.message = tr("The process terminated with exit code %1.").arg(sp_resp.exitCode);
-        break;
-    case Utils::SynchronousProcessResponse::TerminatedAbnormally:
-        response.message = tr("The process terminated abnormally.");
-        break;
-    case Utils::SynchronousProcessResponse::StartFailed:
-        response.message = tr("Could not start doxygen '%1'. Please check your settings in the preferences.").arg(executable);
-        break;
-    case Utils::SynchronousProcessResponse::Hang:
-        response.message = tr("Doxygen did not respond within timeout limit (%1 ms).").arg(timeOut);
-        break;
-    }
-    if (response.error)
-        msgManager->write(response.message,Core::MessageManager::WithFocus);
-    else msgManager->write(tr("All good mate!"),Core::MessageManager::WithFocus);
-
-    return response;
+    return;
 }
 
 void DoxygenPlugin::externalString(const QString& text)
 {
     Core::MessageManager::write(text);
     Core::MessageManager::showOutputPane();
+}
+
+void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatus)
+{
+    DoxygenResponse response;
+    response.error = true;
+    response.stdErr = m_process.readAllStandardError();
+    response.stdOut = m_process.readAllStandardOutput();
+    switch (exitStatus)
+    {
+    case QProcess::NormalExit:
+        response.error = false;
+        break;
+    case QProcess::CrashExit:
+        response.message = tr("The process terminated with exit code %1.").arg(returnCode);
+        break;
+    }
+    if (response.error)
+        externalString(response.message);
+    else externalString(tr("Doxygen ran successfully"));
+
+}
+
+void DoxygenPlugin::readProcessOutput()
+{
+    externalString(m_process.readAll());
 }
 
 DoxygenSettingsStruct DoxygenPlugin::settings() const
