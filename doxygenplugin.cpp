@@ -315,7 +315,8 @@ void DoxygenPlugin::runDoxygen(const QStringList &arguments, QString workingDire
     m_process->setWorkingDirectory(workingDirectory);
 
     m_process->start(executable, allArgs);
-    m_process->waitForStarted();
+    if (!m_process->waitForStarted(5000))
+        qDebug("Could not start %s within 5 seconds", executable.toStdString().c_str());
 
     return;
 }
