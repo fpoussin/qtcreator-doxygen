@@ -184,9 +184,10 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
             dox, SLOT(documentCurrentProject(DoxygenSettingsStruct)));
 
     // Process connection for Doxygen
-    connect(&m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+    m_process = new QProcess();
+    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(processExited(int,QProcess::ExitStatus)));
-    connect(&m_process, SIGNAL(readyRead()),
+    connect(m_process, SIGNAL(readyRead()),
             this, SLOT(readProcessOutput()));
 
     return true;
@@ -308,13 +309,13 @@ void DoxygenPlugin::runDoxygen(const QStringList &arguments, QString workingDire
     const QString outputText = tr("Executing: %1 %2\n").arg(executable).arg(DoxygenSettingsStruct::formatArguments(allArgs));
     externalString(outputText);
 
-    m_process.close();
-    m_process.waitForFinished();
+    m_process->close();
+    m_process->waitForFinished();
 
-    m_process.setWorkingDirectory(workingDirectory);
+    m_process->setWorkingDirectory(workingDirectory);
 
-    m_process.start(executable, allArgs);
-    m_process.waitForStarted();
+    m_process->start(executable, allArgs);
+    m_process->waitForStarted();
 
     return;
 }
@@ -329,8 +330,8 @@ void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatu
 {
     DoxygenResponse response;
     response.error = true;
-    response.stdErr = m_process.readAllStandardError();
-    response.stdOut = m_process.readAllStandardOutput();
+    response.stdErr = m_process->readAllStandardError();
+    response.stdOut = m_process->readAllStandardOutput();
     switch (exitStatus)
     {
     case QProcess::NormalExit:
@@ -348,7 +349,7 @@ void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatu
 
 void DoxygenPlugin::readProcessOutput()
 {
-    externalString(m_process.readAll());
+    externalString(m_process->readAll());
 }
 
 DoxygenSettingsStruct DoxygenPlugin::settings() const

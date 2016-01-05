@@ -72,7 +72,7 @@ private:
     QAction* m_doxygenDocumentActiveProjectAction;
     QAction* m_doxygenBuildDocumentationAction;
     QAction* m_doxygenDoxyfileWizardAction;
-    QProcess m_process;
+    QProcess* m_process;
 
 signals:
     void doxyDocumentEntity(const DoxygenSettingsStruct &DoxySettings, Core::IEditor *editor);
