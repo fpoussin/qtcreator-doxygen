@@ -588,7 +588,7 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     uint count = 0;
     m_cancel = false;
     Core::EditorManager *editorManager = Core::EditorManager::instance();
-    QStringList allFiles = p->files(ProjectExplorer::Project::ExcludeGeneratedFiles);
+    QStringList allFiles = p->files(ProjectExplorer::Project::SourceFiles);
     QStringList files;
 
     allFiles = allFiles.filter(QRegExp("\\.(h|hpp|c|cpp)$"));

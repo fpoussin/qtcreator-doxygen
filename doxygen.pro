@@ -28,12 +28,12 @@ RESOURCES += doxygen.qrc
 
 ## set the QTC_SOURCE environment variable to override the setting here
 QTCREATOR_SOURCES = $$(QTC_SOURCE)
-unix:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=$$(HOME)/src/qt-creator-opensource-src-3.6.0
-win32:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=D:\src\qt-creator-opensource-src-3.6.0
+unix:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=$$(HOME)/src/qt-creator-opensource-src-4.0.0-rc1
+win32:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=D:\src\qt-creator-opensource-src-4.0.0-rc1
 
 ## set the QTC_BUILD environment variable to override the setting here
 IDE_BUILD_TREE = $$(QTC_BUILD)
-unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=$$(HOME)/qtcreator-3.6.0
+unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=$$(HOME)/qtcreator-4.0.0-rc1
 win32:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=D:\src\build-qtcreator-5_5_1_msvc2013-Release
 
 ## set the QTC_LIB_BASENAME environment variable to override the setting here
