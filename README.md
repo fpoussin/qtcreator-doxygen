@@ -1,7 +1,7 @@
 # qtcreator-doxygen
 Doxygen Plugin for Qt Creator
 
-[![GitHub version](https://badge.fury.io/gh/fpoussin%2Fqtcreator-doxygen.svg)](https://badge.fury.io/gh/fpoussin%2Fqtcreator-doxygen)  
+[![GitHub version](https://badge.fury.io/gh/fpoussin%2Fqtcreator-doxygen.svg)](https://github.com/fpoussin/qtcreator-doxygen/releases)  
 
 This project is a fork of the original plugins at: http://dev.kofee.org/projects/qtcreator-doxygen  
 Built for the latest Qt-Creator versions. (3.5.x-3.6.x)
