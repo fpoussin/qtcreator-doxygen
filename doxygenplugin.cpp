@@ -331,8 +331,8 @@ void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatu
 {
     DoxygenResponse response;
     response.error = true;
-    response.stdErr = m_process->readAllStandardError();
-    response.stdOut = m_process->readAllStandardOutput();
+    response.stdErr = QLatin1String(m_process->readAllStandardError());
+    response.stdOut = QLatin1String(m_process->readAllStandardOutput());
     switch (exitStatus)
     {
     case QProcess::NormalExit:
@@ -350,7 +350,7 @@ void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatu
 
 void DoxygenPlugin::readProcessOutput()
 {
-    externalString(m_process->readAll());
+    externalString(QLatin1String(m_process->readAll()));
 }
 
 DoxygenSettingsStruct DoxygenPlugin::settings() const
