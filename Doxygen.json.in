@@ -1,6 +1,6 @@
 {
     \"Name\" : \"Doxygen\",
-    \"Version\" : \"0.4.4\",
+    \"Version\" : \"0.4.5\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
     \"Vendor\" : \"Fabien Poussin\",
     \"Copyright\" : \"Fabien Poussin\",
@@ -17,4 +17,3 @@
     \"Url\" : \"https://github.com/fpoussin/qtcreator-doxygen\",
     $$dependencyList
 }
-

@@ -25,6 +25,7 @@
 #include "doxygenconstants.h"
 #include <coreplugin/icore.h>
 #include <utils/qtcassert.h>
+#include <utils/icon.h>
 #include <QtCore/QCoreApplication>
 #include <QIcon>
 
@@ -40,7 +41,7 @@ DoxygenSettings::DoxygenSettings() :
     setDisplayName(tr("Doxygen"));
     setCategory(Core::Id::fromString(QString(Constants::DOXYGEN_SETTINGS_CATEGORY)));
     setDisplayCategory("Doxygen");
-    setCategoryIcon(":/doxygen.png");
+    setCategoryIcon(Utils::Icon(":/doxygen.png"));
 }
 
 QWidget* DoxygenSettings::widget()
