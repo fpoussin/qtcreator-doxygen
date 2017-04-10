@@ -588,13 +588,13 @@ uint Doxygen::documentProject(ProjectExplorer::Project *p, const DoxygenSettings
     uint count = 0;
     m_cancel = false;
     Core::EditorManager *editorManager = Core::EditorManager::instance();
-    QStringList allFiles = p->files(ProjectExplorer::Project::SourceFiles);
+
     QStringList files;
 
-    allFiles = allFiles.filter(QRegExp("\\.(h|hpp|c|cpp)$"));
-    DoxygenFilesDialog *dialog = new DoxygenFilesDialog(allFiles, NULL);
+    DoxygenFilesDialog *dialog = new DoxygenFilesDialog(NULL);
+    dialog->initFileTree(p->rootProjectNode());
 
-    if (dialog->result() != QDialog::Accepted)
+    if (dialog->exec() != QDialog::Accepted)
     {
         delete dialog;
         return 0;
