@@ -21,10 +21,15 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QListWidget" name="listWidget">
-     <property name="sortingEnabled">
+    <widget class="QTreeWidget" name="treeWidget">
+     <property name="headerHidden">
       <bool>true</bool>
      </property>
+     <column>
+      <property name="text">
+       <string/>
+      </property>
+     </column>
     </widget>
    </item>
    <item>
