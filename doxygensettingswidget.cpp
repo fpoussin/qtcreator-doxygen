@@ -22,9 +22,9 @@
 #include "doxygensettingswidget.h"
 #include "ui_doxygensettingswidget.h"
 
-DoxygenSettingsWidget::DoxygenSettingsWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::DoxygenSettingsWidget)
+DoxygenSettingsWidget::DoxygenSettingsWidget(QWidget* parent)
+    : QWidget(parent)
+    , ui(new Ui::DoxygenSettingsWidget)
 {
     ui->setupUi(this);
     ui->pathChooser_doxygen->setExpectedKind(Utils::PathChooser::Command);
@@ -41,7 +41,7 @@ DoxygenSettingsWidget::~DoxygenSettingsWidget()
     delete ui;
 }
 
-void DoxygenSettingsWidget::changeEvent(QEvent *e)
+void DoxygenSettingsWidget::changeEvent(QEvent* e)
 {
     QWidget::changeEvent(e);
     switch (e->type()) {
@@ -79,7 +79,7 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
     return rc;
 }
 
-void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct &s)
+void DoxygenSettingsWidget::setSettings(const DoxygenSettingsStruct& s)
 {
     ui->pathChooser_doxygen->setPath(s.doxygenCommand);
     ui->pathChooser_wizard->setPath(s.doxywizardCommand);
@@ -115,24 +115,19 @@ void DoxygenSettingsWidget::on_fileComments_clicked(bool checked)
 {
     Files2Comment toComment = Files2Comment(ui->fcommentChooser->currentIndex());
     ui->fileCommentText->setEnabled(checked);
-    if(checked == false || toComment == all)
-    {
+    if (checked == false || toComment == all) {
         checked = false;
         ui->label_filecommentHeaders->setVisible(checked);
         ui->label_filecommentImpl->setVisible(checked);
         ui->commentHeaderFiles->setVisible(checked);
         ui->commentImplementationFiles->setVisible(checked);
-    }
-    else if(toComment == headers)
-    {
+    } else if (toComment == headers) {
         ui->label_filecommentHeaders->setVisible(false);
         ui->label_filecommentImpl->setVisible(true);
 
         ui->commentHeaderFiles->setVisible(false);
         ui->commentImplementationFiles->setVisible(true);
-    }
-    else if(toComment == implementations)
-    {
+    } else if (toComment == implementations) {
         ui->label_filecommentHeaders->setVisible(true);
         ui->label_filecommentImpl->setVisible(false);
         ui->commentHeaderFiles->setVisible(true);

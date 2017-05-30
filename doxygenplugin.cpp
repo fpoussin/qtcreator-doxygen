@@ -20,39 +20,39 @@
 **/
 
 #include "doxygenplugin.h"
-#include "doxygenconstants.h"
 #include "doxygen.h"
+#include "doxygenconstants.h"
 
-#include <coreplugin/icore.h>
-#include <coreplugin/icontext.h>
+#include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/actionmanager/actionmanager.h>
 #include <coreplugin/actionmanager/command.h>
-#include <coreplugin/actionmanager/actioncontainer.h>
 #include <coreplugin/coreconstants.h>
-#include <coreplugin/messagemanager.h>
 #include <coreplugin/editormanager/editormanager.h>
+#include <coreplugin/icontext.h>
+#include <coreplugin/icore.h>
+#include <coreplugin/messagemanager.h>
 #include <cppeditor/cppeditorconstants.h>
 #include <cpptools/cpptoolsconstants.h>
 #include <projectexplorer/project.h>
 #include <projectexplorer/projectexplorer.h>
-#include <projectexplorer/session.h>
 #include <projectexplorer/projectexplorerconstants.h>
 #include <projectexplorer/projecttree.h>
+#include <projectexplorer/session.h>
 
+#include <extensionsystem/pluginmanager.h>
+#include <utils/parameteraction.h>
 #include <utils/qtcassert.h>
 #include <utils/synchronousprocess.h>
-#include <utils/parameteraction.h>
-#include <extensionsystem/pluginmanager.h>
 
 #include <QAction>
-#include <QMessageBox>
+#include <QFileInfo>
+#include <QKeySequence>
 #include <QMainWindow>
 #include <QMenu>
-#include <QKeySequence>
-#include <QStringList>
-#include <QFileInfo>
-#include <QString>
+#include <QMessageBox>
 #include <QProcess>
+#include <QString>
+#include <QStringList>
 
 #include <QtPlugin>
 
@@ -61,16 +61,16 @@ using namespace DoxyPlugin;
 using namespace DoxyPlugin::Internal;
 
 // Timeout for building documentation
-enum { doxygenTimeOut = 120};
+enum { doxygenTimeOut = 120 };
 
-static const char CMD_ID_DOXYGEN_MAINVIEW[]       = "Doxygen.MainView";
-static const char CMD_ID_DOXYGEN_MENU[]           = "Doxygen.Menu";
-static const char CMD_ID_CREATEDOCUMENTATION[]    = "Doxygen.CreateDocumentation";
-static const char CMD_ID_DOCUMENTFILE[]           = "Doxygen.DocumentFile";
-static const char CMD_ID_DOCUMENTOPENEDPROJECT[]  = "Doxygen.DocumentOpenedProject";
-static const char CMD_ID_DOCUMENTACTIVEPROJECT[]  = "Doxygen.DocumentActiveProject";
-static const char CMD_ID_BUILDDOCUMENTATION[]     = "Doxygen.BuildDocumentation";
-static const char CMD_ID_DOXYFILEWIZARD[]         = "Doxygen.RunWizard";
+static const char CMD_ID_DOXYGEN_MAINVIEW[] = "Doxygen.MainView";
+static const char CMD_ID_DOXYGEN_MENU[] = "Doxygen.Menu";
+static const char CMD_ID_CREATEDOCUMENTATION[] = "Doxygen.CreateDocumentation";
+static const char CMD_ID_DOCUMENTFILE[] = "Doxygen.DocumentFile";
+static const char CMD_ID_DOCUMENTOPENEDPROJECT[] = "Doxygen.DocumentOpenedProject";
+static const char CMD_ID_DOCUMENTACTIVEPROJECT[] = "Doxygen.DocumentActiveProject";
+static const char CMD_ID_BUILDDOCUMENTATION[] = "Doxygen.BuildDocumentation";
+static const char CMD_ID_DOXYFILEWIZARD[] = "Doxygen.RunWizard";
 
 DoxygenPlugin* DoxygenPlugin::m_instance = 0;
 
@@ -86,7 +86,7 @@ DoxygenPlugin::~DoxygenPlugin()
     m_instance = 0;
 }
 
-bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorString)
+bool DoxygenPlugin::initialize(const QStringList& arguments, QString* errorString)
 {
     // Register objects in the plugin manager's object pool
     // Load settings
@@ -106,35 +106,35 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     m_settings = new DoxygenSettings;
     addAutoReleasedObject(m_settings);
 
-    Core::ActionManager *am = Core::ActionManager::instance();
+    Core::ActionManager* am = Core::ActionManager::instance();
     Core::Context globalcontext(C_GLOBAL);
     //Core::Context context(CMD_ID_DOXYGEN_MAINVIEW);
-    Core::ActionContainer *toolsContainer = am->actionContainer(Core::Constants::M_TOOLS);
-    Core::ActionContainer *doxygenMenu = am->createMenu(Core::Id(CMD_ID_DOXYGEN_MENU));
+    Core::ActionContainer* toolsContainer = am->actionContainer(Core::Constants::M_TOOLS);
+    Core::ActionContainer* doxygenMenu = am->createMenu(Core::Id(CMD_ID_DOXYGEN_MENU));
     doxygenMenu->menu()->setTitle(tr("&Doxygen"));
     toolsContainer->addMenu(doxygenMenu);
 
     // put action in our own menu in "Tools"
     // create documentation for symbol under cursor
-    Core::Command *command;
-    m_doxygenCreateDocumentationAction = new QAction(tr("Document current entity"),  this);
+    Core::Command* command;
+    m_doxygenCreateDocumentationAction = new QAction(tr("Document current entity"), this);
     command = am->registerAction(m_doxygenCreateDocumentationAction, CMD_ID_CREATEDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F9")));
     connect(m_doxygenCreateDocumentationAction, SIGNAL(triggered(bool)), this, SLOT(documentEntity()));
     doxygenMenu->addAction(command);
     // Don't forget the contextual menu
-    Core::ActionContainer *contextMenu= am->createMenu(CppEditor::Constants::M_CONTEXT);
+    Core::ActionContainer* contextMenu = am->createMenu(CppEditor::Constants::M_CONTEXT);
     contextMenu->addAction(command);
 
     // create documentation for a whole file
-    m_doxygenDocumentFileAction = new QAction(tr("Document current file"),  this);
+    m_doxygenDocumentFileAction = new QAction(tr("Document current file"), this);
     command = am->registerAction(m_doxygenDocumentFileAction, CMD_ID_DOCUMENTFILE, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F5")));
     connect(m_doxygenDocumentFileAction, SIGNAL(triggered(bool)), this, SLOT(documentFile()));
     doxygenMenu->addAction(command);
-/*
+    /*
     // create documentation for a whole project of the currently opened file
     m_doxygenDocumentOpenedProjectAction = new QAction(tr("Document whole project of opened file"),  this);
     command = am->registerAction(m_doxygenDocumentOpenedProjectAction,
@@ -146,17 +146,17 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     doxygenMenu->addAction(command);
 */
     // create documentation for a whole project
-    m_doxygenDocumentActiveProjectAction = new QAction(tr("Document current project"),  this);
+    m_doxygenDocumentActiveProjectAction = new QAction(tr("Document current project"), this);
     command = am->registerAction(m_doxygenDocumentActiveProjectAction,
-            CMD_ID_DOCUMENTACTIVEPROJECT, globalcontext);
+        CMD_ID_DOCUMENTACTIVEPROJECT, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F8")));
     connect(m_doxygenDocumentActiveProjectAction, SIGNAL(triggered(bool)),
-            this, SLOT(documentCurrentProject()));
+        this, SLOT(documentCurrentProject()));
     doxygenMenu->addAction(command);
 
     // "compile" documentation action
-    m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"),  this);
+    m_doxygenBuildDocumentationAction = new QAction(tr("Build Doxygen Documentation"), this);
     command = am->registerAction(m_doxygenBuildDocumentationAction, CMD_ID_BUILDDOCUMENTATION, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F4")));
@@ -164,7 +164,7 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
     doxygenMenu->addAction(command);
 
     // edit Doxyfile action
-    m_doxygenDoxyfileWizardAction = new QAction(tr("Edit Doxyfile"),  this);
+    m_doxygenDoxyfileWizardAction = new QAction(tr("Edit Doxyfile"), this);
     command = am->registerAction(m_doxygenDoxyfileWizardAction, CMD_ID_DOXYFILEWIZARD, globalcontext);
     command->setAttribute(Core::Command::CA_UpdateText);
     command->setDefaultKeySequence(QKeySequence(tr("Ctrl+Shift+F6")));
@@ -176,19 +176,19 @@ bool DoxygenPlugin::initialize(const QStringList &arguments, QString *errorStrin
 
     connect(dox, SIGNAL(message(QString)), this, SLOT(externalString(QString)));
 
-    connect(this, SIGNAL(doxyDocumentEntity(DoxygenSettingsStruct,Core::IEditor*)),
-            dox, SLOT(documentEntity(DoxygenSettingsStruct,Core::IEditor*)));
-    connect(this, SIGNAL(doxyDocumentFile(DoxygenSettingsStruct,Core::IEditor*)),
-            dox, SLOT(documentFile(DoxygenSettingsStruct,Core::IEditor*)));
+    connect(this, SIGNAL(doxyDocumentEntity(DoxygenSettingsStruct, Core::IEditor*)),
+        dox, SLOT(documentEntity(DoxygenSettingsStruct, Core::IEditor*)));
+    connect(this, SIGNAL(doxyDocumentFile(DoxygenSettingsStruct, Core::IEditor*)),
+        dox, SLOT(documentFile(DoxygenSettingsStruct, Core::IEditor*)));
     connect(this, SIGNAL(doxyDocumentCurrentProject(DoxygenSettingsStruct)),
-            dox, SLOT(documentCurrentProject(DoxygenSettingsStruct)));
+        dox, SLOT(documentCurrentProject(DoxygenSettingsStruct)));
 
     // Process connection for Doxygen
     m_process = new QProcess();
-    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
-            this, SLOT(processExited(int,QProcess::ExitStatus)));
+    connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+        this, SLOT(processExited(int, QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyRead()),
-            this, SLOT(readProcessOutput()));
+        this, SLOT(readProcessOutput()));
 
     return true;
 }
@@ -210,17 +210,17 @@ ExtensionSystem::IPlugin::ShutdownFlag DoxygenPlugin::aboutToShutdown()
 
 void DoxygenPlugin::documentEntity()
 {
-    Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
+    Core::IEditor* editor = Core::EditorManager::instance()->currentEditor();
     emit doxyDocumentEntity(settings(), editor);
 }
 
 void DoxygenPlugin::documentFile()
 {
     if (QMessageBox::question((QWidget*)this->parent(),
-                              "Doxygen", "Document current File?",
-                              QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
-    {
-        Core::IEditor *editor = Core::EditorManager::instance()->currentEditor();
+            "Doxygen", "Document current File?",
+            QMessageBox::Yes, QMessageBox::No)
+        == QMessageBox::Yes) {
+        Core::IEditor* editor = Core::EditorManager::instance()->currentEditor();
         emit doxyDocumentFile(settings(), editor);
     }
 }
@@ -240,17 +240,17 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
     // TODO, allow configuration of the command
     // the default here will just run doxygen at the project root
 
-    ProjectExplorer::Project *p = ProjectExplorer::ProjectTree::currentProject();
+    ProjectExplorer::Project* p = ProjectExplorer::ProjectTree::currentProject();
     if (!p) {
         QMessageBox::warning((QWidget*)parent(),
-                             tr("Doxygen"),
-                             tr("You don't have any current project."),
-                             QMessageBox::Close, QMessageBox::NoButton);
+            tr("Doxygen"),
+            tr("You don't have any current project."),
+            QMessageBox::Close, QMessageBox::NoButton);
         return false;
     }
 
     QString projectRoot = Doxygen::getProjectRoot();
-    if(!projectRoot.size())
+    if (!projectRoot.size())
         return false;
 
     QString doxyFile = projectRoot;
@@ -260,8 +260,7 @@ bool DoxygenPlugin::buildDocumentation() // TODO: refactor
     // create default Doxyfile if it doesn't exist
     QFileInfo doxyFileInfo(doxyFile);
 
-    if(!doxyFileInfo.exists())
-    {
+    if (!doxyFileInfo.exists()) {
         args << "-g" << doxyFile;
         runDoxygen(args, projectRoot);
         return true;
@@ -275,12 +274,12 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 {
     // prevent a crash if user launches this command with no project opened
     // You don't need to have an editor open for that.
-    ProjectExplorer::Project *p = ProjectExplorer::ProjectTree::currentProject();
+    ProjectExplorer::Project* p = ProjectExplorer::ProjectTree::currentProject();
     if (!p) {
         QMessageBox::warning((QWidget*)parent(),
-                             tr("Doxygen"),
-                             tr("You don't have any current project."),
-                             QMessageBox::Close, QMessageBox::NoButton);
+            tr("Doxygen"),
+            tr("You don't have any current project."),
+            QMessageBox::Close, QMessageBox::NoButton);
         return;
     }
 
@@ -290,18 +289,16 @@ void DoxygenPlugin::doxyfileWizard() // TODO: refactor
 
     bool ret = QProcess::startDetached(settings().doxywizardCommand, arglist, projectRoot);
 
-    if(!ret)
-    {
+    if (!ret) {
         const QString outputText = tr("Failed to launch %1\n").arg(executable);
         externalString(outputText);
     }
 }
 
-void DoxygenPlugin::runDoxygen(const QStringList &arguments, QString workingDirectory)
+void DoxygenPlugin::runDoxygen(const QStringList& arguments, QString workingDirectory)
 {
     const QString executable = settings().doxygenCommand;
-    if(executable.isEmpty())
-    {
+    if (executable.isEmpty()) {
         externalString(tr("No doxygen executable specified"));
         return;
     }
@@ -333,8 +330,7 @@ void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatu
     response.error = true;
     response.stdErr = QLatin1String(m_process->readAllStandardError());
     response.stdOut = QLatin1String(m_process->readAllStandardOutput());
-    switch (exitStatus)
-    {
+    switch (exitStatus) {
     case QProcess::NormalExit:
         response.error = false;
         break;
@@ -344,8 +340,8 @@ void DoxygenPlugin::processExited(int returnCode, QProcess::ExitStatus exitStatu
     }
     if (response.error)
         externalString(response.message);
-    else externalString(tr("Doxygen ran successfully"));
-
+    else
+        externalString(tr("Doxygen ran successfully"));
 }
 
 void DoxygenPlugin::readProcessOutput()
