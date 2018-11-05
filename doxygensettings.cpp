@@ -33,7 +33,7 @@ namespace DoxyPlugin {
 namespace Internal {
 
     DoxygenSettings::DoxygenSettings()
-        : m_widget(0)
+        : m_widget()
     {
         if (QSettings* settings = Core::ICore::instance()->settings())
             m_settings.fromSettings(settings);

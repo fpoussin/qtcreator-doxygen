@@ -141,7 +141,7 @@ void DoxygenFilesDialog::updateChecks(QTreeWidgetItem* item, int column)
             item->child(i)->setCheckState(0, checkState);
         }
     } else if (item->childCount() == 0 || column == -1) {
-        if (item->parent() == 0) {
+        if (item->parent() == nullptr) {
             return;
         }
         for (int j = 0; j < item->parent()->childCount(); ++j) {
@@ -154,7 +154,7 @@ void DoxygenFilesDialog::updateChecks(QTreeWidgetItem* item, int column)
         } else {
             item->parent()->setCheckState(0, item->checkState(0));
         }
-        if (item->parent() != 0) {
+        if (item->parent() != nullptr) {
             updateChecks(item->parent(), -1);
         }
     }

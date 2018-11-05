@@ -56,7 +56,7 @@ using namespace ProjectExplorer;
 using namespace DoxyPlugin;
 using namespace DoxyPlugin::Internal;
 
-Doxygen* Doxygen::m_instance = 0;
+Doxygen* Doxygen::m_instance = nullptr;
 
 Doxygen::Doxygen(QObject* parent)
     : QObject(parent)
@@ -130,13 +130,13 @@ Symbol* currentSymbol(Core::IEditor* editor)
 {
     CppTools::CppModelManager* modelManager = CppTools::CppModelManager::instance();
     if (!modelManager) {
-        return 0;
+        return nullptr;
     }
 
     const Snapshot snapshot = modelManager->snapshot();
     Document::Ptr doc = snapshot.document(editor->document()->filePath());
     if (!doc) {
-        return 0;
+        return nullptr;
     }
 
     Symbol* last = doc->lastVisibleSymbolAt(editor->currentLine(), editor->currentColumn());
@@ -543,7 +543,7 @@ uint Doxygen::documentProject(ProjectExplorer::Project* p, const DoxygenSettings
 
     QStringList files;
 
-    DoxygenFilesDialog* dialog = new DoxygenFilesDialog(NULL);
+    DoxygenFilesDialog* dialog = new DoxygenFilesDialog();
     dialog->initFileTree(p->rootProjectNode());
 
     if (dialog->exec() != QDialog::Accepted) {
