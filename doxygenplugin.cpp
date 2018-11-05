@@ -104,7 +104,7 @@ bool DoxygenPlugin::initialize(const QStringList& arguments, QString* errorStrin
 
     // settings dialog :)
     m_settings = new DoxygenSettings;
-    addAutoReleasedObject(m_settings);
+    //addAutoReleasedObject(m_settings);
 
     Core::ActionManager* am = Core::ActionManager::instance();
     Core::Context globalcontext(C_GLOBAL);
