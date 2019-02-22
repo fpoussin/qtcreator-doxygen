@@ -14,10 +14,10 @@ https://github.com/fpoussin/qtcreator-doxygen/releases
 
 ## Compiling
 
-You will have to install the same Qt version (ie: 5.10 MSVC 2015 32 bit for 4.5.0) that was user to build Qt creator version you are targeting for the plugin.  
+You will have to install the same Qt version (ie: 5.10 MSVC 2015 32 bit for 4.5.0) that was used to build the Qt creator version you are targeting for the plugin.  
 You can check this in the "about" menu of Qt creator.  
 
-* Download and extract the qt creator sources from the official website  
+* Download and extract the Qt creator sources from the official website  
 * Compile them using the correct Qt kit (Optional on linux, you can point to the official binary release which should be in your home folder by default)  
 * You don't need to install it when compiled  
   
