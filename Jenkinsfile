@@ -16,6 +16,7 @@ git submodule update --init'''
       steps {
         sh '''mkdir build
 cd build
+export HOME=/tmp
 qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator ..
 nice make -j $(nproc)'''
       }
