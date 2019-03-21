@@ -38,7 +38,7 @@ You can check this in the "about" menu of Qt creator.
 If you compiled the plugin, it will be installed automatically.  
   
 ##### If you downloaded a binary release, the paths are as follow:  
-* Unix: ~/.local/share/data/QtProject/qtcreator/plugins/\<version\>  
-* OSX: ~/Library/Application Support/QtProject/Qt Creator/plugins/\<version\>  
-* Windows: %LOCALAPPDATA%\QtProject\qtcreator\plugins\\<version\>  
-Replace \<version\>  with your Qt Creator version (ie: 4.8.0)  
+* Unix: ~/.local/share/data/QtProject/qtcreator/plugins/**\<version\>**  
+* OSX: ~/Library/Application Support/QtProject/Qt Creator/plugins/**\<version\>**  
+* Windows: %LOCALAPPDATA%\QtProject\qtcreator\plugins\\**\<version\>**  
+Replace **\<version\>**  with your Qt Creator version (ie: 4.8.0)  
