@@ -79,6 +79,11 @@ jobs:
         set(package_suffix ${CMAKE_MATCH_2})
         string(REPLACE "-debug-symbols" "" package_suffix "${package_suffix}")
 
+        # Workaround for CMake's greedy regex
+        if ("${{ matrix.config.qt-package-name }}" MATCHES "win32")
+          string(REPLACE "X86_64" "X86" package_suffix "${package_suffix}")
+        endif()
+
         file(MAKE_DIRECTORY qt5)
 
         foreach(package qtbase qtdeclarative qttools qtsvg)
