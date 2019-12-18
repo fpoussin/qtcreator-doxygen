@@ -9,10 +9,10 @@ jobs:
         matrix:
           config:
           - {
-              artifact: "Windows.tar.xz",
+              artifact: "Doxygen-4.11.0-x64.dll",
               os: windows-latest,
               environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              
+
               qt-base-url: "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_5140",
               qt-package-name: "qt.qt5.5140.win64_msvc2017_64",
               qt-dir-prefix: "5.14.0/msvc2017_64",
@@ -21,9 +21,21 @@ jobs:
               qtc-source: "qt-creator-opensource-src-4.11.0"
             }
           - {
-              artifact: "Linux.tar.xz",
+              artifact: "Doxygen-4.11.0-x86.dll",
+              os: windows-latest,
+              environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat",
+
+              qt-base-url: "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_5140",
+              qt-package-name: "qt.qt5.5140.win32_msvc2017",
+              qt-dir-prefix: "5.14.0/msvc2017",
+              qtc-base-url: "https://download.qt.io/official_releases/qtcreator/4.11/4.11.0",
+              qtc-platform: "windows_msvc2017_x86",
+              qtc-source: "qt-creator-opensource-src-4.11.0"
+            }
+          - {
+              artifact: "libDoxygen-4.11.0-x64.so",
               os: ubuntu-latest,
-                            
+
               qt-base-url: "https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt5_5140",
               qt-package-name: "qt.qt5.5140.gcc_64",
               qt-dir-prefix: "5.14.0/gcc_64",
@@ -32,9 +44,9 @@ jobs:
               qtc-source: "qt-creator-opensource-src-4.11.0"
             }
           - {
-              artifact: "macOS.tar.xz",
+              artifact: "libDoxygen-4.11.0-x64.dylib",
               os: macos-latest,
-              
+
               qt-base-url: "https://download.qt.io/online/qtsdkrepository/mac_x64/desktop/qt5_5140",
               qt-package-name: "qt.qt5.5140.clang_64",
               qt-dir-prefix: "5.14.0/clang_64",
@@ -46,27 +58,36 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Installing system libs
+      shell: cmake -P {0}
+      run: |
+        if ("${{ runner.os }}" STREQUAL "Linux")
+          execute_process(
+            COMMAND sudo apt install libgl1-mesa-dev
+          )
+        endif()
+
     - name: Download Qt
       shell: cmake -P {0}
       run: |
         file(DOWNLOAD "${{ matrix.config.qt-base-url }}/Updates.xml" ./Updates.xml SHOW_PROGRESS)
-        
+
         file(READ ./Updates.xml updates_xml)
         string(REGEX MATCH "<Name>${{ matrix.config.qt-package-name }}.*<Version>([0-9+-.]+)</Version>.*<DownloadableArchives>qtbase([a-zA-Z0-9_-]+).7z"
           updates_xml_output "${updates_xml}")
         set(package_version ${CMAKE_MATCH_1})
         set(package_suffix ${CMAKE_MATCH_2})
         string(REPLACE "-debug-symbols" "" package_suffix "${package_suffix}")
-        
+
         file(MAKE_DIRECTORY qt5)
-                
+
         foreach(package qtbase qtdeclarative qttools qtsvg)
           file(DOWNLOAD "${{ matrix.config.qt-base-url }}/${{ matrix.config.qt-package-name }}/${package_version}${package}${package_suffix}.7z" ./${package}.7z SHOW_PROGRESS)
           execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ../${package}.7z WORKING_DIRECTORY qt5)
         endforeach()
-        
+
         file(READ "qt5/${{ matrix.config.qt-dir-prefix }}/mkspecs/qconfig.pri" qtconfig)
-        string(REPLACE "Enterprise" "OpenSource" qtconfig "${qtconfig}") 
+        string(REPLACE "Enterprise" "OpenSource" qtconfig "${qtconfig}")
         string(REPLACE "licheck.exe" "" qtconfig "${qtconfig}")
         string(REPLACE "licheck64" "" qtconfig "${qtconfig}")
         string(REPLACE "licheck_mac" "" qtconfig "${qtconfig}")
@@ -78,12 +99,21 @@ jobs:
         file(DOWNLOAD "${{ matrix.config.qtc-base-url }}/${{ matrix.config.qtc-source }}" ./qtcreator_src.7z SHOW_PROGRESS)
         file(DOWNLOAD "${{ matrix.config.qtc-base-url }}/installer_source/${{ matrix.config.qtc-platform }}/qtcreator.7z" ./qtcreator.7z SHOW_PROGRESS)
         file(DOWNLOAD "${{ matrix.config.qtc-base-url }}/installer_source/${{ matrix.config.qtc-platform }}/qtcreator_dev.7z" ./qtcreator_dev.7z SHOW_PROGRESS)
-        
+
         file(MAKE_DIRECTORY qtcreator)
-        
+
         foreach(package qtcreator_src qtcreator qtcreator_dev)
           execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ../${package}.7z WORKING_DIRECTORY qtcreator)
         endforeach()
+
+        if ("${{ runner.os }}" STREQUAL "macOS")
+          execute_process(
+            COMMAND ${CMAKE_COMMAND} -E make_directory qtcreator/bin
+            COMMAND ${CMAKE_COMMAND} -E create_symlink
+              "$ENV{GITHUB_WORKSPACE}/qtcreator/Qt Creator.app"
+              "$ENV{GITHUB_WORKSPACE}/qtcreator/bin/Qt Creator.app"
+          )
+        endif()
 
     - name: Configure
       shell: cmake -P {0}
@@ -100,13 +130,13 @@ jobs:
             endif()
           endforeach()
         endif()
-                
+
         execute_process(
           COMMAND qt5/${{ matrix.config.qt-dir-prefix }}/bin/qmake
             doxygen.pro
             CONFIG+=release
-            QTC_SOURCE=qtcreator
-            QTC_BUILD=qtcreator
+            QTC_SOURCE="$ENV{GITHUB_WORKSPACE}/qtcreator"
+            QTC_BUILD="$ENV{GITHUB_WORKSPACE}/qtcreator"
           RESULT_VARIABLE result
         )
         if (NOT result EQUAL 0)
@@ -116,7 +146,7 @@ jobs:
     - name: Build
       shell: cmake -P {0}
       run: |
-        
+
         if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
           file(STRINGS environment_script_output.txt output_lines)
           foreach(line IN LISTS output_lines)
@@ -125,19 +155,22 @@ jobs:
             endif()
           endforeach()
         endif()
-        
+
         if ("${{ runner.os }}" STREQUAL "Windows")
           set(ENV{PATH} "qt5/${{ matrix.config.qt-dir-prefix }}/bin/;$ENV{PATH}")
         else()
           set(ENV{PATH} "qt5/${{ matrix.config.qt-dir-prefix }}/bin/:$ENV{PATH}")
           set(ENV{LD_LIBRARY_PATH} "qtcreator/lib/Qt/lib:$ENV{LD_LIBRARY_PATH}")
         endif()
-        
-        set(make_program "make")
-        if ("${{ runner.os }}" STREQUAL "Windows") 
+
+        include(ProcessorCount)
+        ProcessorCount(N)
+
+        set(make_program make -j ${N})
+        if ("${{ runner.os }}" STREQUAL "Windows")
           set(make_program "qtcreator/bin/jom")
         endif()
-        
+
         execute_process(
           COMMAND ${make_program}
           RESULT_VARIABLE result
@@ -146,10 +179,18 @@ jobs:
           message(FATAL_ERROR "Bad exit status")
         endif()
 
-    #- uses: actions/upload-artifact@v1
-      #with:
-        #path: ./${{ matrix.config.artifact }}
-        #name: ${{ matrix.config.artifact }}
+        if ("${{ runner.os }}" STREQUAL "Windows")
+          execute_process(COMMAND ${CMAKE_COMMAND} -E rename qtcreator/lib/qtcreator/plugins/Doxygen4.dll ${{ matrix.config.artifact }})
+        elseif ("${{ runner.os }}" STREQUAL "Linux")
+          execute_process(COMMAND ${CMAKE_COMMAND} -E rename qtcreator/lib/qtcreator/plugins/libDoxygen.so ${{ matrix.config.artifact }})
+        elseif ("${{ runner.os }}" STREQUAL "macOS")
+          execute_process(COMMAND ${CMAKE_COMMAND} -E rename "qtcreator/bin/Qt Creator.app/Contents/PlugIns/libDoxygen.dylib" ${{ matrix.config.artifact }})
+        endif()
+
+    - uses: actions/upload-artifact@v1
+      with:
+        path: ./${{ matrix.config.artifact }}
+        name: ${{ matrix.config.artifact }}
 
   release:
     if: contains(github.ref, 'tags/v')
@@ -184,15 +225,19 @@ jobs:
         matrix:
           config:
           - {
-              artifact: "Windows.tar.xz",
+              artifact: "Doxygen-4.11.0-x64.dll",
               os: ubuntu-latest
             }
           - {
-              artifact: "Linux.tar.xz",
+              artifact: "Doxygen-4.11.0-x86.dll",
               os: ubuntu-latest
             }
           - {
-              artifact: "macOS.tar.xz",
+              artifact: "libDoxygen-4.11.0-x64.so",
+              os: ubuntu-latest
+            }
+          - {
+              artifact: "libDoxygen-4.11.0-x64.dylib",
               os: ubuntu-latest
             }
     needs: release
