@@ -26,21 +26,21 @@ RESOURCES += doxygen.qrc
 
 # Qt Creator linking
 
-## set the QTC_SOURCE environment variable to override the setting here
+## set the QTC_SOURCE variable to override the setting here
 QTCREATOR_SOURCES = $$QTC_SOURCE
 unix:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=$$(HOME)/src/qt-creator-opensource-src-4.10.0
 win32:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=C:\src\qt-creator-opensource-src-4.10.0
 
-## set the QTC_BUILD environment variable to override the setting here
+## set the QTC_BUILD variable to override the setting here
 IDE_BUILD_TREE = $$QTC_BUILD
 unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=$$(HOME)/Qt/Tools/QtCreator
 win32:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:\src\build-qtcreator-Desktop_Qt_5_11_2_MSVC2015_32bit2-Release
 
-## set the QTC_LIB_BASENAME environment variable to override the setting here
+## set the QTC_LIB_BASENAME variable to override the setting here
 ## this variable points to the library installation path, relative to IDE_BUILD_TREE,
 ## so that $$IDE_BUILD_TREE/$$IDE_LIBRARY_BASENAME/qtcreator will be used by
 ## qtcreatorplugin.pri automatically as the qtcreator library path
-IDE_LIBRARY_BASENAME = $$(QTC_LIB_BASENAME)
+IDE_LIBRARY_BASENAME = $$QTC_LIB_BASENAME
 
 ## uncomment to build plugin into user config directory
 ## <localappdata>/plugins/<ideversion>
