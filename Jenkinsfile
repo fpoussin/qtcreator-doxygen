@@ -18,8 +18,9 @@ git submodule update --init'''
         sh '''mkdir build
 cd build
 export HOME=/tmp
-qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator USE_USER_DESTDIR=no ..
-nice make -j $(nproc)'''
+qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator ..
+nice make -j $(nproc)
+cp /qtcreator/lib/qtcreator/plugins/libDoxygen.so $WORKSPACE/'''
       }
     }
 
