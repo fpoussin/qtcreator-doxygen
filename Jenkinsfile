@@ -20,6 +20,7 @@ cd build
 export HOME=/tmp
 qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator ..
 nice make -j $(nproc)'''
+        archiveArtifacts(artifacts: '/tmp/.local/share/data/QtProject/qtcreator/plugins/*/*.so', caseSensitive: true, onlyIfSuccessful: true)
       }
     }
 
