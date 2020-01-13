@@ -18,15 +18,14 @@ git submodule update --init'''
         sh '''mkdir build
 cd build
 export HOME=/tmp
-qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator ..
-mkdir -p /tmp/.local/share/data/QtProject/qtcreator/plugins
+qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator USE_USER_DESTDIR=no ..
 nice make -j $(nproc)'''
       }
     }
 
     stage('Artifacts') {
       steps {
-        archiveArtifacts(artifacts: '/tmp/.local/share/data/QtProject/qtcreator/plugins/**/*.so', caseSensitive: true, onlyIfSuccessful: true)
+        archiveArtifacts(artifacts: 'libDoxygen.so', caseSensitive: true, onlyIfSuccessful: true)
       }
     }
 
