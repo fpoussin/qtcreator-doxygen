@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'fpoussin/jenkins:ubuntu-18.04-qtcreator'
+      image 'fpoussin/jenkins:ubuntu-18.04-qtcreator-4.11'
     }
 
   }
@@ -12,6 +12,7 @@ pipeline {
 git submodule update --init'''
       }
     }
+
     stage('Build') {
       steps {
         sh '''mkdir build
@@ -21,5 +22,6 @@ qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator ..
 nice make -j $(nproc)'''
       }
     }
+
   }
 }
