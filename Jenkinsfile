@@ -19,6 +19,7 @@ git submodule update --init'''
 cd build
 export HOME=/tmp
 qmake QTC_SOURCE=/qtcreator QTC_BUILD=/qtcreator ..
+mkdir -p /tmp/.local/share/data/QtProject/qtcreator/plugins
 nice make -j $(nproc)'''
       }
     }
