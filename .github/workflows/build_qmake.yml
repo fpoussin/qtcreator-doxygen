@@ -181,7 +181,6 @@ jobs:
           COMMAND ${{ steps.qt.outputs.qt_dir }}/bin/qmake
             $ENV{PLUGIN_PRO}
             CONFIG+=release
-            USE_USER_DESTDIR=no
             QTC_SOURCE="${qtcreator_dir}"
             QTC_BUILD="${qtcreator_dir}"
           RESULT_VARIABLE result
