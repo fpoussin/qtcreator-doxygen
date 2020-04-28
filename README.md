@@ -27,7 +27,8 @@ You can check this in the "about" menu of Qt creator.
 * Specify the path of source and binaries for Qt creator using **QTC_SOURCE** and **QTC_BUILD** vars  
 * **QTC_SOURCE** must point to the sources you extracted  
 * **QTC_BUILD** must point to your build folder (or binary release on Linux)  
-* Example command: *qmake QTC_SOURCE=\~/src/qt-creator-opensource-src-4.5.0 QTC_BUILD=\~/qtcreator-4.5.0* .  
+* **USE_USER_DESTDIR** installs the module automatically  
+* Example command: *qmake USE_USER_DESTDIR=yes QTC_SOURCE=\~/src/qt-creator-opensource-src-4.5.0 QTC_BUILD=\~/qtcreator-4.5.0* .  
   
 #### Qt Creator  
 * Specify the path of source and binaries for Qt creator by editing the dexygen.pro file  
