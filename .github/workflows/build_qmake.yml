@@ -50,58 +50,17 @@ jobs:
 
     - name: Download Qt
       id: qt
-      uses: jurplel/install-qt-action@v2
+      uses: fpoussin/install-qt-action@v2
       with:
+        aqtversion: master
         version: "${{ env.QT_VERSION }}"
         modules: qtdeclarative qttools qtsvg
+        tools:
+          - name: qtcreator
+            version: "${{ env.QT_CREATOR_VERSION }}"
+          - name: qtcreatordev
+            version: "${{ env.QT_CREATOR_VERSION }}"
         arch: "${{ matrix.config.msvc }}"
-
-    - name: Download Qt Creator
-      id: qt_creator
-      shell: cmake -P {0}
-      run: |
-        string(REGEX MATCH "([0-9]+.[0-9]+).[0-9]+" outvar "$ENV{QT_CREATOR_VERSION}")
-        set(qtc_base_url "https://download.qt.io/official_releases/qtcreator/${CMAKE_MATCH_1}/$ENV{QT_CREATOR_VERSION}")
-
-        if ("${{ runner.os }}" STREQUAL "Windows")
-          set(qtc_output_directory "qtcreator/lib/qtcreator/plugins")
-          set(qtc_binary_name "$ENV{PLUGIN_NAME}4.dll")
-          if ("${{ matrix.config.environment_script }}" MATCHES "vcvars64.bat")
-            set(qtc_platform "windows_msvc2017_x64")
-          elseif ("${{ matrix.config.environment_script }}" MATCHES "vcvars32.bat")
-            set(qtc_platform "windows_msvc2017_x86")
-          endif()
-        elseif ("${{ runner.os }}" STREQUAL "Linux")
-          set(qtc_output_directory "qtcreator/lib/qtcreator/plugins")
-          set(qtc_binary_name "lib$ENV{PLUGIN_NAME}.so")
-          set(qtc_platform "linux_gcc_64_rhel72")
-        elseif ("${{ runner.os }}" STREQUAL "macOS")
-          set(qtc_output_directory "qtcreator/bin/Qt Creator.app/Contents/PlugIns")
-          set(qtc_binary_name "lib$ENV{PLUGIN_NAME}.dylib")
-          set(qtc_platform "mac_x64")
-        endif()
-
-        # Save the path for other steps
-        message("::set-output name=qtc_binary_name::${qtc_binary_name}")
-        message("::set-output name=qtc_output_directory::${qtc_output_directory}")
-
-        file(MAKE_DIRECTORY qtcreator)
-
-        foreach(package qtcreator qtcreator_dev)
-          file(DOWNLOAD
-            "${qtc_base_url}/installer_source/${qtc_platform}/${package}.7z" ./${package}.7z SHOW_PROGRESS)
-          execute_process(COMMAND
-            ${CMAKE_COMMAND} -E tar xvf ../${package}.7z WORKING_DIRECTORY qtcreator)
-        endforeach()
-
-        if ("${{ runner.os }}" STREQUAL "macOS")
-          execute_process(
-            COMMAND ${CMAKE_COMMAND} -E make_directory qtcreator/bin
-            COMMAND ${CMAKE_COMMAND} -E create_symlink
-              "$ENV{GITHUB_WORKSPACE}/qtcreator/Qt Creator.app"
-              "$ENV{GITHUB_WORKSPACE}/qtcreator/bin/Qt Creator.app"
-          )
-        endif()
 
     - name: Configure
       shell: cmake -P {0}
