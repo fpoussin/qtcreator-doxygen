@@ -70,7 +70,7 @@ DoxygenSettingsStruct DoxygenSettingsWidget::settings() const
     rc.customEnding = QString(ui->edit_endTag->text()).replace("\\n", "\n");
     rc.customNewLine = QString(ui->edit_newLine->text()).replace("\\n", "\n");
     rc.customShortDoc = QString(ui->edit_shortTag->text()).replace("\\n", "\n");
-    rc.customShortDocEnd = QString(ui->edit_shortTagEnd->text()).replace("\\\n", "\n");
+    rc.customShortDocEnd = QString(ui->edit_shortTagEnd->text()).replace("\\n", "\n");
     rc.fileComment = ui->fileCommentText->toPlainText();
     rc.fileCommentHeaders = ui->commentHeaderFiles->isChecked();
     rc.fileCommentImpl = ui->commentImplementationFiles->isChecked();
