@@ -50,7 +50,7 @@ jobs:
 
     - name: Download Qt
       id: qt
-      uses: fpoussin/install-qt-action@master
+      uses: fpoussin/install-qt-action@v2
       with:
         aqtversion: master
         version: "${{ env.QT_VERSION }}"
