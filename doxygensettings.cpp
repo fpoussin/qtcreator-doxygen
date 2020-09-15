@@ -39,7 +39,7 @@ namespace Internal {
             m_settings.fromSettings(settings);
         setId("A.General");
         setDisplayName(tr("Doxygen"));
-        setCategory(Core::Id::fromString(QString(Constants::DOXYGEN_SETTINGS_CATEGORY)));
+        setCategory(Utils::Id::fromString(QString(Constants::DOXYGEN_SETTINGS_CATEGORY)));
         setDisplayCategory("Doxygen");
         setCategoryIcon(Utils::Icon(":/doxygen.png"));
     }
