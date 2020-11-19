@@ -111,7 +111,7 @@ bool DoxygenPlugin::initialize(const QStringList& arguments, QString* errorStrin
     Core::Context globalcontext(C_GLOBAL);
     //Core::Context context(CMD_ID_DOXYGEN_MAINVIEW);
     Core::ActionContainer* toolsContainer = am->actionContainer(Core::Constants::M_TOOLS);
-    Core::ActionContainer* doxygenMenu = am->createMenu(Core::Id(CMD_ID_DOXYGEN_MENU));
+    Core::ActionContainer* doxygenMenu = am->createMenu(Utils::Id(CMD_ID_DOXYGEN_MENU));
     doxygenMenu->menu()->setTitle(tr("&Doxygen"));
     toolsContainer->addMenu(doxygenMenu);
 

@@ -577,7 +577,7 @@ uint Doxygen::documentProject(ProjectExplorer::Project* p, const DoxygenSettings
                     && fileExtension == "qml"
                     )
                 ) {*/
-            Core::IEditor* editor = editorManager->openEditor(files[i], Core::Id(),
+            Core::IEditor* editor = editorManager->openEditor(files[i], Utils::Id(),
                 Core::EditorManager::DoNotChangeCurrentEditor
                     | Core::EditorManager::IgnoreNavigationHistory
                     | Core::EditorManager::DoNotMakeVisible);
