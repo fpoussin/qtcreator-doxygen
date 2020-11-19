@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'fpoussin/jenkins:ubuntu-18.04-qtcreator-4.11'
+      image 'fpoussin/jenkins:ubuntu-20.04-qtcreator-4.13'
     }
 
   }
