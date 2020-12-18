@@ -3,8 +3,8 @@ name: QMake Build Matrix
 on: [push]
 
 env:
-  QT_VERSION: 5.15.1
-  QT_CREATOR_VERSION: 4.13.0
+  QT_VERSION: 5.15.2
+  QT_CREATOR_VERSION: 4.14.0
   PLUGIN_PRO: doxygen.pro
   PLUGIN_NAME: Doxygen
 
@@ -50,17 +50,11 @@ jobs:
 
     - name: Download Qt
       id: qt
-      uses: fpoussin/install-qt-action@v2
+      uses: jurplel/install-qt-action@v2
       with:
-        aqtversion: master
         version: "${{ env.QT_VERSION }}"
         modules: qtdeclarative qttools qtsvg
-        tools:
-          - name: qtcreator
-            version: "${{ env.QT_CREATOR_VERSION }}"
-          - name: qtcreatordev
-            version: "${{ env.QT_CREATOR_VERSION }}"
-        arch: "${{ matrix.config.msvc }}"
+        tools: 'tools_qtcreator,"${{ env.QT_CREATOR_VERSION }}"-0,qt.tools.qtcreator tools_qtcreator,"${{ env.QT_CREATOR_VERSION }}"-0,qt.tools.qtcreatordev'
 
     - name: Configure
       shell: cmake -P {0}
