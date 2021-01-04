@@ -28,13 +28,13 @@ RESOURCES += doxygen.qrc
 
 ## set the QTC_SOURCE variable to override the setting here
 QTCREATOR_SOURCES = $$QTC_SOURCE
-unix:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=$$(HOME)/src/qt-creator-opensource-src-4.10.0
-win32:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=C:\src\qt-creator-opensource-src-4.10.0
+unix:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=$$(HOME)/Qt/Tools/QtCreator/dev/include
+win32:isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=C:\Qt\Tools\QtCreator\dev\include
 
 ## set the QTC_BUILD variable to override the setting here
 IDE_BUILD_TREE = $$QTC_BUILD
 unix:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=$$(HOME)/Qt/Tools/QtCreator
-win32:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:\src\build-qtcreator-Desktop_Qt_5_11_2_MSVC2015_32bit2-Release
+win32:isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:\Qt\Tools\QtCreator\dev\lib\qtcreator
 
 ## set the QTC_LIB_BASENAME variable to override the setting here
 ## this variable points to the library installation path, relative to IDE_BUILD_TREE,
@@ -76,5 +76,6 @@ include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
 DEFINES -= QT_NO_CAST_TO_ASCII QT_NO_CAST_FROM_ASCII
 
 DISTFILES += \
+    CMakeLists.txt \
     Doxygen.json.in
 
